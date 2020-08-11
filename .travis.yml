@@ -6,5 +6,4 @@ cache:
   - $HOME/.m2
       
 script:
-  - git fetch --unshallow origin master
   - mvn test
