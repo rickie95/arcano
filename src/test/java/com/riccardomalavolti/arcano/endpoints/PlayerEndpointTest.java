@@ -1,70 +1,32 @@
 package com.riccardomalavolti.arcano.endpoints;
 
-import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.equalTo;
+import static org.mockito.Mockito.verify;
 
-import javax.ws.rs.core.MediaType;
-
-import org.glassfish.grizzly.http.server.HttpServer;
-import org.junit.BeforeClass;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import io.restassured.RestAssured;
+import com.riccardomalavolti.arcano.service.PlayerService;
 
+@ExtendWith(MockitoExtension.class)
 class PlayerEndpointTest {
-
-	private HttpServer server;
-
-	@BeforeClass
-	public static void configureRestAssured() {
-		RestAssured.baseURI = BasicServer.BASE_URI;
-	}
-
-	@BeforeEach
-	public void setUp() throws Exception {
-		server = BasicServer.startServer();
-	}
-
-	@AfterEach
-	public void tearDown() throws Exception {
-		server.shutdownNow();
-	}
-
+	
+	@Mock private PlayerService playerService;
+	
+	@InjectMocks private PlayerEndpoint playerEndpoint;
+	
 	@Test
 	void getPlayersList() {
-		given().
-			accept(MediaType.APPLICATION_JSON)
-			.when().
-			get(BasicServer.BASE_URI + "player").
-		then().
-			statusCode(200).
-			assertThat().
-				body(
-					"id[0]", equalTo(1),
-					"id[1]", equalTo(2)
-				);
-
+		playerEndpoint.getPlayerList();
+		verify(playerService).getAllPlayers();
 	}
 
 	@Test
 	void getPlayerByID() {
-		final int playerId = 1;
-		final String url = String.format(BasicServer.BASE_URI + "player/%s", playerId);
-
-		System.out.println(url);
-		
-		given().
-			accept(MediaType.APPLICATION_JSON).
-		when().
-			get(url).
-		then().
-			statusCode(200).
-			assertThat().
-				body(
-						"id", equalTo(playerId),
-						"name", equalTo("Mike")
-					);
+		String id = "1";
+		playerEndpoint.getPlayer(id);
+		verify(playerService).getPlayerById(id);
 	}
 }

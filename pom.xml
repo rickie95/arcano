@@ -19,9 +19,11 @@
 		<maven.compiler.release>${java.version}</maven.compiler.release>
 
 		<junit>5.6.2</junit>
+		<mockito>3.4.6</mockito>
 		<restassured.version>4.3.1</restassured.version>
 		<grizzly.version>2.28</grizzly.version>
-		
+		<weld-junit.version>2.0.1.Final</weld-junit.version>
+
 		<javaee.api.version>8.0.1</javaee.api.version>
 		<hibernate.version>5.4.13.Final</hibernate.version>
 
@@ -104,25 +106,47 @@
 			<version>${grizzly.version}</version>
 			<scope>test</scope>
 		</dependency>
-		
-		
-		
-		
+
+
+
+
 		<dependency>
 			<groupId>javax</groupId>
 			<artifactId>javaee-api</artifactId>
 			<version>${javaee.api.version}</version>
 			<scope>provided</scope>
 		</dependency>
-		
+
 		<!-- Hibernate -->
-		
+
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-core</artifactId>
 			<version>${hibernate.version}</version>
 			<scope>provided</scope>
 		</dependency>
+
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<version>${mockito}</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-junit-jupiter</artifactId>
+			<version>2.28.2</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.jboss.weld</groupId>
+			<artifactId>weld-junit5</artifactId>
+			<version>${weld-junit.version}</version>
+			<scope>test</scope>
+		</dependency>
+
 
 	</dependencies>
 
@@ -169,6 +193,25 @@
 									<mainClass>com.riccardomalavolti.arcano.App</mainClass>
 								</transformer>
 							</transformers>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<version>3.0.0</version>
+				<executions>
+					<execution>
+						<id>add-test-source</id>
+						<phase>generate-test-sources</phase>
+						<goals>
+							<goal>add-test-source</goal>
+						</goals>
+						<configuration>
+							<sources>
+								<source>src/integration/java</source>
+							</sources>
 						</configuration>
 					</execution>
 				</executions>
