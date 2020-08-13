@@ -40,8 +40,7 @@ public class PlayerServiceImp implements PlayerService {
 
 	@Override
 	public Player getPlayerById(String id) {
-		// TODO Auto-generated method stub
-		return null;
+		return new Player(1, "Mike");
 	}
 
 }
