@@ -3,8 +3,11 @@ package com.riccardomalavolti.arcano.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.enterprise.inject.Default;
+
 import com.riccardomalavolti.arcano.model.Player;
 
+@Default
 public class PlayerServiceImp implements PlayerService {
 
 	@Override

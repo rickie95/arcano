@@ -10,16 +10,20 @@ import org.junit.BeforeClass;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import io.restassured.RestAssured;
 
-class PlayerEndpointTest {
+@ExtendWith(MockitoExtension.class)
+class PlayerEndpointIntegrationTest {
 
-	private HttpServer server;
+	private HttpServer server;	
 
 	@BeforeClass
-	public static void configureRestAssured() {
+	public static void configure() {
 		RestAssured.baseURI = BasicServer.BASE_URI;
+		
 	}
 
 	@BeforeEach
@@ -31,9 +35,12 @@ class PlayerEndpointTest {
 	public void tearDown() throws Exception {
 		server.shutdownNow();
 	}
-
+	
+	
+	
 	@Test
-	void getPlayersList() {
+	public void getPlayersList() {
+	
 		given().
 			accept(MediaType.APPLICATION_JSON)
 			.when().
@@ -49,11 +56,10 @@ class PlayerEndpointTest {
 	}
 
 	@Test
-	void getPlayerByID() {
+	public void getPlayerByID() {
 		final int playerId = 1;
 		final String url = String.format(BasicServer.BASE_URI + "player/%s", playerId);
 
-		System.out.println(url);
 		
 		given().
 			accept(MediaType.APPLICATION_JSON).
