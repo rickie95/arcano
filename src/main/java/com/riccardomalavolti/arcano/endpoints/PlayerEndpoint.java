@@ -11,17 +11,16 @@ import javax.ws.rs.core.MediaType;
 
 import com.riccardomalavolti.arcano.model.Player;
 import com.riccardomalavolti.arcano.service.PlayerService;
+import com.riccardomalavolti.arcano.service.PlayerServiceImp;
 
 
 @Path("/player")
 public class PlayerEndpoint {
 	
-	private final PlayerService playerService;
 	
 	@Inject
-	public PlayerEndpoint(PlayerService playerService) {
-		this.playerService = playerService;
-	}
+	private PlayerService playerService;
+	
 	
 	@Path("/")
 	@GET
