@@ -37,10 +37,8 @@ class PlayerEndpointIntegrationTest {
 	}
 	
 	
-	
 	@Test
-	public void getPlayersList() {
-	
+	void getPlayersList() {
 		given().
 			accept(MediaType.APPLICATION_JSON)
 			.when().
@@ -56,7 +54,7 @@ class PlayerEndpointIntegrationTest {
 	}
 
 	@Test
-	public void getPlayerByID() {
+	void getPlayerByID() {
 		final int playerId = 1;
 		final String url = String.format(BasicServer.BASE_URI + "player/%s", playerId);
 
