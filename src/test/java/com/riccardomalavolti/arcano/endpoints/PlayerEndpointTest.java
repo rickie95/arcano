@@ -25,7 +25,7 @@ class PlayerEndpointTest {
 
 	@Test
 	void getPlayerByID() {
-		String id = "1";
+		Long id = (long) 1;
 		playerEndpoint.getPlayer(id);
 		verify(playerService).getPlayerById(id);
 	}
