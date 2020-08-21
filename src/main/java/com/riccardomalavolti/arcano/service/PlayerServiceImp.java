@@ -1,14 +1,18 @@
 package com.riccardomalavolti.arcano.service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.enterprise.inject.Default;
+import javax.inject.Inject;
 
 import com.riccardomalavolti.arcano.model.Player;
+import com.riccardomalavolti.arcano.repositories.PlayerRepositoryMySQL;
 
 @Default
 public class PlayerServiceImp implements PlayerService {
+	
+	@Inject
+	private PlayerRepositoryMySQL playerRepo;
 
 	@Override
 	public void addPlayer(Player p) {
@@ -30,17 +34,23 @@ public class PlayerServiceImp implements PlayerService {
 
 	@Override
 	public List<Player> getAllPlayers() {
-
-		List<Player> playerList = new ArrayList<>();
-		playerList.add(new Player(1, "Mike"));
-		playerList.add(new Player(2, "Jack"));
-		
-		return playerList;
+		return playerRepo.getAllPlayers();
 	}
 
 	@Override
-	public Player getPlayerById(String id) {
-		return new Player(1, "Mike");
+	public Player getPlayerById(Long playerId) {
+		return playerRepo.getPlayerById(playerId);
+	}
+
+	@Override
+	public boolean commitChanges() {
+		try {
+		playerRepo.commitChanges();
+		return true;
+		}catch(Exception ex) {
+			System.out.println();
+		}
+		return false;
 	}
 
 }

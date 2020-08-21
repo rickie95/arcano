@@ -11,6 +11,7 @@ public interface PlayerService {
 	public void updatePlayer(Player p);
 	
 	public List<Player> getAllPlayers();
-	public Player getPlayerById(String id);
+	public Player getPlayerById(Long id);
+	public boolean commitChanges();
 	
 }
