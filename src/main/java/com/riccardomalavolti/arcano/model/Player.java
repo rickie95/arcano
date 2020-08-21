@@ -11,16 +11,16 @@ import javax.validation.constraints.NotNull;
 @Table(name="player")
 public class Player {
 	
-	private int id;
+	private Long id;
 	private String name;
 	
 	@Id
 	@NotNull
 	@Column(name = "id", nullable = false)
-	public int getId() {
+	public Long getId() {
 		return id;
 	}
-	public void setId(int id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 	public String getName() {
