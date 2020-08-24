@@ -16,7 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import io.restassured.RestAssured;
 
 @ExtendWith(MockitoExtension.class)
-class PlayerEndpointIntegrationTest {
+class PlayerEndpointIT {
 
 	private HttpServer server;	
 
