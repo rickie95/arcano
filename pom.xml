@@ -19,6 +19,7 @@
 		<maven.compiler.release>${java.version}</maven.compiler.release>
 
 		<junit>5.6.2</junit>
+		<junit-runner>1.2.0</junit-runner>
 		<mockito>3.4.6</mockito>
 		<restassured.version>4.3.1</restassured.version>
 		<grizzly.version>2.28</grizzly.version>
@@ -58,6 +59,12 @@
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-params</artifactId>
 			<version>${junit}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.junit.platform</groupId>
+			<artifactId>junit-platform-runner</artifactId>
+			<version>${junit-runner}</version>
 			<scope>test</scope>
 		</dependency>
 
