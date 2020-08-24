@@ -2,13 +2,42 @@ package com.riccardomalavolti.arcano.repositories;
 
 import java.util.List;
 
-import com.riccardomalavolti.arcano.model.Player;
+import javax.enterprise.inject.Default;
+import javax.inject.Inject;
 
-public interface PlayerRepository {
+import com.riccardomalavolti.arcano.model.Player;
+import com.riccardomalavolti.arcano.persistence.GenericDAO;
+
+@Default
+public class PlayerRepository {
+
 	
-	public List<Player> getAllPlayers();
-	public Player getPlayerById(Long playerId);
-	public void addPlayer(Player p);
-	public boolean commitChanges();
+	final GenericDAO<Player> playerDAO;
+	
+	@Inject
+	public PlayerRepository(GenericDAO<Player> playerDAO) {
+		this.playerDAO = playerDAO;
+		this.playerDAO.setClass(Player.class);
+	}
+
+	public List<Player> getAllPlayers() {
+		return playerDAO.findAll();
+	}
+
+	public Player getPlayerById(Long playerId) {
+		return playerDAO.findById(playerId);
+	}
+
+	public Player addPlayer(Player p) {
+		return playerDAO.persist(p);
+	}
+
+	public void removePlayer(Player player) {
+		playerDAO.delete(player);
+	}
+
+	public void mergePlayer(Player player) {
+		playerDAO.merge(player);		
+	}
 
 }
