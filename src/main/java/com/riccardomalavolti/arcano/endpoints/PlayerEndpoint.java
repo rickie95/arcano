@@ -22,23 +22,13 @@ import com.riccardomalavolti.arcano.model.Player;
 import com.riccardomalavolti.arcano.service.PlayerService;
 
 
-@Path("/player")
+@Path("player")
 public class PlayerEndpoint {
 	
 	
 	@Inject
 	private PlayerService playerService;
 	
-	@Path("/up")
-	@GET
-	public Response commit() {
-		if(playerService.commitChanges())
-			return Response.ok().build();
-			
-		return Response.serverError().build();
-	}
-	
-	@Path("/")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<Player> getPlayerList() {
@@ -46,25 +36,24 @@ public class PlayerEndpoint {
 	}
 	
 	@GET
-	@Path("/{id}")
+	@Path("{id}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Player getPlayer(@PathParam("id") Long id) {
+	public Player getPlayer(@PathParam("id") String id) {
 		return playerService.getPlayerById(id);
 	}
 
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response addPlayer(Player p, @Context UriInfo uriInfo) throws URISyntaxException {
+	public Response putNewPlayer(Player p, @Context UriInfo uriInfo) throws URISyntaxException {
 		Player saved = playerService.addPlayer(p);
 		return Response.created(new URI(uriInfo.getAbsolutePath() + "/" + saved.getId()))
 				.entity(saved)
 				.build();
-		
 	}
 	
 	@PUT
-	@Path("/{id}")
+	@Path("{id}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Player updatePlayer(@PathParam("id") String id, Player updatedPlayer) {

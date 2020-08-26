@@ -2,6 +2,7 @@ package com.riccardomalavolti.arcano.repositories;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,10 +18,15 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.riccardomalavolti.arcano.model.Player;
 import com.riccardomalavolti.arcano.persistence.MySQLGenericDAO;
 
+
+import junit.runner.Version;
+
 @ExtendWith(MockitoExtension.class)
 @RunWith(JUnitPlatform.class)
 class PlayerRepositoryTest {
 	
+	private static final Long USER_ID = (long) 1;
+
 	@Mock
 	MySQLGenericDAO<Player> playerDAO;
 	
@@ -33,6 +39,8 @@ class PlayerRepositoryTest {
 	
 	@Test
 	void testDAOClassIsBeingSet() {
+
+		System.out.println("JUnit version is: " + Version.id());
 		Mockito.verify(playerDAO).setClass(DAOParameter.capture());
 		assertEquals(DAOParameter.getValue(), Player.class);
 	}
@@ -62,11 +70,25 @@ class PlayerRepositoryTest {
 	}
 	
 	@Test
+	void testAddingPlayerWhenAlreadyExistentShouldThrowEntityExistException() {
+		Player player = new Player();
+		
+		playerRepo.addPlayer(player);
+		Mockito.verify(playerDAO).persist(playerCaptor.capture());
+		assertEquals(player, playerCaptor.getValue());
+	}
+	
+	@Test
 	void removePlayer() {
 		Player player = new Player();
-		playerRepo.removePlayer(player);
+		player.setId(USER_ID);
+		when(playerDAO.delete(player)).thenReturn(player);
+		
+		Player returnedPlayer = playerRepo.removePlayer(player).get();
+		
 		verify(playerDAO).delete(playerCaptor.capture());
 		assertEquals(player, playerCaptor.getValue());
+		assertEquals(player, returnedPlayer);
 	}
 	
 	@Test

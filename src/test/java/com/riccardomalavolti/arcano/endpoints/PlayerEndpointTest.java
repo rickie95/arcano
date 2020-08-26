@@ -1,32 +1,151 @@
 package com.riccardomalavolti.arcano.endpoints;
 
-import static org.mockito.Mockito.verify;
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.endsWith;
+import static org.hamcrest.Matchers.equalTo;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import javax.json.Json;
+import javax.json.JsonObject;
+import javax.ws.rs.core.Application;
+import javax.ws.rs.core.MediaType;
+
+import org.glassfish.hk2.utilities.binding.AbstractBinder;
+import org.glassfish.jersey.server.ResourceConfig;
+import org.glassfish.jersey.test.JerseyTest;
+import org.junit.Before;
+import org.junit.Test;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.MockitoAnnotations;
 
+import com.riccardomalavolti.arcano.model.Player;
 import com.riccardomalavolti.arcano.service.PlayerService;
 
-@ExtendWith(MockitoExtension.class)
-class PlayerEndpointTest {
+import io.restassured.RestAssured;
+
+public class PlayerEndpointTest extends JerseyTest{
 	
-	@Mock private PlayerService playerService;
+	private static final String PLAYERS = "player";
+
+	@Mock
+	private PlayerService playerService;
+
+//	@InjectMocks
+//	private PlayerEndpoint playerEndpoint;
 	
-	@InjectMocks private PlayerEndpoint playerEndpoint;
+	@Override
+    protected Application configure() {
+		MockitoAnnotations.initMocks(this);
+		return new ResourceConfig(PlayerEndpoint.class)
+				.register(new AbstractBinder() {
+				@Override
+				protected void configure() {
+					bind(playerService)
+						.to(PlayerService.class);
+				}
+			});
+    }
 	
-	@Test
-	void getPlayersList() {
-		playerEndpoint.getPlayerList();
-		verify(playerService).getAllPlayers();
+
+	
+	@Before
+	public void configureRestAssured() {
+		RestAssured.baseURI = getBaseUri().toString();
 	}
 
 	@Test
-	void getPlayerByID() {
+	public void getPlayersList() {
+		Long id1 = (long) 1;
+		String name1 = "Mike";
+		Long id2 = (long) 2;
+		String name2 = "Joe";
+		Player p1 = new Player();
+		p1.setId(id1);
+		p1.setUsername(name1);
+		
+		Player p2 = new Player();
+		p2.setId(id2);
+		p2.setUsername(name2);
+		List<Player> players = new ArrayList<Player>(Arrays.asList(p1, p2));
+		
+		when(playerService.getAllPlayers())
+		.thenReturn(players);
+
+	given().
+		accept(MediaType.APPLICATION_JSON).
+	when().
+		get(PLAYERS).
+	then().
+		statusCode(200).
+		assertThat().
+		body(
+				"[0].id", equalTo(id1.intValue()),
+				"[0].username", equalTo(name1),
+				"[1].id", equalTo(id2.intValue()),
+				"[1].username", equalTo(name2)
+		);
+	}
+
+	@Test
+	public void getPlayerByID() {
 		Long id = (long) 1;
-		playerEndpoint.getPlayer(id);
-		verify(playerService).getPlayerById(id);
+		String name = "Mike";
+		Player p = new Player();
+		p.setId(id);
+		p.setUsername(name);
+		
+		when(playerService.getPlayerById(anyString()))
+			.thenReturn(p);
+
+		given().
+			accept(MediaType.APPLICATION_JSON).
+		when().
+			get(PLAYERS + "/1").
+		then().
+			statusCode(200).
+			assertThat().
+				body(
+					"id", equalTo(id.intValue()), 
+					"username", equalTo(name)
+					);
+		}
+
+	@Test
+	public void testPostNewPlayer() {
+		Long createdId = (long) 3;
+		String name = "Mike";
+		
+		Player playerSent = new Player();
+		playerSent.setUsername(name);
+		
+		Player playerRetuned = new Player();
+		playerRetuned.setId(createdId);
+		playerRetuned.setUsername(name);
+
+		JsonObject jsonSent = Json.createObjectBuilder()
+									.add("username", name)
+									.build();
+
+		when(playerService.addPlayer(playerSent)).thenReturn(playerRetuned);
+
+		given()
+			.contentType(MediaType.APPLICATION_JSON)
+			.body(jsonSent.toString()).
+		when()
+			.post(PLAYERS).prettyPeek().
+		then()
+			.statusCode(201)
+			.assertThat().
+				body(
+						"id", equalTo(createdId.intValue()), 
+						"username", equalTo(name)
+					)
+				.header("Location", response -> endsWith(PLAYERS + "/" + createdId));
+
 	}
 }
