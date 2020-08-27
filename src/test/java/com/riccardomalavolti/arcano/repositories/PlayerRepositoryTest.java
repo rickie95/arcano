@@ -18,9 +18,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.riccardomalavolti.arcano.model.Player;
 import com.riccardomalavolti.arcano.persistence.MySQLGenericDAO;
 
-
-import junit.runner.Version;
-
 @ExtendWith(MockitoExtension.class)
 @RunWith(JUnitPlatform.class)
 class PlayerRepositoryTest {
@@ -39,8 +36,6 @@ class PlayerRepositoryTest {
 	
 	@Test
 	void testDAOClassIsBeingSet() {
-
-		System.out.println("JUnit version is: " + Version.id());
 		Mockito.verify(playerDAO).setClass(DAOParameter.capture());
 		assertEquals(DAOParameter.getValue(), Player.class);
 	}

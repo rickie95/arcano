@@ -68,6 +68,13 @@
 			<scope>test</scope>
 		</dependency>
 
+		<!-- https://mvnrepository.com/artifact/com.github.hanleyt/jersey-junit -->
+		<dependency>
+			<groupId>com.github.hanleyt</groupId>
+			<artifactId>jersey-junit</artifactId>
+			<version>2.1.0</version>
+		</dependency>
+
 		<!-- RestAssured + JSON support -->
 
 		<dependency>

@@ -20,6 +20,8 @@ import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTest;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.platform.runner.JUnitPlatform;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -28,16 +30,15 @@ import com.riccardomalavolti.arcano.service.PlayerService;
 
 import io.restassured.RestAssured;
 
+@RunWith(JUnitPlatform.class)
 public class PlayerEndpointTest extends JerseyTest{
 	
 	private static final String PLAYERS = "player";
 
 	@Mock
 	private PlayerService playerService;
-
-//	@InjectMocks
-//	private PlayerEndpoint playerEndpoint;
 	
+	@SuppressWarnings("deprecation")
 	@Override
     protected Application configure() {
 		MockitoAnnotations.initMocks(this);
@@ -137,7 +138,7 @@ public class PlayerEndpointTest extends JerseyTest{
 			.contentType(MediaType.APPLICATION_JSON)
 			.body(jsonSent.toString()).
 		when()
-			.post(PLAYERS).prettyPeek().
+			.post(PLAYERS).
 		then()
 			.statusCode(201)
 			.assertThat().
