@@ -5,6 +5,7 @@ import java.util.List;
 import javax.transaction.Transactional;
 
 
+
 public interface GenericDAO<T> {
 	
 	public void setClass(Class<T> persistenceClass);
@@ -13,7 +14,7 @@ public interface GenericDAO<T> {
 	
 	@Transactional public T persist(T entity);
 	@Transactional public T merge(T entity);
-	@Transactional public void delete(T entity);
+	@Transactional public T delete(T entity);
 	
 	@Transactional public Object executeArbitraryQuery(String query);
 	

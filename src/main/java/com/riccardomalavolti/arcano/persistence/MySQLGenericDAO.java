@@ -25,7 +25,6 @@ public class MySQLGenericDAO<T> implements GenericDAO<T> {
 	public void checkIfInitialized() {
 		if(persistentClass == null)
 			throw new IllegalStateException("No class has been specified, use setClass()");
-		
 	}
 	
 	public T findById(Long id) {
@@ -37,6 +36,7 @@ public class MySQLGenericDAO<T> implements GenericDAO<T> {
 		return em.find(persistentClass, id);
 	}
 
+	@Transactional
 	public List<T> findAll() {
 		checkIfInitialized();
 		
@@ -60,9 +60,10 @@ public class MySQLGenericDAO<T> implements GenericDAO<T> {
 	}
 
 	@Override
-	public void delete(T entity) {
+	public T delete(T entity) {
 		checkIfInitialized();
 		em.remove(entity);
+		return entity;
 	}
 
 	@Override
