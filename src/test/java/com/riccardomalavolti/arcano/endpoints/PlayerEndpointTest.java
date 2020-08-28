@@ -20,9 +20,7 @@ import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTest;
 import org.junit.Before;
-import org.junit.jupiter.api.Test;
-import org.junit.platform.runner.JUnitPlatform;
-import org.junit.runner.RunWith;
+import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -31,8 +29,7 @@ import com.riccardomalavolti.arcano.service.PlayerService;
 
 import io.restassured.RestAssured;
 
-@RunWith(JUnitPlatform.class)
-public class PlayerEndpointTest extends JerseyTest{
+public class PlayerEndpointTest extends JerseyTest {
 	
 	private static final String PLAYERS = "player";
 	
@@ -165,10 +162,44 @@ public class PlayerEndpointTest extends JerseyTest{
 			statusCode(202).
 			assertThat().
 				body(
-						"id", equalTo(playerId),
+						"id", equalTo(playerId.intValue()),
 						"username", equalTo(playerUsername)
 					);
 			
+	}
+	
+	@Test
+	public void testPutPlayer() {
+		String updatedName = "Joe";
+		
+		Player playerSent = new Player();
+		playerSent.setId(playerId);
+		playerSent.setUsername(playerUsername);
+		
+		Player playerUpdated = new Player();
+		playerUpdated.setId(playerId);
+		playerUpdated.setUsername(updatedName);
+		
+		JsonObject jsonSent = Json.createObjectBuilder()
+				.add("id", playerId)
+				.add("username", playerUsername)
+				.build();
+		
+		when(playerService.updatePlayer(playerId.toString(), playerSent))
+			.thenReturn(playerUpdated);
+		
+		given()
+			.contentType(MediaType.APPLICATION_JSON)
+			.body(jsonSent.toString()).
+		when().
+			put(PLAYERS + "/" + playerId.toString()).
+		then().
+			statusCode(200).
+			assertThat().
+				body(
+					"id", equalTo(playerId.intValue()),
+					"username",  equalTo(updatedName)
+						);
 	}
 	
 }

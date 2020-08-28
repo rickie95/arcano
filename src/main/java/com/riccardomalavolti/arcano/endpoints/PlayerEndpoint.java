@@ -45,7 +45,7 @@ public class PlayerEndpoint {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response putNewPlayer(Player p, @Context UriInfo uriInfo) throws URISyntaxException {
+	public Response postNewPlayer(Player p, @Context UriInfo uriInfo) throws URISyntaxException {
 		Player saved = playerService.addPlayer(p);
 		return Response.created(new URI(uriInfo.getAbsolutePath() + "/" + saved.getId()))
 				.entity(saved)
@@ -56,8 +56,10 @@ public class PlayerEndpoint {
 	@Path("{id}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Player updatePlayer(@PathParam("id") String id, Player updatedPlayer) {
-		return playerService.updatePlayer(id, updatedPlayer);
+	public Response updatePlayer(@PathParam("id") String id, Player updatedPlayer) {
+		return Response
+				.ok(playerService.updatePlayer(id, updatedPlayer))
+				.build();
 	}
 	
 	@DELETE
