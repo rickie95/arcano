@@ -1,6 +1,7 @@
 package com.riccardomalavolti.arcano.endpoints;
 
 import static io.restassured.RestAssured.given;
+import static io.restassured.RestAssured.when;
 import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -19,7 +20,7 @@ import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTest;
 import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.platform.runner.JUnitPlatform;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -34,6 +35,9 @@ import io.restassured.RestAssured;
 public class PlayerEndpointTest extends JerseyTest{
 	
 	private static final String PLAYERS = "player";
+	
+	private static final Long playerId = (long) 1;
+	private static final String playerUsername = "Mike";
 
 	@Mock
 	private PlayerService playerService;
@@ -51,8 +55,6 @@ public class PlayerEndpointTest extends JerseyTest{
 				}
 			});
     }
-	
-
 	
 	@Before
 	public void configureRestAssured() {
@@ -147,6 +149,26 @@ public class PlayerEndpointTest extends JerseyTest{
 						"username", equalTo(name)
 					)
 				.header("Location", response -> endsWith(PLAYERS + "/" + createdId));
-
 	}
+	
+	@Test
+	public void testDeletePlayer() {
+		Player playerToBeDeleted = new Player();
+		playerToBeDeleted.setId(playerId);
+		playerToBeDeleted.setUsername(playerUsername);
+		
+		when(playerService.deletePlayer(playerId.toString())).thenReturn(playerToBeDeleted);
+		
+		when().
+			delete(PLAYERS + "/" + playerId).
+		then().
+			statusCode(202).
+			assertThat().
+				body(
+						"id", equalTo(playerId),
+						"username", equalTo(playerUsername)
+					);
+			
+	}
+	
 }

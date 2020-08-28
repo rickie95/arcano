@@ -21,7 +21,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-
 @ExtendWith(MockitoExtension.class)
 @RunWith(JUnitPlatform.class)
 class MySQLGenericDAOTest {
@@ -83,7 +82,6 @@ class MySQLGenericDAOTest {
 		List<String> list = (List<String>) dao.executeArbitraryQuery(aQuery);
 		
 		assertEquals(0, list.size());
-		
 	}
 	
 	@Test
@@ -126,6 +124,5 @@ class MySQLGenericDAOTest {
 		dao.merge(s);
 		verify(em).merge(s);
 	}
-	
 
 }

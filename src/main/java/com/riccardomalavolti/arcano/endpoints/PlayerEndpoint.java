@@ -61,7 +61,7 @@ public class PlayerEndpoint {
 	}
 	
 	@DELETE
-	@Path("/{id}")
+	@Path("{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response deletePlayer(@PathParam("id") String id) {
 		return Response
