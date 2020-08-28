@@ -5,6 +5,7 @@ import java.util.List;
 import javax.enterprise.inject.Default;
 import javax.inject.Inject;
 import javax.persistence.EntityExistsException;
+import javax.transaction.Transactional;
 import javax.ws.rs.NotFoundException;
 
 import com.riccardomalavolti.arcano.exceptions.ConflictException;
@@ -35,14 +36,16 @@ public class PlayerService {
 		}
 	}
 
-	public Player updatePlayer(String id, Player p) {
-		// TODO Auto-generated method stub
-		return null;
+	public Player updatePlayer(Player p) {		
+		return playerRepo
+				.mergePlayer(p)
+				.orElseThrow(() -> new NotFoundException("No player exist with id " + p.getId().toString()));
 	}
 
 	public Player deletePlayer(String playerId) {
 		Player p = new Player();
 		p.setId(Long.parseLong(playerId));
+		System.out.println(p.getId());
 		return playerRepo
 				.removePlayer(p)
 				.orElseThrow(() -> new NotFoundException("No player exist with id " + playerId));

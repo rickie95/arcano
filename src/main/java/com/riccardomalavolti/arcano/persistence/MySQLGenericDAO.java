@@ -5,6 +5,7 @@ import java.util.List;
 import javax.enterprise.inject.Default;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
 
@@ -27,6 +28,8 @@ public class MySQLGenericDAO<T> implements GenericDAO<T> {
 			throw new IllegalStateException("No class has been specified, use setClass()");
 	}
 	
+	@Override
+	@Transactional
 	public T findById(Long id) {
 		checkIfInitialized();
 		
@@ -36,16 +39,17 @@ public class MySQLGenericDAO<T> implements GenericDAO<T> {
 		return em.find(persistentClass, id);
 	}
 
+	@Override
 	@Transactional
 	public List<T> findAll() {
 		checkIfInitialized();
 		
-		query = em.createQuery("SELECT * FROM :tableName;", persistentClass)
-				.setParameter("tableName", persistentClass);
+		Query q = em.createNativeQuery("SELECT * FROM Player;", persistentClass);
 		
-		return query.getResultList();
+		return q.getResultList();
 	}
 	
+	@Override
 	@Transactional
 	public T persist(T entity){
 		checkIfInitialized();
@@ -54,19 +58,23 @@ public class MySQLGenericDAO<T> implements GenericDAO<T> {
 	}
 
 	@Override
+	@Transactional
 	public T merge(T entity){
 		checkIfInitialized();
-		return em.merge(entity);
+		
+		return em.merge(entity); 
 	}
 
 	@Override
+	@Transactional
 	public T delete(T entity) {
 		checkIfInitialized();
-		em.remove(entity);
+		em.remove(em.contains(entity) ? entity : em.merge(entity));
 		return entity;
 	}
 
 	@Override
+	@Transactional
 	public List<T> executeArbitraryQuery(String query) {
 		checkIfInitialized();
 		return em.createQuery(query, persistentClass)

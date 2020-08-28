@@ -37,8 +37,8 @@ public class PlayerRepository {
 		return Optional.ofNullable(playerDAO.delete(player));
 	}
 
-	public void mergePlayer(Player player) {
-		playerDAO.merge(player);		
+	public Optional<Player> mergePlayer(Player player) {
+		return Optional.ofNullable(playerDAO.merge(player));		
 	}
 
 }
