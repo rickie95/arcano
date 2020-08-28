@@ -58,6 +58,11 @@
 			<version>${junit.jupiter.version}</version>
 			<scope>test</scope>
 		</dependency>
+		 <dependency>
+            <groupId>org.junit.vintage</groupId>
+            <artifactId>junit-vintage-engine</artifactId>
+            <version>${junit.jupiter.version}</version>
+        </dependency>
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-params</artifactId>
@@ -83,6 +88,22 @@
 			<groupId>com.github.hanleyt</groupId>
 			<artifactId>jersey-junit</artifactId>
 			<version>2.1.0</version>
+		</dependency>
+		
+		<!-- Mockito -->
+		
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<version>${mockito}</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-junit-jupiter</artifactId>
+			<version>2.28.2</version>
+			<scope>test</scope>
 		</dependency>
 
 		<!-- RestAssured + JSON support -->
@@ -148,20 +169,6 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-core</artifactId>
-			<version>${mockito}</version>
-			<scope>test</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-junit-jupiter</artifactId>
-			<version>2.28.2</version>
-			<scope>test</scope>
-		</dependency>
-
-		<dependency>
 			<groupId>org.jboss.weld</groupId>
 			<artifactId>weld-junit5</artifactId>
 			<version>${weld-junit.version}</version>
@@ -193,22 +200,7 @@
 			</plugin>
 			<plugin>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.19.1</version>
-				<dependencies>
-					
-					<dependency>
-                        <groupId>org.junit.platform</groupId>
-                        <artifactId>junit-platform-surefire-provider</artifactId>
-                        <version>${junit.platform.version}</version>
-					</dependency>
-					
-					<dependency>
-						<groupId>org.junit.jupiter</groupId>
-                        <artifactId>junit-jupiter-engine</artifactId>
-                        <version>${junit.jupiter.version}</version>
-					</dependency>
-				
-				</dependencies>
+				<version>3.0.0-M1</version>
 			</plugin>
 			<plugin>
 				<artifactId>maven-jar-plugin</artifactId>
