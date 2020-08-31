@@ -27,8 +27,7 @@ class MySQLGenericDAOTest {
 	
 	// Tested with String
 	
-	@Mock
-	EntityManager em;
+	@Mock EntityManager em;
 	@Mock TypedQuery<String> query;
 	
 	@InjectMocks
@@ -70,7 +69,6 @@ class MySQLGenericDAOTest {
 			dao.findById(id));
 	}
 	
-	
 	@Test
 	void testExecuteArbitraryQuery() {
 		String aQuery = "SELECT foo FROM TABLE";
@@ -88,13 +86,13 @@ class MySQLGenericDAOTest {
 	void findAllShouldReturnACollectionOfObjects() {
 		List<String> list = new ArrayList<String>(Arrays.asList("Foo", "Bar"));
 		
-		when(query.setParameter("tableName", String.class))
+		when(em.createQuery(MySQLGenericDAO.SELECT_ALL_FROM_ENTITY_TABLE, String.class))
+			.thenReturn(query);
+		
+		when(query.setParameter(MySQLGenericDAO.ENTITY_TABLE_NAME_PARAMETER, String.class.toString()))
 			.thenReturn(query);
 		
 		when(query.getResultList()).thenReturn(list);
-		
-		when(em.createQuery("SELECT * FROM :tableName;", String.class))
-			.thenReturn(query);
 		
 		List<String> res = dao.findAll();
 		
@@ -112,9 +110,19 @@ class MySQLGenericDAOTest {
 	}
 	
 	@Test
-	void testDelete() {
+	void testDeleteIfEntityIsManaged() {
 		String s = "Foo";
+		when(em.contains(s)).thenReturn(true);
 		dao.delete(s);
+		verify(em).remove(s);
+	}
+	
+	@Test
+	void testDeleteIfEntityIsNotManagedShouldMergeFirst() {
+		String s = "Foo";
+		when(em.contains(s)).thenReturn(false);
+		dao.delete(s);
+		verify(em).merge(s);
 		verify(em).remove(s);
 	}
 	

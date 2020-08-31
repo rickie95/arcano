@@ -5,13 +5,15 @@ import java.util.List;
 import javax.enterprise.inject.Default;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
 
 @Default
 public class MySQLGenericDAO<T> implements GenericDAO<T> {
 
+	public static final String SELECT_ALL_FROM_ENTITY_TABLE = "SELECT entity FROM :entityTableName";
+	public static final String ENTITY_TABLE_NAME_PARAMETER = "entityTableName";
+	
 	@PersistenceContext
 	EntityManager em;
 	
@@ -44,9 +46,9 @@ public class MySQLGenericDAO<T> implements GenericDAO<T> {
 	public List<T> findAll() {
 		checkIfInitialized();
 		
-		Query q = em.createNativeQuery("SELECT * FROM Player;", persistentClass);
-		
-		return q.getResultList();
+		return em.createQuery(SELECT_ALL_FROM_ENTITY_TABLE, persistentClass)
+				.setParameter(ENTITY_TABLE_NAME_PARAMETER, persistentClass.toString())
+				.getResultList();
 	}
 	
 	@Override
@@ -69,7 +71,9 @@ public class MySQLGenericDAO<T> implements GenericDAO<T> {
 	@Transactional
 	public T delete(T entity) {
 		checkIfInitialized();
-		em.remove(em.contains(entity) ? entity : em.merge(entity));
+		if(!em.contains(entity)) 
+			em.merge(entity);	
+		em.remove(entity);
 		return entity;
 	}
 
