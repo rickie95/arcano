@@ -5,7 +5,6 @@ import java.util.List;
 import javax.enterprise.inject.Default;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
 
 @Default
@@ -16,9 +15,7 @@ public class MySQLGenericDAO<T> implements GenericDAO<T> {
 	
 	@PersistenceContext
 	EntityManager em;
-	
-	private TypedQuery<T> query;
-	
+		
 	private Class<T> persistentClass;
 	
 	public void setClass(Class<T> persistenceClass) {
