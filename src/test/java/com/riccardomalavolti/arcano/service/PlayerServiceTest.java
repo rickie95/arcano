@@ -94,6 +94,7 @@ class PlayerServiceTest {
 		when(playerRepo.addPlayer(p1)).thenReturn(p1);
 		
 		Player returnedPlayer = playerRepo.addPlayer(p1);
+		verify(playerRepo).addPlayer(p1);
 		
 		assertEquals(p1, returnedPlayer);
 	}
@@ -124,6 +125,17 @@ class PlayerServiceTest {
 		when(playerRepo.removePlayer(p1)).thenThrow(NotFoundException.class);
 		String p1IDString = p1Id.toString();
 		assertThrows(NotFoundException.class, () -> playerService.deletePlayer(p1IDString));
+	}
+	
+	@Test
+	void testUpdatePlayer() {
+		when(playerRepo.mergePlayer(p1)).thenReturn(Optional.of(p1));
+		
+		Player returnedPlayer = playerService.updatePlayer(p1);
+		
+		verify(playerRepo).mergePlayer(p1);
+		assertEquals(returnedPlayer, p1);
+		
 	}
 
 }
