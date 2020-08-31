@@ -185,7 +185,7 @@ public class PlayerEndpointTest extends JerseyTest {
 				.add("username", playerUsername)
 				.build();
 		
-		when(playerService.updatePlayer(playerId.toString(), playerSent))
+		when(playerService.updatePlayer(playerSent))
 			.thenReturn(playerUpdated);
 		
 		given()
