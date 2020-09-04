@@ -17,6 +17,7 @@
 		<maven.compiler.source>${java.version}</maven.compiler.source>
 		<maven.compiler.target>${java.version}</maven.compiler.target>
 		<maven.compiler.release>${java.version}</maven.compiler.release>
+		<graphql.version>15.0</graphql.version>
 
 		<junit.version>4.12</junit.version>
 		<junit.jupiter.version>5.1.0</junit.jupiter.version>
@@ -44,6 +45,12 @@
 	<dependencies>
 		<!-- Dependencies -->
 
+		<dependency>
+			<groupId>com.graphql-java</groupId>
+			<artifactId>graphql-java</artifactId>
+			<version>${graphql.version}</version>
+		</dependency>
+
 
 		<!-- Testing dependencies -->
 		<dependency>
@@ -58,11 +65,12 @@
 			<version>${junit.jupiter.version}</version>
 			<scope>test</scope>
 		</dependency>
-		 <dependency>
-            <groupId>org.junit.vintage</groupId>
-            <artifactId>junit-vintage-engine</artifactId>
-            <version>${junit.jupiter.version}</version>
-        </dependency>
+		<dependency>
+			<groupId>org.junit.vintage</groupId>
+			<artifactId>junit-vintage-engine</artifactId>
+			<version>${junit.jupiter.version}</version>
+			<scope>test</scope>
+		</dependency>
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-params</artifactId>
@@ -75,13 +83,13 @@
 			<version>${junit.platform.runner.version}</version>
 			<scope>test</scope>
 		</dependency>
-		
-		 <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>${junit.version}</version>
-            <scope>test</scope>
-        </dependency>
+
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${junit.version}</version>
+			<scope>test</scope>
+		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/com.github.hanleyt/jersey-junit -->
 		<dependency>
@@ -89,9 +97,9 @@
 			<artifactId>jersey-junit</artifactId>
 			<version>2.1.0</version>
 		</dependency>
-		
+
 		<!-- Mockito -->
-		
+
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-core</artifactId>
@@ -103,6 +111,15 @@
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-junit-jupiter</artifactId>
 			<version>2.28.2</version>
+			<scope>test</scope>
+		</dependency>
+
+		<!-- AssertJ -->
+
+		<dependency>
+			<groupId>org.assertj</groupId>
+			<artifactId>assertj-core</artifactId>
+			<version>3.17.1</version>
 			<scope>test</scope>
 		</dependency>
 
@@ -151,7 +168,7 @@
 			<version>${grizzly.version}</version>
 			<scope>test</scope>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>javax</groupId>
 			<artifactId>javaee-api</artifactId>
