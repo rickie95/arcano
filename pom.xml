@@ -17,7 +17,10 @@
 		<maven.compiler.source>${java.version}</maven.compiler.source>
 		<maven.compiler.target>${java.version}</maven.compiler.target>
 		<maven.compiler.release>${java.version}</maven.compiler.release>
+
 		<graphql.version>15.0</graphql.version>
+		<microprofile.version>3.3</microprofile.version>
+		 <smallrye-graphql.version>1.0.8</smallrye-graphql.version>
 
 		<junit.version>4.12</junit.version>
 		<junit.jupiter.version>5.1.0</junit.jupiter.version>
@@ -50,7 +53,26 @@
 			<artifactId>graphql-java</artifactId>
 			<version>${graphql.version}</version>
 		</dependency>
+		
+		  <dependency>
+            <groupId>io.smallrye</groupId>
+            <artifactId>smallrye-graphql-servlet</artifactId>
+            <version>${smallrye-graphql.version}</version>
+        </dependency>
 
+		<dependency>
+			<groupId>org.eclipse.microprofile</groupId>
+			<artifactId>microprofile</artifactId>
+			<version>${microprofile.version}</version>
+			<type>pom</type>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>29.0-jre</version>
+		</dependency>
 
 		<!-- Testing dependencies -->
 		<dependency>
