@@ -86,11 +86,11 @@ class MySQLGenericDAOTest {
 	void findAllShouldReturnACollectionOfObjects() {
 		List<String> list = new ArrayList<String>(Arrays.asList("Foo", "Bar"));
 		
-		when(em.createQuery(MySQLGenericDAO.SELECT_ALL_FROM_ENTITY_TABLE, String.class))
+		String formattedQuery = String.format(MySQLGenericDAO.SELECT_ALL_FROM_ENTITY_TABLE, String.class.getName());
+		
+		when(em.createQuery(formattedQuery, String.class))
 			.thenReturn(query);
 		
-		when(query.setParameter(MySQLGenericDAO.ENTITY_TABLE_NAME_PARAMETER, String.class.toString()))
-			.thenReturn(query);
 		
 		when(query.getResultList()).thenReturn(list);
 		
