@@ -1,6 +1,7 @@
 package com.riccardomalavolti.arcano.repositories;
 
 import java.util.List;
+import java.util.Optional;
 
 import javax.inject.Inject;
 
@@ -25,6 +26,12 @@ public class MatchRepository {
 		return matchDAO.persist(match);
 	}
 
-	
+	public Optional<Match> removeMatch(Match match) {
+		return Optional.ofNullable(matchDAO.delete(match));
+	}
+
+	public Optional<Match> getMatchById(Long matchId) {
+		return Optional.ofNullable(matchDAO.findById(matchId));
+	}
 
 }

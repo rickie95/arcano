@@ -12,18 +12,19 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.riccardomalavolti.arcano.model.Match;
-import com.riccardomalavolti.arcano.persistence.MySQLGenericDAO;
+import com.riccardomalavolti.arcano.persistence.MatchDAO;
 
 @ExtendWith(MockitoExtension.class)
 @RunWith(JUnitPlatform.class)
 class MatchRepositoryTest {
+	
+	private final Long matchId = (long) 1;
 
 	@Mock
-	private MySQLGenericDAO<Match> matchDAO;
+	private MatchDAO matchDAO;
 	
 	@Captor ArgumentCaptor<Class<Match>> DAOParameter;
 	
@@ -52,6 +53,43 @@ class MatchRepositoryTest {
 		Match returnedMatch = matchRepo.addMatch(match);
 		
 		assertThat(returnedMatch).isEqualTo(match);
+	}
+	
+	@Test
+	void testRemoveMatchShouldReturnDeletedMatchIfFound() {
+		Match match = new Match();
+		match.setId((long)(1));
+		when(matchDAO.delete(match)).thenReturn(match);
+		
+		Match removedMatch = matchRepo.removeMatch(match).get();
+		
+		assertThat(removedMatch).isEqualTo(match);
+	}
+	
+	@Test
+	void testRemoveMatchShouldReturnNullIfMatchToBeDeletedIsNotFound() {
+		Match match = new Match();
+		match.setId((long)(1));
+		when(matchDAO.delete(match)).thenReturn(null);
+		
+		assertThat(matchRepo.removeMatch(match)).isEmpty();
+	}
+	
+	@Test
+	void testGetMatchByIdShouldReturnTheSearchedMatch() {
+		Match match = new Match();
+		match.setId((long)(1));
+		
+		when(matchDAO.findById(matchId)).thenReturn(match);
+		
+		Match returnedMatch = matchRepo.getMatchById(matchId).get();
+		assertThat(returnedMatch).isEqualTo(match);
+	}
+	
+	@Test
+	void testGetMatchByIdShouldReturnNullIfNotFound() {
+		when(matchDAO.findById(matchId)).thenReturn(null);
+		assertThat(matchRepo.getMatchById(matchId)).isEmpty();
 	}
 	
 }
