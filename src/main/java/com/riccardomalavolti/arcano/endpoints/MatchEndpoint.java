@@ -5,9 +5,11 @@ import java.net.URISyntaxException;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -34,6 +36,22 @@ public class MatchEndpoint {
 		Match saved = matchService.createMatch(match);
 		return Response.created(new URI(uriInfo.getAbsolutePath() + "/" + saved.getId()))
 				.entity(saved)
+				.build();
+	}
+	
+	@GET
+	@Path("{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Match getMatchById(@PathParam("id") String matchId) {
+		return matchService.getMatchById(matchId);
+	}
+	
+	@DELETE
+	@Path("{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response deleteMatch(@PathParam("id") String matchId) {
+		return Response
+				.accepted(matchService.deleteMatch(matchId))
 				.build();
 	}
 }
