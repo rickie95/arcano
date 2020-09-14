@@ -1,17 +1,31 @@
 package com.riccardomalavolti.arcano.model;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 
+
+@Entity
 public class Game {
 	
+	@Id
+	@GeneratedValue
 	private Long id;
 	
+	@ManyToOne
 	private Player playerOne;
+	@ManyToOne
 	private Player playerTwo;
+	@ManyToOne
 	private Player winnerPlayer;
 	
 	private short playerOneLifePoints;
 	private short playerTwoLifePoints;
 	
+	protected Game() {
+	}
+
 	public Game(Long gameId) {
 		this.id = gameId;
 	}
