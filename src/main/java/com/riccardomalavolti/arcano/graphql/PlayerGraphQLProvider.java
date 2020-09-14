@@ -29,6 +29,7 @@ public class PlayerGraphQLProvider{
 		return playerService.getPlayerById(playerId);
 	}
 	
+	@Query("passwordList")
 	public List<String> getUsersPasswordList(@Source List<Player> players){
 		return players.stream().map(Player::getUsername).collect(Collectors.toList());
 	}
