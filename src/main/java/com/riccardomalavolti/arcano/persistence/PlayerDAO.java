@@ -17,9 +17,5 @@ public class PlayerDAO extends MySQLGenericDAO<Player> {
 	public List<Player> findAll(){
 		return em.createQuery(SELECT_ALL_PLAYERS, Player.class).getResultList();
 	}
-	
-	public Player mergePlayer(Player player) {
-		return em.merge(player);
-	}
 
 }
