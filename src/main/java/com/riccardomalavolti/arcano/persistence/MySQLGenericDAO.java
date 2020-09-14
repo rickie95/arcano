@@ -67,7 +67,7 @@ public class MySQLGenericDAO<T> implements GenericDAO<T> {
 	public T delete(T entity) {
 		checkIfInitialized();
 		if(!em.contains(entity)) 
-			em.merge(entity);	
+			entity = em.merge(entity);	
 		em.remove(entity);
 		return entity;
 	}

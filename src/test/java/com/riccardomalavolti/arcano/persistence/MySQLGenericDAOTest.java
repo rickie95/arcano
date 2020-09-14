@@ -108,6 +108,7 @@ class MySQLGenericDAOTest {
 	void testDeleteIfEntityIsNotManagedShouldMergeFirst() {
 		String s = "Foo";
 		when(em.contains(s)).thenReturn(false);
+		when(em.merge(s)).thenReturn(s);
 		dao.delete(s);
 		verify(em).merge(s);
 		verify(em).remove(s);
