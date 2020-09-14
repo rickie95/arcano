@@ -9,7 +9,6 @@ import org.eclipse.microprofile.graphql.Mutation;
 import org.eclipse.microprofile.graphql.Query;
 
 import com.riccardomalavolti.arcano.model.Match;
-import com.riccardomalavolti.arcano.model.Player;
 import com.riccardomalavolti.arcano.service.MatchService;
 
 @GraphQLApi
