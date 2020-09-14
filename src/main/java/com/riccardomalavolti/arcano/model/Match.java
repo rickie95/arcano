@@ -19,11 +19,11 @@ public class Match {
 	@GeneratedValue
 	Long id;
 	
-	@OneToOne(cascade = CascadeType.ALL)
+	@ManyToOne
     @JoinColumn(name = "playerone_id", referencedColumnName = "id")	
 	Player playerOne;
 	
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "playertwo_id", referencedColumnName = "id")
 	Player playerTwo;
 	
