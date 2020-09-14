@@ -19,8 +19,7 @@ public class MatchService {
 	private PlayerRepository playerRepo;
 
 	public Match createMatch(Match match) {
-		Player p1 = playerRepo.getPlayerById(
-				match.getPlayerOne().getId())
+		Player p1 = playerRepo.getPlayerById(match.getPlayerOne().getId())
 		.orElseThrow(() -> new NotFoundException("No player exist with id" + match.getPlayerOne().getId()));
 		System.out.println("REPO" + p1);
 		match.setPlayerOne(p1);
@@ -35,5 +34,17 @@ public class MatchService {
 
 	public List<Match> getAllMatches() {
 		return matchRepo.getAllMatches();
+	}
+	
+	public Match getMatchById(String matchId) {
+		return matchRepo.getMatchById(Long.parseLong(matchId))
+				.orElseThrow(() -> new NotFoundException("No match found with this id"));
+	}
+	
+	public Match deleteMatch(String matchId) {
+		Match m = new Match();
+		m.setId(Long.parseLong(matchId));
+		return matchRepo.removeMatch(m)
+				.orElseThrow(() -> new NotFoundException("No match found with this id"));
 	}
 }
