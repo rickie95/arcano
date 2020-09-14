@@ -35,7 +35,7 @@ class PlayerRepositoryTest {
 	PlayerRepository playerRepo;
 	
 	@Test
-	void testDAOClassIsBeingSet() {
+	void testDAOClassHasBeingSet() {
 		Mockito.verify(playerDAO).setClass(DAOParameter.capture());
 		assertEquals(DAOParameter.getValue(), Player.class);
 	}

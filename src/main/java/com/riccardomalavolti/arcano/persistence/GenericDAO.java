@@ -14,9 +14,6 @@ public interface GenericDAO<T> {
 	
 	@Transactional public T persist(T entity);
 	@Transactional public T merge(T entity);
-	@Transactional public T delete(T entity);
-	
-	@Transactional public Object executeArbitraryQuery(String query);
-	
+	@Transactional public T delete(T entity);	
 	
 }
