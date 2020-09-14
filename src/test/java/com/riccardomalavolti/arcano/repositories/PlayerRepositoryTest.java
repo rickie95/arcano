@@ -16,7 +16,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.riccardomalavolti.arcano.model.Player;
-import com.riccardomalavolti.arcano.persistence.MySQLGenericDAO;
+import com.riccardomalavolti.arcano.persistence.PlayerDAO;
 
 @ExtendWith(MockitoExtension.class)
 @RunWith(JUnitPlatform.class)
@@ -25,7 +25,7 @@ class PlayerRepositoryTest {
 	private static final Long USER_ID = (long) 1;
 
 	@Mock
-	MySQLGenericDAO<Player> playerDAO;
+	PlayerDAO playerDAO;
 	
 	@Captor ArgumentCaptor<Class<Player>> DAOParameter;
 	@Captor ArgumentCaptor<Long> playerId;
