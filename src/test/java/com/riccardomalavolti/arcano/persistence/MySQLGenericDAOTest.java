@@ -70,19 +70,6 @@ class MySQLGenericDAOTest {
 	}
 	
 	@Test
-	void testExecuteArbitraryQuery() {
-		String aQuery = "SELECT foo FROM TABLE";
-		when(em.createQuery(aQuery, String.class))
-			.thenReturn(query);
-		
-		when(query.getResultList()).thenReturn(new ArrayList<String>());
-		
-		List<String> list = (List<String>) dao.executeArbitraryQuery(aQuery);
-		
-		assertEquals(0, list.size());
-	}
-	
-	@Test
 	void findAllShouldReturnACollectionOfObjects() {
 		List<String> list = new ArrayList<String>(Arrays.asList("Foo", "Bar"));
 		
