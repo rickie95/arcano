@@ -22,7 +22,7 @@ import com.riccardomalavolti.arcano.model.Player;
 import com.riccardomalavolti.arcano.service.PlayerService;
 
 
-@Path("player")
+@Path("players")
 public class PlayerEndpoint {
 	
 	

@@ -8,6 +8,7 @@
 		<jta-data-source>arcano-ds</jta-data-source>
 
 		<class>com.riccardomalavolti.arcano.model.Player</class>
+		<class>com.riccardomalavolti.arcano.model.Match</class>
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 
 		<properties>

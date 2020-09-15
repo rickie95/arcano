@@ -31,7 +31,7 @@ import io.restassured.RestAssured;
 
 public class PlayerEndpointTest extends JerseyTest {
 	
-	private static final String PLAYERS = "player";
+	private static final String PLAYERS = "players";
 	
 	private static final Long playerId = (long) 1;
 	private static final String playerUsername = "Mike";

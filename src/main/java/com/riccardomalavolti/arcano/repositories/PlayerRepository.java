@@ -7,16 +7,15 @@ import javax.enterprise.inject.Default;
 import javax.inject.Inject;
 
 import com.riccardomalavolti.arcano.model.Player;
-import com.riccardomalavolti.arcano.persistence.GenericDAO;
-import com.riccardomalavolti.arcano.persistence.MySQLGenericDAO;
+import com.riccardomalavolti.arcano.persistence.PlayerDAO;
 
 @Default
 public class PlayerRepository {
 
-	final GenericDAO<Player> playerDAO;
+	final PlayerDAO playerDAO;
 	
 	@Inject
-	public PlayerRepository(MySQLGenericDAO<Player> playerDAO) {
+	public PlayerRepository(PlayerDAO playerDAO) {
 		this.playerDAO = playerDAO;
 		this.playerDAO.setClass(Player.class);
 	}
@@ -40,5 +39,4 @@ public class PlayerRepository {
 	public Optional<Player> mergePlayer(Player player) {
 		return Optional.ofNullable(playerDAO.merge(player));		
 	}
-
 }

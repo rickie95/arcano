@@ -10,8 +10,7 @@ import javax.transaction.Transactional;
 @Default
 public class MySQLGenericDAO<T> implements GenericDAO<T> {
 
-	public static final String SELECT_ALL_FROM_ENTITY_TABLE = "SELECT entity FROM :entityTableName";
-	public static final String ENTITY_TABLE_NAME_PARAMETER = "entityTableName";
+	public static final String SELECT_ALL_FROM_ENTITY_TABLE = "FROM %s";
 	
 	@PersistenceContext
 	EntityManager em;
@@ -42,9 +41,9 @@ public class MySQLGenericDAO<T> implements GenericDAO<T> {
 	@Transactional
 	public List<T> findAll() {
 		checkIfInitialized();
-		
-		return em.createQuery(SELECT_ALL_FROM_ENTITY_TABLE, persistentClass)
-				.setParameter(ENTITY_TABLE_NAME_PARAMETER, persistentClass.toString())
+		return em.createQuery(
+				String.format(SELECT_ALL_FROM_ENTITY_TABLE, 
+						persistentClass.getName()), persistentClass)
 				.getResultList();
 	}
 	
@@ -60,7 +59,6 @@ public class MySQLGenericDAO<T> implements GenericDAO<T> {
 	@Transactional
 	public T merge(T entity){
 		checkIfInitialized();
-		
 		return em.merge(entity); 
 	}
 
@@ -69,17 +67,9 @@ public class MySQLGenericDAO<T> implements GenericDAO<T> {
 	public T delete(T entity) {
 		checkIfInitialized();
 		if(!em.contains(entity)) 
-			em.merge(entity);	
+			entity = em.merge(entity);	
 		em.remove(entity);
 		return entity;
-	}
-
-	@Override
-	@Transactional
-	public List<T> executeArbitraryQuery(String query) {
-		checkIfInitialized();
-		return em.createQuery(query, persistentClass)
-				.getResultList();
 	}
 
 	public Class<T> getPersistentClass() {
