@@ -289,6 +289,33 @@
 					</execution>
 				</executions>
 			</plugin>
+
+            <plugin>
+                <groupId>org.wildfly.plugins</groupId>
+                <artifactId>wildfly-maven-plugin</artifactId>
+                <version>2.0.2.Final</version>    
+                <configuration>
+                    <version>20.0.0.Final</version> 
+                    <server-config>standalone-microprofile.xml</server-config>
+                    <systemProperties>
+                        <jboss.tx.node.id>1</jboss.tx.node.id>
+                    </systemProperties>
+                    <!-- So that you can log into localhost:9990 -->
+                    <add-user>
+                        <users>
+                            <user>
+                                <username>admin</username>
+                                <password>admin</password>
+                                <groups>
+                                    <group>admin</group>
+                                </groups>
+                            </user>
+                        </users>
+                    </add-user>
+                </configuration>
+            </plugin>    
+
+
 		</plugins>
 	</build>
 </project>
