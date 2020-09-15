@@ -25,16 +25,20 @@ public class Match {
 	
 	
 	public Player getWinner() {
-		if (playerOneScore > playerTwoScore)
+		if (playerOneScore > playerTwoScore) {
 			winner = playerOne;
-		
-		winner = playerTwo;
-		
+		}else {
+			winner = playerTwo;
+		}
 		return winner;
 	}
 	
 	public Long getId() {
 		return id;
+	}
+	
+	public void setId(Long matchid) {
+		this.id = matchid;
 	}
 	
 	public Player getPlayerOne() {

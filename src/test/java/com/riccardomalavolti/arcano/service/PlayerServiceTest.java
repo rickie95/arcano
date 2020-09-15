@@ -6,6 +6,9 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+
+import static org.assertj.core.api.Assertions.*;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -36,8 +39,8 @@ class PlayerServiceTest {
 	private final static String p1Username = "Mike";
 	private final static String p2Username = "Joe";
 	
-	private final static Long p1Id = (long) 1;
-	private final static Long p2Id = (long) 2;
+	private final static Long playerOneID = (long) 1;
+	private final static Long playerTwoID = (long) 2;
 	
 	private Player p1, p2;
 	List<Player> playerList;
@@ -54,9 +57,9 @@ class PlayerServiceTest {
 	@BeforeEach
 	void setupRepository() {
 		p1 = new Player();
-		p1.setId(p1Id); p1.setUsername(p1Username);
+		p1.setId(playerOneID); p1.setUsername(p1Username);
 		p2 = new Player();
-		p2.setId(p2Id); p2.setUsername(p2Username);
+		p2.setId(playerTwoID); p2.setUsername(p2Username);
 		playerList = new ArrayList<>(Arrays.asList(p1, p2));
 	}
 	
@@ -72,11 +75,11 @@ class PlayerServiceTest {
 	
 	@Test
 	void testGetPlayerById() {
-		when(playerRepo.getPlayerById(p1Id)).thenReturn(Optional.of(p1));
+		when(playerRepo.getPlayerById(playerOneID)).thenReturn(Optional.of(p1));
 		
-		Player returnedPlayer = playerService.getPlayerById(p1Id.toString());
+		Player returnedPlayer = playerService.getPlayerById(playerOneID.toString());
 		
-		verify(playerRepo).getPlayerById(p1Id);
+		verify(playerRepo).getPlayerById(playerOneID);
 		assertEquals(p1, returnedPlayer);
 	}
 	
@@ -94,6 +97,7 @@ class PlayerServiceTest {
 		when(playerRepo.addPlayer(p1)).thenReturn(p1);
 		
 		Player returnedPlayer = playerRepo.addPlayer(p1);
+		verify(playerRepo).addPlayer(p1);
 		
 		assertEquals(p1, returnedPlayer);
 	}
@@ -109,7 +113,7 @@ class PlayerServiceTest {
 	
 	@Test
 	void testDeletePlayer() {
-		String p1IDString = p1Id.toString();
+		String p1IDString = playerOneID.toString();
 		when(playerRepo.removePlayer(p1)).thenReturn(Optional.of(p1));
 		
 		Player returnedPlayer = playerService.deletePlayer(p1IDString);
@@ -122,8 +126,37 @@ class PlayerServiceTest {
 	@Test
 	void testDeletePlayerIfNotPresentShouldThrowsANotFoundException() {
 		when(playerRepo.removePlayer(p1)).thenThrow(NotFoundException.class);
-		String p1IDString = p1Id.toString();
+		String p1IDString = playerOneID.toString();
 		assertThrows(NotFoundException.class, () -> playerService.deletePlayer(p1IDString));
+	}
+	
+	@Test
+	void testUpdatePlayer() {
+		when(playerRepo.mergePlayer(p1)).thenReturn(Optional.of(p1));
+		
+		Player returnedPlayer = playerService.updatePlayer(p1);
+		
+		verify(playerRepo).mergePlayer(p1);
+		assertEquals(returnedPlayer, p1);
+		
+	}
+	
+	@Test
+	void testUpdatePlayerShouldThrowsAnExeptionIfThePlayerDoesntExists() {
+		when(playerRepo.mergePlayer(p1)).thenReturn(Optional.empty());
+		
+		assertThatExceptionOfType(NotFoundException.class).
+			isThrownBy(() -> playerService.updatePlayer(p1));
+	}
+	
+	@Test
+	void testDeletePlayerShouldThrowsAnExceptionIfThePlayerDoesntExist() {
+		when(playerRepo.removePlayer(p1)).thenReturn(Optional.empty());
+		
+		String playerId = playerOneID.toString();
+		
+		assertThatExceptionOfType(NotFoundException.class).
+			isThrownBy(() -> playerService.deletePlayer(playerId));
 	}
 
 }
