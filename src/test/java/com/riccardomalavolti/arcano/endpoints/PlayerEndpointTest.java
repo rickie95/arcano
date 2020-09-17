@@ -19,7 +19,9 @@ import javax.ws.rs.core.MediaType;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTest;
+import org.glassfish.jersey.test.TestProperties;
 import org.junit.Before;
+import org.junit.After;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -42,7 +44,8 @@ public class PlayerEndpointTest extends JerseyTest {
 	@SuppressWarnings("deprecation")
 	@Override
     protected Application configure() {
-		MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.initMocks(this);
+        forceSet(TestProperties.CONTAINER_PORT, "0");
 		return new ResourceConfig(PlayerEndpoint.class)
 				.register(new AbstractBinder() {
 				@Override
@@ -56,7 +59,7 @@ public class PlayerEndpointTest extends JerseyTest {
 	@Before
 	public void configureRestAssured() {
 		RestAssured.baseURI = getBaseUri().toString();
-	}
+    }
 
 	@Test
 	public void getPlayersList() {
@@ -76,19 +79,19 @@ public class PlayerEndpointTest extends JerseyTest {
 		when(playerService.getAllPlayers())
 		.thenReturn(players);
 
-	given().
-		accept(MediaType.APPLICATION_JSON).
-	when().
-		get(PLAYERS).
-	then().
-		statusCode(200).
-		assertThat().
-		body(
-				"[0].id", equalTo(id1.intValue()),
-				"[0].username", equalTo(name1),
-				"[1].id", equalTo(id2.intValue()),
-				"[1].username", equalTo(name2)
-		);
+        given().
+            accept(MediaType.APPLICATION_JSON).
+        when().
+            get(PLAYERS).
+        then().
+            statusCode(200).
+            assertThat().
+            body(
+                    "[0].id", equalTo(id1.intValue()),
+                    "[0].username", equalTo(name1),
+                    "[1].id", equalTo(id2.intValue()),
+                    "[1].username", equalTo(name2)
+            );
 	}
 
 	@Test
