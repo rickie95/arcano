@@ -107,8 +107,7 @@ class PlayerServiceTest {
 		when(playerRepo.addPlayer(p1)).thenThrow(EntityExistsException.class);
 
 		
-		assertThrows(ConflictException.class, () -> 
-			playerService.addPlayer(p1));
+		assertThrows(ConflictException.class, () -> playerService.addPlayer(p1));
 	}
 	
 	@Test
