@@ -36,13 +36,19 @@ public class MatchService {
 	
 	public Match getMatchById(String matchId) {
 		return matchRepo.getMatchById(Long.parseLong(matchId))
-				.orElseThrow(() -> new NotFoundException("No match found with this id"));
+				.orElseThrow(() -> new NotFoundException(String.format("No match found with id %s", matchId)));
 	}
 	
 	public Match deleteMatch(String matchId) {
 		Match m = new Match();
 		m.setId(Long.parseLong(matchId));
 		return matchRepo.removeMatch(m)
-				.orElseThrow(() -> new NotFoundException("No match found with this id"));
+				.orElseThrow(() -> new NotFoundException(String.format("No match found with id %s", matchId)));
+	}
+
+	public Match updateMatch(String matchId, Match newMatch) {
+		newMatch.setId(Long.parseLong(matchId));
+		return matchRepo.updateMatch(newMatch)
+				.orElseThrow(() -> new NotFoundException(String.format("No match found with id %s", matchId)));
 	}
 }

@@ -133,7 +133,7 @@ class PlayerServiceTest {
 	void testUpdatePlayer() {
 		when(playerRepo.mergePlayer(p1)).thenReturn(Optional.of(p1));
 		
-		Player returnedPlayer = playerService.updatePlayer(p1);
+		Player returnedPlayer = playerService.updatePlayer(p1.getId().toString(), p1);
 		
 		verify(playerRepo).mergePlayer(p1);
 		assertEquals(returnedPlayer, p1);
@@ -145,7 +145,7 @@ class PlayerServiceTest {
 		when(playerRepo.mergePlayer(p1)).thenReturn(Optional.empty());
 		
 		assertThatExceptionOfType(NotFoundException.class).
-			isThrownBy(() -> playerService.updatePlayer(p1));
+			isThrownBy(() -> playerService.updatePlayer(p1.getId().toString(), p1));
 	}
 	
 	@Test
