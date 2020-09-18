@@ -14,5 +14,5 @@ public interface GameRepository {
 	public List<Game> findAllGames();
 	
 	public void removeGame(Game game);
-	
+		
 }

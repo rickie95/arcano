@@ -24,15 +24,22 @@ public class GameRepositoryInMemory implements GameRepository {
 	}
 
 	@Override
-	public Game createGame(Player playerOne, Player playerTwo) {
-		Game game = new Game(gameIdCounter++, playerOne, playerTwo);
+	public synchronized Game createGame(Player playerOne, Player playerTwo) {
+		/*
+		 *  TODO: renderlo più generico, permettendo più giocatori 
+		 *  e diversi punteggi di partenza.
+		 */
+		
+		Game game = new Game(gameIdCounter++);
+		game.setPointsForPlayer(playerOne.getId(), (short) 20);
+		game.setPointsForPlayer(playerTwo.getId(), (short) 20);
 		gameList.put(game.getId(), game);
 		return game;
 	}
 
 	@Override
-	public Game findGameById(Long gameid) {
-		return gameList.get(gameid);
+	public Game findGameById(Long gameId) {
+		return gameList.get(gameId);
 	}
 
 	@Override
@@ -41,7 +48,7 @@ public class GameRepositoryInMemory implements GameRepository {
 	}
 
 	@Override
-	public void removeGame(Game game) {
+	public synchronized void removeGame(Game game) {
 		gameList.remove(game.getId());
 	}
 
