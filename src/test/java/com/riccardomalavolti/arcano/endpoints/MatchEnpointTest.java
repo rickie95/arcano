@@ -29,6 +29,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import com.riccardomalavolti.arcano.endpoints.REST.MatchEndpoint;
 import com.riccardomalavolti.arcano.model.Match;
 import com.riccardomalavolti.arcano.model.Player;
 import com.riccardomalavolti.arcano.service.MatchService;
