@@ -34,4 +34,8 @@ public class MatchRepository {
 		return Optional.ofNullable(matchDAO.findById(matchId));
 	}
 
+	public Optional<Match> updateMatch(Match match) {
+		return Optional.ofNullable(matchDAO.merge(match));
+	}
+
 }

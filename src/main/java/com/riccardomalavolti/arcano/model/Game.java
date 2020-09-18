@@ -1,89 +1,52 @@
 package com.riccardomalavolti.arcano.model;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
+import java.util.Collections;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 
-@Entity
 public class Game {
 	
-	@Id
-	@GeneratedValue
 	private Long id;
+	private boolean isEnded;
 	
-	@ManyToOne
-	private Player playerOne;
-	@ManyToOne
-	private Player playerTwo;
-	@ManyToOne
-	private Player winnerPlayer;
+	private Map<Long, Short> gamePoints;
 	
-	private short playerOneLifePoints;
-	private short playerTwoLifePoints;
+	public Game(Long id) {
+		this.id = id;
+		this.isEnded = false;
+		gamePoints = new ConcurrentHashMap<>();
+	}
 	
-	protected Game() {
+	public synchronized void setPointsForPlayer(Long playerId, Short points) {
+		gamePoints.put(playerId, points);
 	}
-
-	public Game(Long gameId) {
-		this.id = gameId;
+	
+	public synchronized Short getPointsForPlayer(Long playerId) {
+		return gamePoints.get(playerId);
 	}
-
-	public Game(Long gameId, Player playerOne, Player playerTwo) {
-		this.id = gameId;
-		this.playerOne = playerOne;
-		this.playerTwo = playerTwo;
+	
+	public void setId(Long id) {
+		this.id = id;
 	}
-
+	
 	public Long getId() {
-		return id;
+		return this.id;
 	}
 	
-	public void setId(Long gameid) {
-		this.id = gameid;
+	public Long getWinnerId() {
+		return Collections.max(gamePoints.entrySet(), Map.Entry.comparingByValue()).getKey();
 	}
 	
-	public Player getPlayerOne() {
-		return playerOne;
+	public boolean isEnded() {
+		return this.isEnded;
 	}
 	
-	public void setPlayerOne(Player playerOne) {
-		this.playerOne = playerOne;
-	}
-	
-	public Player getPlayerTwo() {
-		return playerTwo;
-	}
-	
-	public void setPlayerTwo(Player playerTwo) {
-		this.playerTwo = playerTwo;
-	}
-	
-	public Player getWinnerPlayer() {
-		return winnerPlayer;
-	}
-	
-	public void setWinnerPlayer(Player winnerPlayer) {
-		this.winnerPlayer = winnerPlayer;
-	}
-	
-	public short getPlayerOneLifePoints() {
-		return playerOneLifePoints;
-	}
-	
-	public void setPlayerOneLifePoints(short playerOneLifePoints) {
-		this.playerOneLifePoints = playerOneLifePoints;
-	}
-	
-	public short getPlayerTwoLifePoints() {
-		return playerTwoLifePoints;
-	}
-	
-	public void setPlayerTwoLifePoints(short playerTwoLifePoints) {
-		this.playerTwoLifePoints = playerTwoLifePoints;
+	public void endGame() {
+		this.isEnded = true;
 	}
 
-	
-	
+	public Long opponentOf(Long playerId) {
+		return gamePoints.keySet().stream().filter( key -> !key.equals(playerId)).findFirst().get();
+	}
 }

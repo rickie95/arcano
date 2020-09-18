@@ -9,7 +9,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
 
-@Entity
+@Entity(name="incontro")
 public class Match {
 
 	@Id
@@ -100,16 +100,16 @@ public class Match {
 		return playerOneScore;
 	}
 	
-	public void setPlayerOneScore(short playerOneScore) {
-		this.playerOneScore = playerOneScore;
+	public void setPlayerOneScore(int playerOneScore) {
+		this.playerOneScore = (short) playerOneScore;
 	}
 	
 	public short getPlayerTwoScore() {
 		return playerTwoScore;
 	}
 	
-	public void setPlayerTwoScore(short playerTwoScore) {
-		this.playerTwoScore = playerTwoScore;
+	public void setPlayerTwoScore(int i) {
+		this.playerTwoScore = (short) i;
 	}
 	
 }

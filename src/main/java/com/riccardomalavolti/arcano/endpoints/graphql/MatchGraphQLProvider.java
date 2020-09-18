@@ -1,4 +1,4 @@
-package com.riccardomalavolti.arcano.graphql;
+package com.riccardomalavolti.arcano.endpoints.graphql;
 
 import java.util.List;
 
