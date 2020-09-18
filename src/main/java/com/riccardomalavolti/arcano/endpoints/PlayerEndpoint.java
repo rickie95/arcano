@@ -57,9 +57,8 @@ public class PlayerEndpoint {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response updatePlayer(@PathParam("id") String id, Player updatedPlayer) {
-		updatedPlayer.setId(Long.parseLong(id));
 		return Response
-				.ok(playerService.updatePlayer(updatedPlayer))
+				.ok(playerService.updatePlayer(id, updatedPlayer))
 				.build();
 	}
 	

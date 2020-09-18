@@ -21,7 +21,6 @@ import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTest;
 import org.glassfish.jersey.test.TestProperties;
 import org.junit.Before;
-import org.junit.After;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -188,7 +187,7 @@ public class PlayerEndpointTest extends JerseyTest {
 				.add("username", playerUsername)
 				.build();
 		
-		when(playerService.updatePlayer(playerSent))
+		when(playerService.updatePlayer(playerId.toString(), playerSent))
 			.thenReturn(playerUpdated);
 		
 		given()
