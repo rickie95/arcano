@@ -12,6 +12,10 @@ public class MatchDAO extends MySQLGenericDAO<Match> {
 
 	public static final String SELECT_ALL_MATCHES = "FROM Match";
 	
+	public MatchDAO() {
+		super.setClass(Match.class);
+	}
+	
 	@Override
 	@Transactional
 	public List<Match> findAll(){
