@@ -40,14 +40,14 @@ class MatchDAOTest {
 		Long matchTwoId = (long) 2;
 		m2.setId(matchTwoId);
 		
-		List<Match> list = new ArrayList<Match>(Arrays.asList(m1, m2));
+		List<Match> matchList = new ArrayList<Match>(Arrays.asList(m1, m2));
 		
 		when(em.createQuery(MatchDAO.SELECT_ALL_MATCHES, Match.class)).thenReturn(query);
-		when(query.getResultList()).thenReturn(list);
+		when(query.getResultList()).thenReturn(matchList);
 		
 		List<Match> returnedList = matchDAO.findAll();
 		
-		assertThat(returnedList).contains(m1, m2);
+		assertThat(returnedList).containsExactlyInAnyOrderElementsOf(matchList);
 		
 	}
 
