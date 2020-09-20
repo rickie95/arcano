@@ -64,21 +64,6 @@ class GameServiceTest {
 	}
 	
 	@Test
-	void testGetGameWinner() {
-		Player winner = new Player();
-		winner.setId(playerOneId);
-		
-		when(mockedGame.getWinnerPlayer()).thenReturn(winner);
-		when(gameRepository.findGameById(gameId)).thenReturn(mockedGame);	
-		
-		Player returnedPlayer = gameService.getWinnerOfGame(gameId);
-		
-		verify(gameRepository).findGameById(gameId);
-		
-		assertEquals(returnedPlayer, winner);
-	}
-	
-	@Test
 	void testGetGameById() {
 		when(gameRepository.findGameById(gameId)).thenReturn(game);
 		
