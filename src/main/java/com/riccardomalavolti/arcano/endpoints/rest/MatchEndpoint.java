@@ -1,4 +1,4 @@
-package com.riccardomalavolti.arcano.endpoints.REST;
+package com.riccardomalavolti.arcano.endpoints.rest;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -21,8 +21,10 @@ import javax.ws.rs.core.UriInfo;
 import com.riccardomalavolti.arcano.model.Match;
 import com.riccardomalavolti.arcano.service.MatchService;
 
-@Path("matches")
+@Path(MatchEndpoint.BASE_PATH)
 public class MatchEndpoint {
+	
+	public static final String BASE_PATH = "matches";
 
 	@Inject private MatchService matchService;
 	

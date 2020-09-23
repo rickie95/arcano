@@ -12,6 +12,8 @@ import com.riccardomalavolti.arcano.repositories.PlayerRepository;
 
 public class MatchService {
 
+	private static final String NO_MATCH_FOUND_WITH_ID = "No match found with id %s";
+	
 	@Inject
 	private MatchRepository matchRepo;
 	
@@ -36,19 +38,19 @@ public class MatchService {
 	
 	public Match getMatchById(String matchId) {
 		return matchRepo.getMatchById(Long.parseLong(matchId))
-				.orElseThrow(() -> new NotFoundException(String.format("No match found with id %s", matchId)));
+				.orElseThrow(() -> new NotFoundException(String.format(NO_MATCH_FOUND_WITH_ID, matchId)));
 	}
 	
 	public Match deleteMatch(String matchId) {
 		Match m = new Match();
 		m.setId(Long.parseLong(matchId));
 		return matchRepo.removeMatch(m)
-				.orElseThrow(() -> new NotFoundException(String.format("No match found with id %s", matchId)));
+				.orElseThrow(() -> new NotFoundException(String.format(NO_MATCH_FOUND_WITH_ID, matchId)));
 	}
 
 	public Match updateMatch(String matchId, Match newMatch) {
 		newMatch.setId(Long.parseLong(matchId));
 		return matchRepo.updateMatch(newMatch)
-				.orElseThrow(() -> new NotFoundException(String.format("No match found with id %s", matchId)));
+				.orElseThrow(() -> new NotFoundException(String.format(NO_MATCH_FOUND_WITH_ID, matchId)));
 	}
 }

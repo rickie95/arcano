@@ -1,13 +1,13 @@
 package com.riccardomalavolti.arcano.endpoints;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.endsWith;
-import static org.mockito.Mockito.when;
-import static org.mockito.ArgumentMatchers.any;
-
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.emptyOrNullString;
+import static org.hamcrest.Matchers.endsWith;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,8 +18,6 @@ import javax.json.JsonObject;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.MediaType;
 
-import io.restassured.RestAssured;
-
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTest;
@@ -29,15 +27,17 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import com.riccardomalavolti.arcano.endpoints.REST.MatchEndpoint;
+import com.riccardomalavolti.arcano.endpoints.rest.MatchEndpoint;
+import com.riccardomalavolti.arcano.model.Event;
 import com.riccardomalavolti.arcano.model.Match;
 import com.riccardomalavolti.arcano.model.Player;
 import com.riccardomalavolti.arcano.service.MatchService;
 
+import io.restassured.RestAssured;
+
 
 public class MatchEnpointTest extends JerseyTest {
 
-    private static final String MATCHES = "matches";
     private final Long matchId = (long) 1;
 
     @Mock private MatchService matchService;
@@ -76,7 +76,7 @@ public class MatchEnpointTest extends JerseyTest {
         given()
             .accept(MediaType.APPLICATION_JSON).
         when()
-            .get(MATCHES).
+            .get(MatchEndpoint.BASE_PATH).
         then()
             .statusCode(200)
             .assertThat()
@@ -96,7 +96,7 @@ public class MatchEnpointTest extends JerseyTest {
         given()
         	.accept(MediaType.APPLICATION_JSON).
         when()
-        	.get(MATCHES + "/" + matchId.toString()).
+        	.get(MatchEndpoint.BASE_PATH + "/" + matchId.toString()).
         then()
         	.statusCode(200)
         	.assertThat()
@@ -117,7 +117,7 @@ public class MatchEnpointTest extends JerseyTest {
         given()
         	.accept(MediaType.APPLICATION_JSON).
         when()
-        	.delete(MATCHES + "/" + matchId.toString()).
+        	.delete(MatchEndpoint.BASE_PATH + "/" + matchId.toString()).
         then()
         	.statusCode(202)
         	.assertThat()
@@ -128,7 +128,7 @@ public class MatchEnpointTest extends JerseyTest {
         given()
     		.accept(MediaType.APPLICATION_JSON).
     		when()
-    		.delete(MATCHES + "/" + matchId.toString()).
+    		.delete(MatchEndpoint.BASE_PATH + "/" + matchId.toString()).
 	    then()
 	    	.statusCode(202)
 	    	.assertThat()
@@ -161,7 +161,7 @@ public class MatchEnpointTest extends JerseyTest {
 	    	.contentType(MediaType.APPLICATION_JSON)
 	    	.body(newMatchJSON.toString()).
 	    when()
-	    	.put(MATCHES + "/" + matchId.toString()).
+	    	.put(MatchEndpoint.BASE_PATH + "/" + matchId.toString()).
 	    then()
 	    	.statusCode(200)
 	    	.assertThat()
@@ -199,7 +199,7 @@ public class MatchEnpointTest extends JerseyTest {
     		.contentType(MediaType.APPLICATION_JSON)
     		.body(newMatchJSON.toString()).
     	when()
-    		.post(MATCHES).
+    		.post(MatchEndpoint.BASE_PATH).
     	then()
     		.statusCode(201)
     		.assertThat()
@@ -210,9 +210,7 @@ public class MatchEnpointTest extends JerseyTest {
     					"playerOne.id", equalTo(1),
     					"playerTwo.id", equalTo(2)
     					)
-    			.header("Location", response -> endsWith(MATCHES + "/" + createdMatch.getId().toString()));
+    			.header("Location", response -> endsWith(MatchEndpoint.BASE_PATH + "/" + createdMatch.getId().toString()));
     }
-    
-    
     
 }

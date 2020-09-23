@@ -1,4 +1,4 @@
-package com.riccardomalavolti.arcano.endpoints.REST;
+package com.riccardomalavolti.arcano.endpoints.rest;
 
 import java.net.URI;
 import java.net.URISyntaxException;
