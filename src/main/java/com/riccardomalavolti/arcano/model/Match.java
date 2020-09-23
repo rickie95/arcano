@@ -17,6 +17,10 @@ public class Match {
 	Long id;
 	
 	@ManyToOne
+	@JoinColumn(name = "event_id", referencedColumnName = "id")
+	Event parentEvent;
+
+	@ManyToOne
     @JoinColumn(name = "playerone_id", referencedColumnName = "id")	
 	Player playerOne;
 	
@@ -110,6 +114,14 @@ public class Match {
 	
 	public void setPlayerTwoScore(int i) {
 		this.playerTwoScore = (short) i;
+	}
+	
+	public Event getParentEvent() {
+		return parentEvent;
+	}
+
+	public void setParentEvent(Event parentEvent) {
+		this.parentEvent = parentEvent;
 	}
 	
 }
