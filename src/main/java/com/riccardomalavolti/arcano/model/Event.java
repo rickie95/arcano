@@ -1,8 +1,15 @@
 package com.riccardomalavolti.arcano.model;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Transient;
+
+import com.riccardomalavolti.arcano.exceptions.ConflictException;
 
 @Entity
 public class Event {
@@ -12,9 +19,27 @@ public class Event {
 	private Long id;
 
 	private String name;
+	
+	@Transient
+	private Set<Player> playerList;
+	
+	@Transient
+	private Set<User> judgeList;
 
 	public void setId(long id) {
 		this.id = id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public void setPlayerList(Set<Player> playerList) {
+		this.playerList = playerList;
+	}
+
+	public void setJudgeList(Set<User> judgeList) {
+		this.judgeList = judgeList;
 	}
 
 	@Override
@@ -52,6 +77,28 @@ public class Event {
 
 	public String getName() {
 		return this.name;
+	}
+
+	public Player enrollPlayer(Player player) {
+		if(playerList.add(player))
+			return player;
+		
+		throw new ConflictException("Player is already enrolled");
+	}
+	
+	public List<Player> getPlayerList(){
+		return new ArrayList<>(playerList);
+	}
+	
+	public User addJudge(User judge) {
+		if(judgeList.add(judge))
+			return judge;
+		
+		throw new ConflictException("Judge is already enrolled");
+	}
+	
+	public List<User> getJudgeList(){
+		return new ArrayList<>(judgeList);
 	}
 
 }

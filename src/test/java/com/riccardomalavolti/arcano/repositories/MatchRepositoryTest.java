@@ -92,4 +92,25 @@ class MatchRepositoryTest {
 		assertThat(matchRepo.getMatchById(matchId)).isEmpty();
 	}
 	
+	@Test
+	void testUpdateMatch() {
+		Match match = new Match();
+		match.setId(matchId);
+		
+		when(matchDAO.merge(match)).thenReturn(match);
+		
+		Match returnedMatch = matchRepo.updateMatch(match).get();
+		assertThat(returnedMatch).isEqualTo(match);
+	}
+	
+	@Test
+	void testUpdateMatchIfNotAvailableShouldReturnNull() {
+		Match match = new Match();
+		match.setId(matchId);
+		
+		when(matchDAO.merge(match)).thenReturn(null);
+		
+		assertThat(matchRepo.updateMatch(match)).isEmpty();
+	}
+	
 }

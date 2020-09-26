@@ -8,6 +8,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 import javax.json.Json;
@@ -28,6 +29,7 @@ import org.mockito.MockitoAnnotations;
 import com.riccardomalavolti.arcano.endpoints.rest.EventEndpoint;
 import com.riccardomalavolti.arcano.model.Event;
 import com.riccardomalavolti.arcano.model.Player;
+import com.riccardomalavolti.arcano.model.User;
 import com.riccardomalavolti.arcano.service.EventService;
 
 import io.restassured.RestAssured;
@@ -60,8 +62,12 @@ public class EventEndpointTest extends JerseyTest {
 	public void testGetEventList() {
 		Event eOne = new Event();
 		eOne.setId((long)(1));
+		eOne.setJudgeList(new HashSet<User>());
+		eOne.setPlayerList(new HashSet<Player>());
 		Event eTwo = new Event();
 		eTwo.setId((long)(2));
+		eTwo.setJudgeList(new HashSet<User>());
+		eTwo.setPlayerList(new HashSet<Player>());
 		
 		List<Event> eventList = new ArrayList<>(Arrays.asList(eOne, eTwo));
 		
@@ -87,6 +93,8 @@ public class EventEndpointTest extends JerseyTest {
 		Long id = (long) 1;
 		Event eOne = new Event();
 		eOne.setId(id);
+		eOne.setJudgeList(new HashSet<User>());
+		eOne.setPlayerList(new HashSet<Player>());
 		
 		when(eventService.getEventById(id)).thenReturn(eOne);
 		
@@ -123,6 +131,8 @@ public class EventEndpointTest extends JerseyTest {
 		Event createdEvent = new Event();
 		createdEvent.setId((long)(1));
 		createdEvent.setName("Foo");
+		createdEvent.setJudgeList(new HashSet<User>());
+		createdEvent.setPlayerList(new HashSet<Player>());
 		
 		when(eventService.createEvent(any(Event.class))).thenReturn(createdEvent);
 		
@@ -202,7 +212,7 @@ public class EventEndpointTest extends JerseyTest {
 			// events/{event_id}/enroll
 			.post(EventEndpoint.BASE_PATH + String.format("/%s/enroll", eventId)).
 		then()
-			.statusCode(404);		
+			.statusCode(404);
 	}
 	
 	

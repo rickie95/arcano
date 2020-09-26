@@ -5,7 +5,6 @@ import static org.hamcrest.Matchers.emptyOrNullString;
 import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -28,7 +27,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import com.riccardomalavolti.arcano.endpoints.rest.MatchEndpoint;
-import com.riccardomalavolti.arcano.model.Event;
 import com.riccardomalavolti.arcano.model.Match;
 import com.riccardomalavolti.arcano.model.Player;
 import com.riccardomalavolti.arcano.service.MatchService;

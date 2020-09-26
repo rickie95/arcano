@@ -19,17 +19,20 @@ public class EventService {
 		return eventRepo.getAllEvents();
 	}
 
-	public Event getEventById(Long id) {
-		return eventRepo.getEventById(id)
-				.orElseThrow(() -> new NotFoundException(String.format(NO_EVENT_FOUND_WITH_ID, id)));
+	public Event getEventById(Long eventId) {
+		return eventRepo.getEventById(eventId)
+				.orElseThrow(() -> new NotFoundException(String.format(NO_EVENT_FOUND_WITH_ID, eventId)));
 	}
 
 	public Player enrollPlayerInEvent(Player player, Long eventId) {
-		return null;
+		Event event = eventRepo.getEventById(eventId)
+				.orElseThrow(() -> new NotFoundException(String.format(NO_EVENT_FOUND_WITH_ID, eventId)));
+
+		return event.enrollPlayer(player);
 	}
 
 	public Event createEvent(Event event) {
-		return null;
+		return eventRepo.addEvent(event);
 	}
 
 }
