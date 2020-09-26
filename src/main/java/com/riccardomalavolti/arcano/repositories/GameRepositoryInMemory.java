@@ -4,10 +4,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.enterprise.inject.Default;
 import javax.inject.Singleton;
 
+import com.riccardomalavolti.arcano.exceptions.ConflictException;
 import com.riccardomalavolti.arcano.model.Game;
 import com.riccardomalavolti.arcano.model.Player;
 
@@ -15,13 +17,8 @@ import com.riccardomalavolti.arcano.model.Player;
 @Singleton
 public class GameRepositoryInMemory implements GameRepository {
 	
-	private Map<Long, Game> gameList;
-	private Long gameIdCounter;
-	
-	public GameRepositoryInMemory() {
-		gameList = new HashMap<>();
-		gameIdCounter = (long) 0;
-	}
+	private static Map<Long, Game> gameList = new HashMap<>();
+	private static Long gameIdCounter = (long) 0;
 
 	@Override
 	public synchronized Game createGame(Player playerOne, Player playerTwo) {
@@ -36,10 +33,18 @@ public class GameRepositoryInMemory implements GameRepository {
 		gameList.put(game.getId(), game);
 		return game;
 	}
+	
+	@Override
+	public synchronized Game addGame(Game game) {
+		if(gameList.put(game.getId(), game) == null)
+			return game;
+		
+		throw new ConflictException(String.format("Game with id %s is already present.", game.getId()));
+	}
 
 	@Override
-	public Game findGameById(Long gameId) {
-		return gameList.get(gameId);
+	public Optional<Game> findGameById(Long gameId) {
+		return Optional.of(gameList.get(gameId));
 	}
 
 	@Override
@@ -48,8 +53,8 @@ public class GameRepositoryInMemory implements GameRepository {
 	}
 
 	@Override
-	public synchronized void removeGame(Game game) {
-		gameList.remove(game.getId());
+	public synchronized Game removeGame(Game game) {
+		return gameList.remove(game.getId());
 	}
 
 }

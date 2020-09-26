@@ -11,14 +11,16 @@ import com.riccardomalavolti.arcano.repositories.GameRepository;
 import com.riccardomalavolti.arcano.repositories.PlayerRepository;
 
 public class GameService {
+	
+	public static final String GAME_NOT_FOUND = "Game with id %s cannot be found";
 
 	@Inject
 	private GameRepository gameRepository;
 	@Inject
 	private PlayerRepository playerRepository;
 
-	public Player getWinnerOfGame(Long gameid) {
-		return playerRepository.getPlayerById(gameRepository.findGameById(gameid).getWinnerId())
+	public Player getWinnerOfGame(Long gameId) {
+		return playerRepository.getPlayerById(getGameById(gameId).getWinnerId())
 				.orElseThrow(() -> new NotFoundException("Cannot retrive informations about the winner."));
 	}
 
@@ -27,7 +29,8 @@ public class GameService {
 	}
 
 	public Game getGameById(Long gameid) {
-		return gameRepository.findGameById(gameid);
+		return gameRepository.findGameById(gameid)
+				.orElseThrow(() -> new NotFoundException(String.format(GAME_NOT_FOUND, gameid)));
 	}
 
 	public List<Game> allGames() {
@@ -35,16 +38,15 @@ public class GameService {
 	}
 	
 	public void setPointsForPlayerInGame(Long gameId, Long playerId, Short points) {
-		gameRepository.findGameById(gameId).setPointsForPlayer(playerId, points);
+		getGameById(gameId).setPointsForPlayer(playerId, points);
 	}
 	
 	public Short getPointForPlayerInGame(Long playerId, Long gameId) {
-		return gameRepository.findGameById(gameId).getPointsForPlayer(playerId);
+		return getGameById(gameId).getPointsForPlayer(playerId);
 	}
 
 	public Long getOpponentIdForPlayerInGame(Long playerId, Long gameId) {
-		Game game = gameRepository.findGameById(gameId);
-		return game.opponentOf(playerId);
+		return getGameById(gameId).opponentOf(playerId);
 	}
 
 }

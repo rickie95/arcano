@@ -2,14 +2,19 @@ package com.riccardomalavolti.arcano.service;
 
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.mock;
+import static org.mockito.ArgumentMatchers.anyLong;
 
 import static org.assertj.core.api.Assertions.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import javax.ws.rs.NotFoundException;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,6 +28,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.riccardomalavolti.arcano.model.Game;
 import com.riccardomalavolti.arcano.model.Player;
 import com.riccardomalavolti.arcano.repositories.GameRepository;
+import com.riccardomalavolti.arcano.repositories.PlayerRepository;
 
 @ExtendWith(MockitoExtension.class)
 @RunWith(JUnitPlatform.class)
@@ -32,10 +38,9 @@ class GameServiceTest {
 	private static final Long playerOneId = (long) 1;
 	private static final Long playerTwoId = (long) 2;
 
-	@Mock
-	private GameRepository gameRepository;
-	@Mock
-	private Game mockedGame;
+	@Mock private PlayerRepository playerRepository;
+	@Mock private GameRepository gameRepository;
+	@Mock private Game mockedGame;
 	
 	@InjectMocks
 	private GameService gameService;
@@ -60,17 +65,25 @@ class GameServiceTest {
 		Game createdGame = gameService.createGame(playerOne, playerTwo);
 		
 		verify(gameRepository).createGame(playerOne, playerTwo);
-		assertEquals(game, createdGame);
+		assertThat(game).isEqualTo(createdGame);
 	}
 	
 	@Test
 	void testGetGameById() {
-		when(gameRepository.findGameById(gameId)).thenReturn(game);
+		when(gameRepository.findGameById(gameId)).thenReturn(Optional.of(game));
 		
 		Game returnedGame = gameService.getGameById(gameId);
 		
 		verify(gameRepository).findGameById(gameId);
-		assertEquals(game, returnedGame);
+		assertThat(returnedGame).isEqualTo(game);
+	}
+	
+	@Test
+	void testGetGameByIdShouldThrowNotFoundException() {
+		when(gameRepository.findGameById(gameId)).thenReturn(Optional.empty());
+		
+		assertThrows(NotFoundException.class, 
+				() -> gameService.getGameById(gameId));
 	}
 	
 	@Test
@@ -85,4 +98,75 @@ class GameServiceTest {
 		assertThat(returnedGameList).contains(game, game2);
 	}
 	
+	@Test
+	void testSetPointsForPlayerInGame() {
+		Long playerId = (long) 2;
+		Short points = (short) 3;
+		
+		Game game = mock(Game.class);
+		when(gameRepository.findGameById(gameId)).thenReturn(Optional.of(game));
+		
+		gameService.setPointsForPlayerInGame(gameId, playerId, points);
+		
+		verify(game).setPointsForPlayer(playerId, points);
+	}
+	
+	@Test
+	void testGetPointForPlayerInGame() {
+		Long playerId = (long) 2;
+		Short points = (short) 3;
+		
+		Game game = mock(Game.class);
+		when(gameRepository.findGameById(gameId)).thenReturn(Optional.of(game));
+		when(game.getPointsForPlayer(playerId)).thenReturn(points);
+		
+		Short returnedPoint = gameService.getPointForPlayerInGame(playerId, gameId);
+		
+		assertThat(returnedPoint).isEqualTo(points);
+	}
+	
+	@Test
+	void testGetOpponentForPlayerInGame() {
+		Long playerId = (long) 2;
+		Long opponentId = (long) 3;
+		Player opponent = new Player();
+		opponent.setId(opponentId);
+		Game game = mock(Game.class);
+		
+		when(gameRepository.findGameById(gameId)).thenReturn(Optional.of(game));
+		when(game.opponentOf(playerId)).thenReturn(opponent.getId());
+		
+		Long returnedId = gameService.getOpponentIdForPlayerInGame(playerId, gameId);
+		
+		assertThat(returnedId).isEqualTo(opponentId);
+	}
+
+	@Test
+	void testGetWinnerOfGame() {
+		Long winnerId = (long) 4;
+		Player winner = new Player();
+		winner.setId(winnerId);
+		
+		when(gameRepository.findGameById(gameId)).thenReturn(Optional.of(mockedGame));
+		when(mockedGame.getWinnerId()).thenReturn(winnerId);
+		when(playerRepository.getPlayerById(winnerId)).thenReturn(Optional.of(winner));
+		
+		Player returnedPlayer = gameService.getWinnerOfGame(gameId);
+		
+		assertThat(returnedPlayer).isEqualTo(winner);
+	}
+	
+	@Test
+	void testGetWinnerOfGameShouldThrowAnExceptioIfPlayerCantBeFound() {
+		Long winnerId = (long) 4;
+		Player winner = new Player();
+		winner.setId(winnerId);
+		
+		when(gameRepository.findGameById(gameId)).thenReturn(Optional.of(mockedGame));
+		when(mockedGame.getWinnerId()).thenReturn(winnerId);
+		when(playerRepository.getPlayerById(anyLong())).thenReturn(Optional.empty());
+		
+		assertThrows(NotFoundException.class, 
+				() -> gameService.getWinnerOfGame(gameId));
+	}
 }

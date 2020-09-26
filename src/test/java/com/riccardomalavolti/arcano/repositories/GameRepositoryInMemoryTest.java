@@ -3,6 +3,8 @@ package com.riccardomalavolti.arcano.repositories;
 
 import static org.assertj.core.api.Assertions.*;
 
+import java.util.Optional;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -36,7 +38,9 @@ class GameRepositoryInMemoryTest {
 		
 		Game g = gameRepo.createGame(playerOne, playerTwo);
 		
-		assertThat(gameRepo.findGameById(g.getId())).isEqualTo(g);
+		Optional<Game> returnedGame = gameRepo.findGameById(g.getId());
+		
+		assertThat(returnedGame).isNotEmpty().contains(g);
 	}
 	
 	@Test
@@ -60,18 +64,18 @@ class GameRepositoryInMemoryTest {
 	@Test
 	void testRemoveGame() {
 		Long p1ID = (long) 1;
-		Player playerOne = new Player();
-		playerOne.setId(p1ID);
 		
 		Long p2ID = (long) 2;
-		Player playerTwo = new Player();
-		playerTwo.setId(p2ID);
 		
-		Game gameOne = gameRepo.createGame(playerOne, playerTwo);
+		Game gameOne = new Game((long)(3));
+		gameOne.setPointsForPlayer(p1ID, (short)(20));
+		gameOne.setPointsForPlayer(p2ID, (short)(20));
 		
-		gameRepo.removeGame(gameOne);
+		gameRepo.addGame(gameOne);
 		
-		assertThat(gameRepo.findGameById(gameOne.getId())).isNull();
+		Game returned = gameRepo.removeGame(gameOne);
+		
+		assertThat(returned).isNotNull().isEqualTo(gameOne);
 	}
 	
 
