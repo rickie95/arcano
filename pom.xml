@@ -7,7 +7,7 @@
 	<groupId>com.riccardomalavolti</groupId>
 	<artifactId>arcano</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<packaging>jar</packaging>
+	<packaging>war</packaging>
 
 	<name>arcano</name>
 
@@ -227,6 +227,26 @@
 			<scope>provided</scope>
 		</dependency>
 
+		<!-- Java JWT -->
+
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-api</artifactId>
+			<version>0.11.2</version>
+		</dependency>
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-impl</artifactId>
+			<version>0.11.2</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-jackson</artifactId> <!-- or jjwt-gson if Gson is preferred -->
+			<version>0.11.2</version>
+			<scope>runtime</scope>
+		</dependency>
+
 	</dependencies>
 
 	<build>
@@ -254,6 +274,12 @@
 			<plugin>
 				<artifactId>maven-install-plugin</artifactId>
 				<version>3.0.0-M1</version>
+			</plugin>
+			<plugin>
+				<artifactId>maven-war-plugin</artifactId>
+				<configuration>
+					<failOnMissingWebXml>false</failOnMissingWebXml>
+				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -295,103 +321,6 @@
 					</execution>
 				</executions>
 			</plugin>
-
-			<plugin>
-				<groupId>org.wildfly.plugins</groupId>
-				<artifactId>wildfly-maven-plugin</artifactId>
-				<version>2.0.2.Final</version>
-				<configuration>
-					<version>20.0.0.Final</version>
-					<hostname>127.0.0.1</hostname>
-					<port>9990</port>
-					<server-config>standalone-microprofile.xml</server-config>
-					<systemProperties>
-						<jboss.tx.node.id>1</jboss.tx.node.id>
-					</systemProperties>
-					<!-- So that you can log into localhost:9990 -->
-					<add-user>
-						<users>
-							<user>
-								<username>admin</username>
-								<password>admin</password>
-								<groups>
-									<group>admin</group>
-								</groups>
-							</user>
-						</users>
-					</add-user>
-				</configuration>
-				<executions>
-
-					<execution>
-						<id>deploy-postgresql</id>
-						<phase>package</phase>
-						<goals>
-							<goal>deploy-artifact</goal>
-						</goals>
-
-						<configuration>
-							<groupId>org.postgresql</groupId>
-							<artifactId>postgresql</artifactId>
-							<version>${postgresql-driver.version}</version>
-							<name>postgresql.jar</name>
-						</configuration>
-					</execution>
-
-					<execution>
-						<id>add-datasource</id>
-						<phase>install</phase>
-						<goals>
-							<goal>add-resource</goal>
-						</goals>
-						<configuration>
-							<address>subsystem=datasources</address>
-
-							<resources>
-								<resource>
-									<address>xa-data-source=java:jboss/datasources/arcano-ds</address>
-									<properties>
-										<jndi-name>java:jboss/datasources/arcano-ds</jndi-name>
-										<xa-datasource-class>org.postgresql.xa.PGXADataSource</xa-datasource-class>
-										<enabled>true</enabled>
-									</properties>
-								</resource>
-
-								<resource>
-									<address>xa-datasource-properties=DatabaseName</address>
-									<properties>
-										<value>${database-name}</value>
-									</properties>
-								</resource>
-
-								<resource>
-									<address>xa-datasource-properties=ServerName</address>
-									<properties>
-										<value>localhost</value>
-									</properties>
-								</resource>
-
-								<resource>
-									<address>xa-datasource-properties=User</address>
-									<properties>
-										<value>${database-user}</value>
-									</properties>
-								</resource>
-
-								<resource>
-									<address>xa-datasource-properties=Password</address>
-									<properties>
-										<value>${database-password}</value>
-									</properties>
-								</resource>
-
-							</resources>
-						</configuration>
-					</execution>
-
-				</executions>
-			</plugin>
-
 
 		</plugins>
 	</build>
