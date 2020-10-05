@@ -48,6 +48,7 @@
 		<maven.surefire>3.0.0-M5</maven.surefire>
 		<maven.jar>3.2.0</maven.jar>
 		<maven.install>3.0.0-M1</maven.install>
+		<maven.war>3.3.1</maven.war>
 	</properties>
 
 	<dependencies>
@@ -280,6 +281,7 @@
 				<configuration>
 					<failOnMissingWebXml>false</failOnMissingWebXml>
 				</configuration>
+				<version>${maven.war}</version>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
