@@ -20,9 +20,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.riccardomalavolti.arcano.model.Match;
-import com.riccardomalavolti.arcano.model.Player;
+import com.riccardomalavolti.arcano.model.User;
 import com.riccardomalavolti.arcano.repositories.MatchRepository;
-import com.riccardomalavolti.arcano.repositories.PlayerRepository;
+import com.riccardomalavolti.arcano.repositories.UserRepository;
 
 @ExtendWith(MockitoExtension.class)
 @RunWith(JUnitPlatform.class)
@@ -33,18 +33,18 @@ class MatchServiceTest {
 	private static final Long playerTwoId = (long) 2;
 
 	@Mock MatchRepository matchRepo;
-	@Mock PlayerRepository playerRepo;
+	@Mock UserRepository playerRepo;
 
 	@InjectMocks
 	MatchService matchService;
 
-	private Player playerOne, playerTwo;
+	private User playerOne, playerTwo;
 	private Match match;
 
 	@BeforeEach
 	void setUpPlayers() {
-		playerOne = new Player();
-		playerTwo = new Player();
+		playerOne = new User();
+		playerTwo = new User();
 		playerOne.setId(playerOneId);
 		playerTwo.setId(playerTwoId);
 

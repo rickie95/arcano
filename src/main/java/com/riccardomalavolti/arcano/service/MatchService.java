@@ -6,9 +6,9 @@ import javax.inject.Inject;
 import javax.ws.rs.NotFoundException;
 
 import com.riccardomalavolti.arcano.model.Match;
-import com.riccardomalavolti.arcano.model.Player;
+import com.riccardomalavolti.arcano.model.User;
 import com.riccardomalavolti.arcano.repositories.MatchRepository;
-import com.riccardomalavolti.arcano.repositories.PlayerRepository;
+import com.riccardomalavolti.arcano.repositories.UserRepository;
 
 public class MatchService {
 
@@ -18,14 +18,14 @@ public class MatchService {
 	private MatchRepository matchRepo;
 	
 	@Inject
-	private PlayerRepository playerRepo;
+	private UserRepository playerRepo;
 
 	public Match createMatch(Match match) {
-		Player p1 = playerRepo.getPlayerById(match.getPlayerOne().getId())
+		User p1 = playerRepo.getPlayerById(match.getPlayerOne().getId())
 		.orElseThrow(() -> new NotFoundException("No player exist with id" + match.getPlayerOne().getId()));
 		match.setPlayerOne(p1);
 				
-		Player p2 = playerRepo.getPlayerById(match.getPlayerTwo().getId())
+		User p2 = playerRepo.getPlayerById(match.getPlayerTwo().getId())
 				.orElseThrow(() -> new NotFoundException("No player exist with id" + match.getPlayerTwo().getId()));
 		match.setPlayerTwo(p2);
 		

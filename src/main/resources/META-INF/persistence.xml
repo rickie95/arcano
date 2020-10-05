@@ -7,10 +7,9 @@
 		<provider>org.hibernate.ejb.HibernatePersistence</provider>
 		<jta-data-source>arcano-ds</jta-data-source>
 
-		<class>com.riccardomalavolti.arcano.model.Player</class>
+		<class>com.riccardomalavolti.arcano.model.User</class>
 		<class>com.riccardomalavolti.arcano.model.Match</class>
 		<class>com.riccardomalavolti.arcano.model.Event</class>
-		<class>com.riccardomalavolti.arcano.model.User</class>
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 
 		<properties>

@@ -20,12 +20,11 @@ public class Event {
 
 	private String name;
 	
-	@Transient
-	private Set<Player> playerList;
-	
-	@Transient
-	private Set<User> judgeList;
+	@Transient private Set<User> playerList;
+	@Transient private Set<User> judgeList;
+	@Transient private Set<User> eventAdministratorList;
 
+	
 	public void setId(long id) {
 		this.id = id;
 	}
@@ -34,7 +33,7 @@ public class Event {
 		this.id = id;
 	}
 
-	public void setPlayerList(Set<Player> playerList) {
+	public void setPlayerList(Set<User> playerList) {
 		this.playerList = playerList;
 	}
 
@@ -79,14 +78,14 @@ public class Event {
 		return this.name;
 	}
 
-	public Player enrollPlayer(Player player) {
+	public User enrollPlayer(User player) {
 		if(playerList.add(player))
 			return player;
 		
 		throw new ConflictException("Player is already enrolled");
 	}
 	
-	public List<Player> getPlayerList(){
+	public List<User> getPlayerList(){
 		return new ArrayList<>(playerList);
 	}
 	

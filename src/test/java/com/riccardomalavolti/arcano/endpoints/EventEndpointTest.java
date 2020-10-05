@@ -28,7 +28,7 @@ import org.mockito.MockitoAnnotations;
 
 import com.riccardomalavolti.arcano.endpoints.rest.EventEndpoint;
 import com.riccardomalavolti.arcano.model.Event;
-import com.riccardomalavolti.arcano.model.Player;
+import com.riccardomalavolti.arcano.model.User;
 import com.riccardomalavolti.arcano.model.User;
 import com.riccardomalavolti.arcano.service.EventService;
 
@@ -63,11 +63,11 @@ public class EventEndpointTest extends JerseyTest {
 		Event eOne = new Event();
 		eOne.setId((long)(1));
 		eOne.setJudgeList(new HashSet<User>());
-		eOne.setPlayerList(new HashSet<Player>());
+		eOne.setPlayerList(new HashSet<User>());
 		Event eTwo = new Event();
 		eTwo.setId((long)(2));
 		eTwo.setJudgeList(new HashSet<User>());
-		eTwo.setPlayerList(new HashSet<Player>());
+		eTwo.setPlayerList(new HashSet<User>());
 		
 		List<Event> eventList = new ArrayList<>(Arrays.asList(eOne, eTwo));
 		
@@ -94,7 +94,7 @@ public class EventEndpointTest extends JerseyTest {
 		Event eOne = new Event();
 		eOne.setId(id);
 		eOne.setJudgeList(new HashSet<User>());
-		eOne.setPlayerList(new HashSet<Player>());
+		eOne.setPlayerList(new HashSet<User>());
 		
 		when(eventService.getEventById(id)).thenReturn(eOne);
 		
@@ -132,7 +132,7 @@ public class EventEndpointTest extends JerseyTest {
 		createdEvent.setId((long)(1));
 		createdEvent.setName("Foo");
 		createdEvent.setJudgeList(new HashSet<User>());
-		createdEvent.setPlayerList(new HashSet<Player>());
+		createdEvent.setPlayerList(new HashSet<User>());
 		
 		when(eventService.createEvent(any(Event.class))).thenReturn(createdEvent);
 		
@@ -163,7 +163,7 @@ public class EventEndpointTest extends JerseyTest {
 		Long playerId = (long) 2;
 		String playerUsername = "Mike";
 		
-		Player player = new Player();
+		User player = new User();
 		player.setId(playerId);
 		player.setUsername(playerUsername);
 		
@@ -193,7 +193,7 @@ public class EventEndpointTest extends JerseyTest {
 		Long playerId = (long) 2;
 		String playerUsername = "Mike";
 		
-		Player player = new Player();
+		User player = new User();
 		player.setId(playerId);
 		player.setUsername(playerUsername);
 		

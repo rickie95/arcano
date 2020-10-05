@@ -22,16 +22,16 @@ public class Match {
 
 	@ManyToOne
     @JoinColumn(name = "playerone_id", referencedColumnName = "id")	
-	Player playerOne;
+	User playerOne;
 	
     @ManyToOne
     @JoinColumn(name = "playertwo_id", referencedColumnName = "id")
-	Player playerTwo;
+	User playerTwo;
 	
 	short playerOneScore;
 	short playerTwoScore;
 
-	@Transient Player winner;
+	@Transient User winner;
 	@Transient List<Game> gameList;
 	@Transient boolean matchEnded;
 	
@@ -67,7 +67,7 @@ public class Match {
 		return true;
 	}
 
-	public Player getWinner() {
+	public User getWinner() {
 		if (playerOneScore > playerTwoScore) {
 			winner = playerOne;
 		}else {
@@ -84,19 +84,19 @@ public class Match {
 		this.id = matchid;
 	}
 	
-	public Player getPlayerOne() {
+	public User getPlayerOne() {
 		return playerOne;
 	}
 	
-	public void setPlayerOne(Player playerOne) {
+	public void setPlayerOne(User playerOne) {
 		this.playerOne = playerOne;
 	}
 	
-	public Player getPlayerTwo() {
+	public User getPlayerTwo() {
 		return playerTwo;
 	}
 	
-	public void setPlayerTwo(Player playerTwo) {
+	public void setPlayerTwo(User playerTwo) {
 		this.playerTwo = playerTwo;
 	}
 	

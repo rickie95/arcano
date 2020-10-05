@@ -6,7 +6,7 @@ import javax.inject.Inject;
 import javax.ws.rs.NotFoundException;
 
 import com.riccardomalavolti.arcano.model.Event;
-import com.riccardomalavolti.arcano.model.Player;
+import com.riccardomalavolti.arcano.model.User;
 import com.riccardomalavolti.arcano.repositories.EventRepository;
 
 public class EventService {
@@ -24,7 +24,7 @@ public class EventService {
 				.orElseThrow(() -> new NotFoundException(String.format(NO_EVENT_FOUND_WITH_ID, eventId)));
 	}
 
-	public Player enrollPlayerInEvent(Player player, Long eventId) {
+	public User enrollPlayerInEvent(User player, Long eventId) {
 		Event event = eventRepo.getEventById(eventId)
 				.orElseThrow(() -> new NotFoundException(String.format(NO_EVENT_FOUND_WITH_ID, eventId)));
 

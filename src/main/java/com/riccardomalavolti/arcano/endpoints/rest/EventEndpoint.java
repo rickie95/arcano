@@ -4,6 +4,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 
+import javax.annotation.security.PermitAll;
+import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -17,9 +19,11 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import com.riccardomalavolti.arcano.model.Event;
-import com.riccardomalavolti.arcano.model.Player;
+import com.riccardomalavolti.arcano.model.Role;
+import com.riccardomalavolti.arcano.model.User;
 import com.riccardomalavolti.arcano.service.EventService;
 
+@PermitAll
 @Path(EventEndpoint.BASE_PATH)
 public class EventEndpoint {
 
@@ -35,6 +39,7 @@ public class EventEndpoint {
 	
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
+	@RolesAllowed(Role.Values.ADMIN_VALUE)
 	public Response createNewEvent(Event event, @Context UriInfo uriInfo) throws URISyntaxException {
 		Event saved = eventService.createEvent(event);
 		return Response.created(new URI(uriInfo.getAbsolutePath() + "/" + saved.getId()))
@@ -53,7 +58,7 @@ public class EventEndpoint {
 	@Path("{id}/enroll")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response enrollPlayerInEvent(@PathParam("id") String eventId, Player player) {
+	public Response enrollPlayerInEvent(@PathParam("id") String eventId, User player) {
 		return Response
 				.accepted(eventService.enrollPlayerInEvent(player, Long.parseLong(eventId)))
 				.build();

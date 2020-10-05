@@ -3,29 +3,52 @@ package com.riccardomalavolti.arcano.model;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.OneToOne;
 import javax.validation.constraints.NotNull;
 
 @Entity
-public class Player {
+public class User {
 	
 	@Id
 	@GeneratedValue
 	private Long id;
 	
-	@OneToOne
-	@NotNull
-	private User user;
+	@NotNull private String username;
+	private String password;
+	private Role role;
 	
-	private String username;
-	
-	
-	public User getUser() {
-		return user;
+	private String name;
+	private String surname;
+
+	public String getPassword() {
+		return password;
 	}
 
-	public void setUser(User user) {
-		this.user = user;
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	public Role getRole() {
+		return role;
+	}
+
+	public void setRole(Role role) {
+		this.role = role;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getSurname() {
+		return surname;
+	}
+
+	public void setSurname(String surname) {
+		this.surname = surname;
 	}
 
 	public Long getId() {
@@ -59,7 +82,7 @@ public class Player {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Player other = (Player) obj;
+		User other = (User) obj;
 		if (id == null) {
 			if (other.id != null)
 				return false;
@@ -69,7 +92,7 @@ public class Player {
 	}
 	@Override
 	public String toString() {
-		return "Player [id=" + id + ", username=" + user.getUsername() + "]";
+		return "Player [id=" + id + ", username=" + username + "]";
 	}
 
 }

@@ -6,37 +6,45 @@ import java.util.Optional;
 import javax.enterprise.inject.Default;
 import javax.inject.Inject;
 
-import com.riccardomalavolti.arcano.model.Player;
-import com.riccardomalavolti.arcano.persistence.PlayerDAO;
+import com.riccardomalavolti.arcano.model.User;
+import com.riccardomalavolti.arcano.persistence.UserDAO;
 
 @Default
-public class PlayerRepository {
+public class UserRepository {
 
-	final PlayerDAO playerDAO;
+	final UserDAO userDAO;
 	
 	@Inject
-	public PlayerRepository(PlayerDAO playerDAO) {
-		this.playerDAO = playerDAO;
-		this.playerDAO.setClass(Player.class);
+	public UserRepository(UserDAO playerDAO) {
+		this.userDAO = playerDAO;
+		this.userDAO.setClass(User.class);
 	}
 
-	public List<Player> getAllPlayers() {
-		return playerDAO.findAll();
+	public List<User> getAllPlayers() {
+		return userDAO.findAll();
 	}
 
-	public Optional<Player> getPlayerById(Long playerId) {
-		return Optional.ofNullable(playerDAO.findById(playerId));
+	public Optional<User> getPlayerById(Long playerId) {
+		return Optional.ofNullable(userDAO.findById(playerId));
 	}
 
-	public Player addPlayer(Player p) {
-		return playerDAO.persist(p);
+	public User addPlayer(User p) {
+		return userDAO.persist(p);
 	}
 
-	public Optional<Player> removePlayer(Player player) {
-		return Optional.ofNullable(playerDAO.delete(player));
+	public Optional<User> removePlayer(User player) {
+		return Optional.ofNullable(userDAO.delete(player));
 	}
 
-	public Optional<Player> mergePlayer(Player player) {
-		return Optional.ofNullable(playerDAO.merge(player));		
+	public Optional<User> mergePlayer(User player) {
+		return Optional.ofNullable(userDAO.merge(player));		
+	}
+
+	public void authenticate(User user) {
+		userDAO.authenticateUser(user);
+	}
+
+	public Optional<User> getUserByUsername(String username) {
+		return Optional.ofNullable(userDAO.findUserByUsername(username));
 	}
 }

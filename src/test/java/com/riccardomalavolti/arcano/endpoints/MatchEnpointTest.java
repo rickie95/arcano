@@ -28,7 +28,7 @@ import org.mockito.MockitoAnnotations;
 
 import com.riccardomalavolti.arcano.endpoints.rest.MatchEndpoint;
 import com.riccardomalavolti.arcano.model.Match;
-import com.riccardomalavolti.arcano.model.Player;
+import com.riccardomalavolti.arcano.model.User;
 import com.riccardomalavolti.arcano.service.MatchService;
 
 import io.restassured.RestAssured;
@@ -172,9 +172,9 @@ public class MatchEnpointTest extends JerseyTest {
     
     @Test
     public void testAddMatchShouldReturnTheURLofTheNewMatch() {
-    	Player p1 = new Player(); 
+    	User p1 = new User(); 
     	p1.setId((long)(1));
-    	Player p2 = new Player(); 
+    	User p2 = new User(); 
     	p2.setId((long)(2));
     	
     	Match createdMatch = new Match();
