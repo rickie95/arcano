@@ -6,9 +6,9 @@ import javax.inject.Inject;
 import javax.ws.rs.NotFoundException;
 
 import com.riccardomalavolti.arcano.model.Game;
-import com.riccardomalavolti.arcano.model.Player;
+import com.riccardomalavolti.arcano.model.User;
 import com.riccardomalavolti.arcano.repositories.GameRepository;
-import com.riccardomalavolti.arcano.repositories.PlayerRepository;
+import com.riccardomalavolti.arcano.repositories.UserRepository;
 
 public class GameService {
 	
@@ -17,14 +17,14 @@ public class GameService {
 	@Inject
 	private GameRepository gameRepository;
 	@Inject
-	private PlayerRepository playerRepository;
+	private UserRepository playerRepository;
 
-	public Player getWinnerOfGame(Long gameId) {
+	public User getWinnerOfGame(Long gameId) {
 		return playerRepository.getPlayerById(getGameById(gameId).getWinnerId())
 				.orElseThrow(() -> new NotFoundException("Cannot retrive informations about the winner."));
 	}
 
-	public Game createGame(Player playerOne, Player playerTwo) {
+	public Game createGame(User playerOne, User playerTwo) {
 		return gameRepository.createGame(playerOne, playerTwo);
 	}
 

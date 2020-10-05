@@ -26,9 +26,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.riccardomalavolti.arcano.model.Game;
-import com.riccardomalavolti.arcano.model.Player;
+import com.riccardomalavolti.arcano.model.User;
 import com.riccardomalavolti.arcano.repositories.GameRepository;
-import com.riccardomalavolti.arcano.repositories.PlayerRepository;
+import com.riccardomalavolti.arcano.repositories.UserRepository;
 
 @ExtendWith(MockitoExtension.class)
 @RunWith(JUnitPlatform.class)
@@ -38,20 +38,20 @@ class GameServiceTest {
 	private static final Long playerOneId = (long) 1;
 	private static final Long playerTwoId = (long) 2;
 
-	@Mock private PlayerRepository playerRepository;
+	@Mock private UserRepository playerRepository;
 	@Mock private GameRepository gameRepository;
 	@Mock private Game mockedGame;
 	
 	@InjectMocks
 	private GameService gameService;
 	
-	private Player playerOne, playerTwo;
+	private User playerOne, playerTwo;
 	private Game game;
 	
 	@BeforeEach
 	void setUpPlayers() {
-		playerOne = new Player();
-		playerTwo = new Player();
+		playerOne = new User();
+		playerTwo = new User();
 		playerOne.setId(playerOneId);
 		playerTwo.setId(playerTwoId);
 		
@@ -129,7 +129,7 @@ class GameServiceTest {
 	void testGetOpponentForPlayerInGame() {
 		Long playerId = (long) 2;
 		Long opponentId = (long) 3;
-		Player opponent = new Player();
+		User opponent = new User();
 		opponent.setId(opponentId);
 		Game game = mock(Game.class);
 		
@@ -144,14 +144,14 @@ class GameServiceTest {
 	@Test
 	void testGetWinnerOfGame() {
 		Long winnerId = (long) 4;
-		Player winner = new Player();
+		User winner = new User();
 		winner.setId(winnerId);
 		
 		when(gameRepository.findGameById(gameId)).thenReturn(Optional.of(mockedGame));
 		when(mockedGame.getWinnerId()).thenReturn(winnerId);
 		when(playerRepository.getPlayerById(winnerId)).thenReturn(Optional.of(winner));
 		
-		Player returnedPlayer = gameService.getWinnerOfGame(gameId);
+		User returnedPlayer = gameService.getWinnerOfGame(gameId);
 		
 		assertThat(returnedPlayer).isEqualTo(winner);
 	}
@@ -159,7 +159,7 @@ class GameServiceTest {
 	@Test
 	void testGetWinnerOfGameShouldThrowAnExceptioIfPlayerCantBeFound() {
 		Long winnerId = (long) 4;
-		Player winner = new Player();
+		User winner = new User();
 		winner.setId(winnerId);
 		
 		when(gameRepository.findGameById(gameId)).thenReturn(Optional.of(mockedGame));

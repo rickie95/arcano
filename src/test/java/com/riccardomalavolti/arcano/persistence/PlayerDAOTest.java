@@ -18,7 +18,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.riccardomalavolti.arcano.model.Player;
+import com.riccardomalavolti.arcano.model.User;
 
 @ExtendWith(MockitoExtension.class)
 @RunWith(JUnitPlatform.class)
@@ -26,26 +26,26 @@ class PlayerDAOTest {
 
 	
 	@Mock EntityManager em;
-	@Mock TypedQuery<Player> query;
+	@Mock TypedQuery<User> query;
 	
-	@InjectMocks PlayerDAO playerDAO;
+	@InjectMocks UserDAO playerDAO;
 	
 	@Test
 	void testFindAllPlayers() {
-		Player p1 = new Player();
+		User p1 = new User();
 		Long playerOneId = (long) 1;
 		p1.setId(playerOneId);
 		
-		Player p2 = new Player();
+		User p2 = new User();
 		Long playerTwoId = (long) 2;
 		p2.setId(playerTwoId);
 		
-		List<Player> list = new ArrayList<Player>(Arrays.asList(p1, p2));
+		List<User> list = new ArrayList<User>(Arrays.asList(p1, p2));
 		
-		when(em.createQuery(PlayerDAO.SELECT_ALL_PLAYERS, Player.class)).thenReturn(query);
+		when(em.createQuery(UserDAO.SELECT_ALL_PLAYERS, User.class)).thenReturn(query);
 		when(query.getResultList()).thenReturn(list);
 		
-		List<Player> returnedList = playerDAO.findAll();
+		List<User> returnedList = playerDAO.findAll();
 		
 		assertThat(returnedList).contains(p1, p2);
 		

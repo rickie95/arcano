@@ -13,7 +13,7 @@ import org.junit.runner.RunWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.riccardomalavolti.arcano.model.Game;
-import com.riccardomalavolti.arcano.model.Player;
+import com.riccardomalavolti.arcano.model.User;
 
 @ExtendWith(MockitoExtension.class)
 @RunWith(JUnitPlatform.class)
@@ -29,11 +29,11 @@ class GameRepositoryInMemoryTest {
 	@Test
 	void testCreateAGameShouldReturnTheGameItself() {
 		Long p1ID = (long) 1;
-		Player playerOne = new Player();
+		User playerOne = new User();
 		playerOne.setId(p1ID);
 		
 		Long p2ID = (long) 2;
-		Player playerTwo = new Player();
+		User playerTwo = new User();
 		playerTwo.setId(p2ID);
 		
 		Game g = gameRepo.createGame(playerOne, playerTwo);
@@ -46,11 +46,11 @@ class GameRepositoryInMemoryTest {
 	@Test
 	void testFindAllGamesShouldReturnsAllGames() {
 		Long p1ID = (long) 1;
-		Player playerOne = new Player();
+		User playerOne = new User();
 		playerOne.setId(p1ID);
 		
 		Long p2ID = (long) 2;
-		Player playerTwo = new Player();
+		User playerTwo = new User();
 		playerTwo.setId(p2ID);
 		
 		Game gameOne = gameRepo.createGame(playerOne, playerTwo);

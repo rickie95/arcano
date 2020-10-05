@@ -11,7 +11,7 @@ import org.eclipse.microprofile.graphql.Name;
 import org.eclipse.microprofile.graphql.Query;
 import org.eclipse.microprofile.graphql.Source;
 
-import com.riccardomalavolti.arcano.model.Player;
+import com.riccardomalavolti.arcano.model.User;
 import com.riccardomalavolti.arcano.service.PlayerService;
 
 @GraphQLApi
@@ -20,22 +20,22 @@ public class PlayerGraphQLProvider{
 	@Inject PlayerService playerService;
 	
 	@Query
-	public List<Player> getPlayers(){
+	public List<User> getPlayers(){
 		return playerService.getAllPlayers();
 	}
 	
 	@Query
-	public Player getPlayerById(@Name("id") String playerId) {
+	public User getPlayerById(@Name("id") String playerId) {
 		return playerService.getPlayerById(playerId);
 	}
 	
 	@Query("passwordList")
-	public List<String> getUsersPasswordList(@Source List<Player> players){
-		return players.stream().map(Player::getUsername).collect(Collectors.toList());
+	public List<String> getUsersPasswordList(@Source List<User> players){
+		return players.stream().map(User::getUsername).collect(Collectors.toList());
 	}
 	
 	@Mutation
-	public Player createPlayer(Player player) {
+	public User createPlayer(User player) {
 		return playerService.addPlayer(player);
 	}
 

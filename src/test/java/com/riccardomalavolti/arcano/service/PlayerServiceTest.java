@@ -29,8 +29,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.riccardomalavolti.arcano.exceptions.ConflictException;
-import com.riccardomalavolti.arcano.model.Player;
-import com.riccardomalavolti.arcano.repositories.PlayerRepository;
+import com.riccardomalavolti.arcano.model.User;
+import com.riccardomalavolti.arcano.repositories.UserRepository;
 
 @ExtendWith(MockitoExtension.class)
 @RunWith(JUnitPlatform.class)
@@ -42,23 +42,23 @@ class PlayerServiceTest {
 	private final static Long playerOneID = (long) 1;
 	private final static Long playerTwoID = (long) 2;
 	
-	private Player p1, p2;
-	List<Player> playerList;
+	private User p1, p2;
+	List<User> playerList;
 	
 	@Captor
-	ArgumentCaptor<Player> playerCaptor;
+	ArgumentCaptor<User> playerCaptor;
 	
 	@Mock
-	PlayerRepository playerRepo;
+	UserRepository playerRepo;
 	
 	@InjectMocks
 	PlayerService playerService;
 	
 	@BeforeEach
 	void setupRepository() {
-		p1 = new Player();
+		p1 = new User();
 		p1.setId(playerOneID); p1.setUsername(p1Username);
-		p2 = new Player();
+		p2 = new User();
 		p2.setId(playerTwoID); p2.setUsername(p2Username);
 		playerList = new ArrayList<>(Arrays.asList(p1, p2));
 	}
@@ -66,7 +66,7 @@ class PlayerServiceTest {
 	@Test
 	void testGetAllPlayer() {		
 		when(playerRepo.getAllPlayers()).thenReturn(playerList);
-		List<Player> returnedList = playerService.getAllPlayers();
+		List<User> returnedList = playerService.getAllPlayers();
 		
 		verify(playerRepo).getAllPlayers();
 		
@@ -77,7 +77,7 @@ class PlayerServiceTest {
 	void testGetPlayerById() {
 		when(playerRepo.getPlayerById(playerOneID)).thenReturn(Optional.of(p1));
 		
-		Player returnedPlayer = playerService.getPlayerById(playerOneID.toString());
+		User returnedPlayer = playerService.getPlayerById(playerOneID.toString());
 		
 		verify(playerRepo).getPlayerById(playerOneID);
 		assertEquals(p1, returnedPlayer);
@@ -96,7 +96,7 @@ class PlayerServiceTest {
 	void testAddPlayer() {
 		when(playerRepo.addPlayer(p1)).thenReturn(p1);
 		
-		Player returnedPlayer = playerRepo.addPlayer(p1);
+		User returnedPlayer = playerRepo.addPlayer(p1);
 		verify(playerRepo).addPlayer(p1);
 		
 		assertEquals(p1, returnedPlayer);
@@ -115,7 +115,7 @@ class PlayerServiceTest {
 		String p1IDString = playerOneID.toString();
 		when(playerRepo.removePlayer(p1)).thenReturn(Optional.of(p1));
 		
-		Player returnedPlayer = playerService.deletePlayer(p1IDString);
+		User returnedPlayer = playerService.deletePlayer(p1IDString);
 		verify(playerRepo).removePlayer(playerCaptor.capture());
 		
 		assertEquals(p1, playerCaptor.getValue());
@@ -133,7 +133,7 @@ class PlayerServiceTest {
 	void testUpdatePlayer() {
 		when(playerRepo.mergePlayer(p1)).thenReturn(Optional.of(p1));
 		
-		Player returnedPlayer = playerService.updatePlayer(p1.getId().toString(), p1);
+		User returnedPlayer = playerService.updatePlayer(p1.getId().toString(), p1);
 		
 		verify(playerRepo).mergePlayer(p1);
 		assertEquals(returnedPlayer, p1);

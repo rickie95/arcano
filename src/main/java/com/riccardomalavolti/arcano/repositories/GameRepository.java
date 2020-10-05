@@ -4,11 +4,11 @@ import java.util.List;
 import java.util.Optional;
 
 import com.riccardomalavolti.arcano.model.Game;
-import com.riccardomalavolti.arcano.model.Player;
+import com.riccardomalavolti.arcano.model.User;
 
 public interface GameRepository {
 
-	public Game createGame(Player playerOne, Player playerTwo);
+	public Game createGame(User playerOne, User playerTwo);
 
 	public Optional<Game> findGameById(Long gameid);
 

@@ -15,8 +15,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.riccardomalavolti.arcano.model.Player;
-import com.riccardomalavolti.arcano.persistence.PlayerDAO;
+import com.riccardomalavolti.arcano.model.User;
+import com.riccardomalavolti.arcano.persistence.UserDAO;
 
 @ExtendWith(MockitoExtension.class)
 @RunWith(JUnitPlatform.class)
@@ -25,19 +25,19 @@ class PlayerRepositoryTest {
 	private static final Long USER_ID = (long) 1;
 
 	@Mock
-	PlayerDAO playerDAO;
+	UserDAO playerDAO;
 	
-	@Captor ArgumentCaptor<Class<Player>> DAOParameter;
+	@Captor ArgumentCaptor<Class<User>> DAOParameter;
 	@Captor ArgumentCaptor<Long> playerId;
-	@Captor ArgumentCaptor<Player> playerCaptor;
+	@Captor ArgumentCaptor<User> playerCaptor;
 	
 	@InjectMocks
-	PlayerRepository playerRepo;
+	UserRepository playerRepo;
 	
 	@Test
 	void testDAOClassHasBeingSet() {
 		Mockito.verify(playerDAO).setClass(DAOParameter.capture());
-		assertEquals(DAOParameter.getValue(), Player.class);
+		assertEquals(DAOParameter.getValue(), User.class);
 	}
 	
 	@Test
@@ -57,7 +57,7 @@ class PlayerRepositoryTest {
 	
 	@Test
 	void testAddingPlayer() {
-		Player player = new Player();
+		User player = new User();
 		
 		playerRepo.addPlayer(player);
 		Mockito.verify(playerDAO).persist(playerCaptor.capture());
@@ -66,7 +66,7 @@ class PlayerRepositoryTest {
 	
 	@Test
 	void testAddingPlayerWhenAlreadyExistentShouldThrowEntityExistException() {
-		Player player = new Player();
+		User player = new User();
 		
 		playerRepo.addPlayer(player);
 		Mockito.verify(playerDAO).persist(playerCaptor.capture());
@@ -75,11 +75,11 @@ class PlayerRepositoryTest {
 	
 	@Test
 	void removePlayer() {
-		Player player = new Player();
+		User player = new User();
 		player.setId(USER_ID);
 		when(playerDAO.delete(player)).thenReturn(player);
 		
-		Player returnedPlayer = playerRepo.removePlayer(player).get();
+		User returnedPlayer = playerRepo.removePlayer(player).get();
 		
 		verify(playerDAO).delete(playerCaptor.capture());
 		assertEquals(player, playerCaptor.getValue());
@@ -88,7 +88,7 @@ class PlayerRepositoryTest {
 	
 	@Test
 	void testMergePlayerShouldReturnTheMergedEntity() {
-		Player player = new Player();
+		User player = new User();
 		playerRepo.mergePlayer(player);
 		verify(playerDAO).merge(playerCaptor.capture());
 		assertEquals(player, playerCaptor.getValue());

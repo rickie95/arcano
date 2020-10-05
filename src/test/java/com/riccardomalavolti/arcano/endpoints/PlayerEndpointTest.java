@@ -26,7 +26,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import com.riccardomalavolti.arcano.endpoints.rest.PlayerEndpoint;
-import com.riccardomalavolti.arcano.model.Player;
+import com.riccardomalavolti.arcano.model.User;
 import com.riccardomalavolti.arcano.service.PlayerService;
 
 import io.restassured.RestAssured;
@@ -67,14 +67,14 @@ public class PlayerEndpointTest extends JerseyTest {
 		String name1 = "Mike";
 		Long id2 = (long) 2;
 		String name2 = "Joe";
-		Player p1 = new Player();
+		User p1 = new User();
 		p1.setId(id1);
 		p1.setUsername(name1);
 		
-		Player p2 = new Player();
+		User p2 = new User();
 		p2.setId(id2);
 		p2.setUsername(name2);
-		List<Player> players = new ArrayList<Player>(Arrays.asList(p1, p2));
+		List<User> players = new ArrayList<User>(Arrays.asList(p1, p2));
 		
 		when(playerService.getAllPlayers())
 		.thenReturn(players);
@@ -98,7 +98,7 @@ public class PlayerEndpointTest extends JerseyTest {
 	public void getPlayerByID() {
 		Long id = (long) 1;
 		String name = "Mike";
-		Player p = new Player();
+		User p = new User();
 		p.setId(id);
 		p.setUsername(name);
 		
@@ -123,10 +123,10 @@ public class PlayerEndpointTest extends JerseyTest {
 		Long createdId = (long) 3;
 		String name = "Mike";
 		
-		Player playerSent = new Player();
+		User playerSent = new User();
 		playerSent.setUsername(name);
 		
-		Player playerRetuned = new Player();
+		User playerRetuned = new User();
 		playerRetuned.setId(createdId);
 		playerRetuned.setUsername(name);
 
@@ -153,7 +153,7 @@ public class PlayerEndpointTest extends JerseyTest {
 	
 	@Test
 	public void testDeletePlayer() {
-		Player playerToBeDeleted = new Player();
+		User playerToBeDeleted = new User();
 		playerToBeDeleted.setId(playerId);
 		playerToBeDeleted.setUsername(playerUsername);
 		
@@ -175,11 +175,11 @@ public class PlayerEndpointTest extends JerseyTest {
 	public void testPutPlayer() {
 		String updatedName = "Joe";
 		
-		Player playerSent = new Player();
+		User playerSent = new User();
 		playerSent.setId(playerId);
 		playerSent.setUsername(playerUsername);
 		
-		Player playerUpdated = new Player();
+		User playerUpdated = new User();
 		playerUpdated.setId(playerId);
 		playerUpdated.setUsername(updatedName);
 		
