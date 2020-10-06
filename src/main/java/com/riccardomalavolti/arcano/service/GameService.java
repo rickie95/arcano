@@ -20,7 +20,7 @@ public class GameService {
 	private UserRepository playerRepository;
 
 	public User getWinnerOfGame(Long gameId) {
-		return playerRepository.getPlayerById(getGameById(gameId).getWinnerId())
+		return playerRepository.getUserById(getGameById(gameId).getWinnerId())
 				.orElseThrow(() -> new NotFoundException("Cannot retrive informations about the winner."));
 	}
 

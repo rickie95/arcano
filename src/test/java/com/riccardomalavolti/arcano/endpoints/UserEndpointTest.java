@@ -25,33 +25,33 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import com.riccardomalavolti.arcano.endpoints.rest.PlayerEndpoint;
+import com.riccardomalavolti.arcano.endpoints.rest.UserEndpoint;
 import com.riccardomalavolti.arcano.model.User;
-import com.riccardomalavolti.arcano.service.PlayerService;
+import com.riccardomalavolti.arcano.service.UserService;
 
 import io.restassured.RestAssured;
 
-public class PlayerEndpointTest extends JerseyTest {
+public class UserEndpointTest extends JerseyTest {
 	
-	private static final String PLAYERS = "players";
+	private static final String USERS = UserEndpoint.ENDPOINT_PATH;
 	
 	private static final Long playerId = (long) 1;
 	private static final String playerUsername = "Mike";
 
 	@Mock
-	private PlayerService playerService;
+	private UserService playerService;
 	
 	@SuppressWarnings("deprecation")
 	@Override
     protected Application configure() {
         MockitoAnnotations.initMocks(this);
         forceSet(TestProperties.CONTAINER_PORT, "0");
-		return new ResourceConfig(PlayerEndpoint.class)
+		return new ResourceConfig(UserEndpoint.class)
 				.register(new AbstractBinder() {
 				@Override
 				protected void configure() {
 					bind(playerService)
-						.to(PlayerService.class);
+						.to(UserService.class);
 				}
 			});
     }
@@ -76,13 +76,13 @@ public class PlayerEndpointTest extends JerseyTest {
 		p2.setUsername(name2);
 		List<User> players = new ArrayList<User>(Arrays.asList(p1, p2));
 		
-		when(playerService.getAllPlayers())
+		when(playerService.getAllUsers())
 		.thenReturn(players);
 
         given().
             accept(MediaType.APPLICATION_JSON).
         when().
-            get(PLAYERS).
+            get(USERS).
         then().
             statusCode(200).
             assertThat().
@@ -102,13 +102,13 @@ public class PlayerEndpointTest extends JerseyTest {
 		p.setId(id);
 		p.setUsername(name);
 		
-		when(playerService.getPlayerById(anyString()))
+		when(playerService.getUserById(anyString()))
 			.thenReturn(p);
 
 		given().
 			accept(MediaType.APPLICATION_JSON).
 		when().
-			get(PLAYERS + "/1").
+			get(USERS + "/1").
 		then().
 			statusCode(200).
 			assertThat().
@@ -134,13 +134,13 @@ public class PlayerEndpointTest extends JerseyTest {
 									.add("username", name)
 									.build();
 
-		when(playerService.addPlayer(playerSent)).thenReturn(playerRetuned);
+		when(playerService.addNewUser(playerSent)).thenReturn(playerRetuned);
 
 		given()
 			.contentType(MediaType.APPLICATION_JSON)
 			.body(jsonSent.toString()).
 		when()
-			.post(PLAYERS).
+			.post(USERS).
 		then()
 			.statusCode(201)
 			.assertThat().
@@ -148,7 +148,7 @@ public class PlayerEndpointTest extends JerseyTest {
 						"id", equalTo(createdId.intValue()), 
 						"username", equalTo(name)
 					)
-				.header("Location", response -> endsWith(PLAYERS + "/" + createdId));
+				.header("Location", response -> endsWith(USERS + "/" + createdId));
 	}
 	
 	@Test
@@ -157,10 +157,10 @@ public class PlayerEndpointTest extends JerseyTest {
 		playerToBeDeleted.setId(playerId);
 		playerToBeDeleted.setUsername(playerUsername);
 		
-		when(playerService.deletePlayer(playerId.toString())).thenReturn(playerToBeDeleted);
+		when(playerService.deleteUser(playerId.toString())).thenReturn(playerToBeDeleted);
 		
 		when().
-			delete(PLAYERS + "/" + playerId).
+			delete(USERS + "/" + playerId).
 		then().
 			statusCode(202).
 			assertThat().
@@ -188,14 +188,14 @@ public class PlayerEndpointTest extends JerseyTest {
 				.add("username", playerUsername)
 				.build();
 		
-		when(playerService.updatePlayer(playerId.toString(), playerSent))
+		when(playerService.updateUser(playerId.toString(), playerSent))
 			.thenReturn(playerUpdated);
 		
 		given()
 			.contentType(MediaType.APPLICATION_JSON)
 			.body(jsonSent.toString()).
 		when().
-			put(PLAYERS + "/" + playerId.toString()).
+			put(USERS + "/" + playerId.toString()).
 		then().
 			statusCode(200).
 			assertThat().

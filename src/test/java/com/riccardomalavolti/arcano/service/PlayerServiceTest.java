@@ -6,9 +6,6 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-
-import static org.assertj.core.api.Assertions.*;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -52,7 +49,7 @@ class PlayerServiceTest {
 	UserRepository playerRepo;
 	
 	@InjectMocks
-	PlayerService playerService;
+	UserService playerService;
 	
 	@BeforeEach
 	void setupRepository() {
@@ -66,7 +63,7 @@ class PlayerServiceTest {
 	@Test
 	void testGetAllPlayer() {		
 		when(playerRepo.getAllPlayers()).thenReturn(playerList);
-		List<User> returnedList = playerService.getAllPlayers();
+		List<User> returnedList = playerService.getAllUsers();
 		
 		verify(playerRepo).getAllPlayers();
 		
@@ -75,48 +72,48 @@ class PlayerServiceTest {
 	
 	@Test
 	void testGetPlayerById() {
-		when(playerRepo.getPlayerById(playerOneID)).thenReturn(Optional.of(p1));
+		when(playerRepo.getUserById(playerOneID)).thenReturn(Optional.of(p1));
 		
-		User returnedPlayer = playerService.getPlayerById(playerOneID.toString());
+		User returnedPlayer = playerService.getUserById(playerOneID.toString());
 		
-		verify(playerRepo).getPlayerById(playerOneID);
+		verify(playerRepo).getUserById(playerOneID);
 		assertEquals(p1, returnedPlayer);
 	}
 	
 	@Test
 	void testGetANonExistentPlayerById() {
-		when(playerRepo.getPlayerById(anyLong()))
+		when(playerRepo.getUserById(anyLong()))
 			.thenReturn(Optional.empty());
 		
 		assertThrows(NotFoundException.class, 
-				() -> playerService.getPlayerById("0"));
+				() -> playerService.getUserById("0"));
 	}
 	
 	@Test
 	void testAddPlayer() {
-		when(playerRepo.addPlayer(p1)).thenReturn(p1);
+		when(playerRepo.addNewUser(p1)).thenReturn(p1);
 		
-		User returnedPlayer = playerRepo.addPlayer(p1);
-		verify(playerRepo).addPlayer(p1);
+		User returnedPlayer = playerRepo.addNewUser(p1);
+		verify(playerRepo).addNewUser(p1);
 		
 		assertEquals(p1, returnedPlayer);
 	}
 	
 	@Test
 	void testAddPlayerWhenWithAnAlreadyExistentPlayer() {
-		when(playerRepo.addPlayer(p1)).thenThrow(EntityExistsException.class);
+		when(playerRepo.addNewUser(p1)).thenThrow(EntityExistsException.class);
 
-		
-		assertThrows(ConflictException.class, () -> playerService.addPlayer(p1));
+		assertThrows(ConflictException.class, () -> playerService.addNewUser(p1));
 	}
 	
 	@Test
 	void testDeletePlayer() {
 		String p1IDString = playerOneID.toString();
-		when(playerRepo.removePlayer(p1)).thenReturn(Optional.of(p1));
+		when(playerRepo.getUserById(p1.getId())).thenReturn(Optional.of(p1));
+		when(playerRepo.removeUser(p1)).thenReturn(p1);
 		
-		User returnedPlayer = playerService.deletePlayer(p1IDString);
-		verify(playerRepo).removePlayer(playerCaptor.capture());
+		User returnedPlayer = playerService.deleteUser(p1IDString);
+		verify(playerRepo).removeUser(playerCaptor.capture());
 		
 		assertEquals(p1, playerCaptor.getValue());
 		assertEquals(returnedPlayer, p1);
@@ -124,38 +121,20 @@ class PlayerServiceTest {
 	
 	@Test
 	void testDeletePlayerIfNotPresentShouldThrowsANotFoundException() {
-		when(playerRepo.removePlayer(p1)).thenThrow(NotFoundException.class);
 		String p1IDString = playerOneID.toString();
-		assertThrows(NotFoundException.class, () -> playerService.deletePlayer(p1IDString));
+		assertThrows(NotFoundException.class, () -> playerService.deleteUser(p1IDString));
 	}
 	
 	@Test
 	void testUpdatePlayer() {
-		when(playerRepo.mergePlayer(p1)).thenReturn(Optional.of(p1));
+		when(playerRepo.getUserById(p1.getId())).thenReturn(Optional.of(p1));
+		when(playerRepo.mergeUser(p1)).thenReturn(p1);
 		
-		User returnedPlayer = playerService.updatePlayer(p1.getId().toString(), p1);
+		User returnedPlayer = playerService.updateUser(p1.getId().toString(), p1);
 		
-		verify(playerRepo).mergePlayer(p1);
+		verify(playerRepo).mergeUser(p1);
 		assertEquals(returnedPlayer, p1);
 		
-	}
-	
-	@Test
-	void testUpdatePlayerShouldThrowsAnExeptionIfThePlayerDoesntExists() {
-		when(playerRepo.mergePlayer(p1)).thenReturn(Optional.empty());
-		
-		assertThatExceptionOfType(NotFoundException.class).
-			isThrownBy(() -> playerService.updatePlayer(p1.getId().toString(), p1));
-	}
-	
-	@Test
-	void testDeletePlayerShouldThrowsAnExceptionIfThePlayerDoesntExist() {
-		when(playerRepo.removePlayer(p1)).thenReturn(Optional.empty());
-		
-		String playerId = playerOneID.toString();
-		
-		assertThatExceptionOfType(NotFoundException.class).
-			isThrownBy(() -> playerService.deletePlayer(playerId));
 	}
 
 }

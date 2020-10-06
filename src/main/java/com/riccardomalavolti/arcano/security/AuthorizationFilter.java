@@ -30,33 +30,28 @@ public class AuthorizationFilter implements ContainerRequestFilter {
 
         Method method = resourceInfo.getResourceMethod();
 
-        // @DenyAll on the method takes precedence over @RolesAllowed and @PermitAll
+        // @DenyAll > @RolesAllowed > @PermitAll
         if (method.isAnnotationPresent(DenyAll.class)) {
             throw new AccessDeniedException("You don't have permissions to perform this action.");
         }
 
-        // @RolesAllowed on the method takes precedence over @PermitAll
         RolesAllowed rolesAllowed = method.getAnnotation(RolesAllowed.class);
         if (rolesAllowed != null) {
             performAuthorization(rolesAllowed.value(), requestContext);
             return;
         }
 
-        // @PermitAll on the method takes precedence over @RolesAllowed on the class
         if (method.isAnnotationPresent(PermitAll.class)) {
             // Do nothing
             return;
         }
 
-        // @DenyAll can't be attached to classes
 
-        // @RolesAllowed on the class takes precedence over @PermitAll on the class
         rolesAllowed = resourceInfo.getResourceClass().getAnnotation(RolesAllowed.class);
         if (rolesAllowed != null) {
             performAuthorization(rolesAllowed.value(), requestContext);
         }
 
-        // @PermitAll on the class
         if (resourceInfo.getResourceClass().isAnnotationPresent(PermitAll.class)) {
             // Do nothing
             return;

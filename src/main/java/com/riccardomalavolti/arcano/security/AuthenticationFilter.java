@@ -15,7 +15,7 @@ import javax.ws.rs.ext.Provider;
 
 import com.riccardomalavolti.arcano.model.User;
 import com.riccardomalavolti.arcano.service.AuthenticationService;
-import com.riccardomalavolti.arcano.service.PlayerService;
+import com.riccardomalavolti.arcano.service.UserService;
 
 @Provider
 @Dependent
@@ -26,7 +26,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 	AuthenticationService authService;
 
 	@Inject
-	PlayerService userService;
+	UserService userService;
 
 	@Override
 	public void filter(ContainerRequestContext requestContext) throws IOException {
@@ -43,6 +43,8 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 
 		String username = authService.parseToken(authenticationToken);
 		User user = userService.getUserByUsername(username);
+		
+		System.out.println(username + " is in the house");
 
 		boolean isSecure = requestContext.getSecurityContext().isSecure();
 		SecurityContext securityContext = new TokenBasedSecurityContext(user, authenticationToken, isSecure);

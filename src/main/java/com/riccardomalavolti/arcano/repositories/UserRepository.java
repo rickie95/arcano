@@ -24,27 +24,29 @@ public class UserRepository {
 		return userDAO.findAll();
 	}
 
-	public Optional<User> getPlayerById(Long playerId) {
+	public Optional<User> getUserById(Long playerId) {
 		return Optional.ofNullable(userDAO.findById(playerId));
 	}
+	
+	public Optional<User> getUserByUsername(String username) {
+		return Optional.ofNullable(userDAO.findUserByUsername(username));
+	}
 
-	public User addPlayer(User p) {
+	public User addNewUser(User p) {
 		return userDAO.persist(p);
 	}
 
-	public Optional<User> removePlayer(User player) {
-		return Optional.ofNullable(userDAO.delete(player));
+	public User removeUser(User player) {
+		return userDAO.delete(player);
 	}
 
-	public Optional<User> mergePlayer(User player) {
-		return Optional.ofNullable(userDAO.merge(player));		
+	public User mergeUser(User player) {
+		return userDAO.merge(player);		
 	}
 
 	public void authenticate(User user) {
 		userDAO.authenticateUser(user);
 	}
 
-	public Optional<User> getUserByUsername(String username) {
-		return Optional.ofNullable(userDAO.findUserByUsername(username));
-	}
+	
 }

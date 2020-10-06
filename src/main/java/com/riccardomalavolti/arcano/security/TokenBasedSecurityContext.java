@@ -33,6 +33,7 @@ public class TokenBasedSecurityContext implements SecurityContext {
 		public String getName() {
 			return user.getUsername();
 		}
+
     	
     }
 

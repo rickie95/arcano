@@ -57,16 +57,16 @@ class MatchServiceTest {
 	@Test
 	void testCreateMatch() {
 		when(matchRepo.addMatch(match)).thenReturn(match);
-		when(playerRepo.getPlayerById(playerOneId))
+		when(playerRepo.getUserById(playerOneId))
 			.thenReturn(Optional.of(playerOne));
-		when(playerRepo.getPlayerById(playerTwoId))
+		when(playerRepo.getUserById(playerTwoId))
 			.thenReturn(Optional.of(playerTwo));
 		
 		Match createdMatch = matchService.createMatch(match);
 
 		verify(matchRepo).addMatch(match);
-		verify(playerRepo).getPlayerById(playerOneId);
-		verify(playerRepo).getPlayerById(playerTwoId);
+		verify(playerRepo).getUserById(playerOneId);
+		verify(playerRepo).getUserById(playerTwoId);
 		
 		assertThat(createdMatch).isEqualTo(match);
 

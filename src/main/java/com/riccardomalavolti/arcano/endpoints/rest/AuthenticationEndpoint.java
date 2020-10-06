@@ -31,11 +31,9 @@ public class AuthenticationEndpoint {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@PermitAll
 	public Response authenticateUser(User user) {
-		System.out.println(String.format("REQUEST FROM %s", user.getId()));
 		try {
 			
 			String token = authService.authenticateUser(user);
-			System.out.println(String.format("User %s is valid", user.getUsername()));
 			// Return the token on the response
 			return Response.ok(token).build();
 

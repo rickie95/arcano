@@ -149,7 +149,7 @@ class GameServiceTest {
 		
 		when(gameRepository.findGameById(gameId)).thenReturn(Optional.of(mockedGame));
 		when(mockedGame.getWinnerId()).thenReturn(winnerId);
-		when(playerRepository.getPlayerById(winnerId)).thenReturn(Optional.of(winner));
+		when(playerRepository.getUserById(winnerId)).thenReturn(Optional.of(winner));
 		
 		User returnedPlayer = gameService.getWinnerOfGame(gameId);
 		
@@ -164,7 +164,7 @@ class GameServiceTest {
 		
 		when(gameRepository.findGameById(gameId)).thenReturn(Optional.of(mockedGame));
 		when(mockedGame.getWinnerId()).thenReturn(winnerId);
-		when(playerRepository.getPlayerById(anyLong())).thenReturn(Optional.empty());
+		when(playerRepository.getUserById(anyLong())).thenReturn(Optional.empty());
 		
 		assertThrows(NotFoundException.class, 
 				() -> gameService.getWinnerOfGame(gameId));

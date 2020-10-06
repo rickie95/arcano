@@ -21,11 +21,11 @@ public class MatchService {
 	private UserRepository playerRepo;
 
 	public Match createMatch(Match match) {
-		User p1 = playerRepo.getPlayerById(match.getPlayerOne().getId())
+		User p1 = playerRepo.getUserById(match.getPlayerOne().getId())
 		.orElseThrow(() -> new NotFoundException("No player exist with id" + match.getPlayerOne().getId()));
 		match.setPlayerOne(p1);
 				
-		User p2 = playerRepo.getPlayerById(match.getPlayerTwo().getId())
+		User p2 = playerRepo.getUserById(match.getPlayerTwo().getId())
 				.orElseThrow(() -> new NotFoundException("No player exist with id" + match.getPlayerTwo().getId()));
 		match.setPlayerTwo(p2);
 		
