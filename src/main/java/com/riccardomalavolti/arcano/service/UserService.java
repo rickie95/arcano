@@ -2,53 +2,56 @@ package com.riccardomalavolti.arcano.service;
 
 import java.util.List;
 
+import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Default;
 import javax.inject.Inject;
 import javax.persistence.EntityExistsException;
-import javax.transaction.Transactional;
 import javax.ws.rs.NotFoundException;
 
 import com.riccardomalavolti.arcano.exceptions.ConflictException;
-import com.riccardomalavolti.arcano.model.Player;
-import com.riccardomalavolti.arcano.repositories.PlayerRepository;
+import com.riccardomalavolti.arcano.model.User;
+import com.riccardomalavolti.arcano.repositories.UserRepository;
 
+@RequestScoped
 @Default
-public class PlayerService {
+public class UserService {
 	
 	@Inject
-	private PlayerRepository playerRepo;
+	private UserRepository userRepo;
 
-	public List<Player> getAllPlayers() {
-		return playerRepo.getAllPlayers();
+	public List<User> getAllUsers() {
+		return userRepo.getAllPlayers();
 	}
 
-	public Player getPlayerById(String playerId) {
-		return playerRepo
-				.getPlayerById(Long.parseLong(playerId))
-				.orElseThrow(() -> new NotFoundException("No player exist with id" + playerId));
+	public User getUserById(String userId) {
+		return userRepo
+				.getUserById(Long.parseLong(userId))
+				.orElseThrow(() -> new NotFoundException("No player exist with id" + userId));
+	}
+	
+	public User getUserByUsername(String username) {
+		return userRepo.getUserByUsername(username)
+				.orElseThrow(() -> new NotFoundException("No player exist with username " + username));
 	}
 
-	public Player addPlayer(Player p) {
+	public User addNewUser(User user) {
 		try {
-			return playerRepo.addPlayer(p);
+			return userRepo.addNewUser(user);
 		}catch(EntityExistsException ex) {
 			throw new ConflictException();
 		}
 	}
 
-	public Player updatePlayer(Player p) {		
-		return playerRepo
-				.mergePlayer(p)
-				.orElseThrow(() -> new NotFoundException("No player exist with id " + p.getId().toString()));
+	public User updateUser(String userId, User user) {
+		User accessedUser = getUserById(userId);		
+		
+		user.setId(accessedUser.getId());
+		return userRepo.mergeUser(user);
 	}
 
-	public Player deletePlayer(String playerId) {
-		Player p = new Player();
-		p.setId(Long.parseLong(playerId));
-		System.out.println(p.getId());
-		return playerRepo
-				.removePlayer(p)
-				.orElseThrow(() -> new NotFoundException("No player exist with id " + playerId));
+	public User deleteUser(String userId) {
+		User requestedUser = getUserById(userId);
+		return userRepo.removeUser(requestedUser);
 	}
 
 }
