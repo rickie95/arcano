@@ -26,16 +26,16 @@ public class MatchRepository {
 		return matchDAO.persist(match);
 	}
 
-	public Optional<Match> removeMatch(Match match) {
-		return Optional.ofNullable(matchDAO.delete(match));
+	public Match removeMatch(Match match) {
+		return matchDAO.delete(match);
 	}
 
 	public Optional<Match> getMatchById(Long matchId) {
 		return Optional.ofNullable(matchDAO.findById(matchId));
 	}
 
-	public Optional<Match> updateMatch(Match match) {
-		return Optional.ofNullable(matchDAO.merge(match));
+	public Match updateMatch(Match match) {
+		return matchDAO.merge(match);
 	}
 
 }

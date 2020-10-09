@@ -178,7 +178,7 @@ public class EventEndpointTest extends JerseyTest {
 			.body(playerJson.toString()).
 		when()
 			// events/{event_id}/enroll
-			.post(EventEndpoint.BASE_PATH + String.format("/%s/enroll", eventId)).
+			.put(EventEndpoint.BASE_PATH + String.format("/%s/players", eventId)).
 		then()
 			.statusCode(202)
 			.assertThat()

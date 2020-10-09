@@ -74,7 +74,7 @@ class PlayerServiceTest {
 	void testGetPlayerById() {
 		when(playerRepo.getUserById(playerOneID)).thenReturn(Optional.of(p1));
 		
-		User returnedPlayer = playerService.getUserById(playerOneID.toString());
+		User returnedPlayer = playerService.getUserById(playerOneID);
 		
 		verify(playerRepo).getUserById(playerOneID);
 		assertEquals(p1, returnedPlayer);
@@ -86,7 +86,7 @@ class PlayerServiceTest {
 			.thenReturn(Optional.empty());
 		
 		assertThrows(NotFoundException.class, 
-				() -> playerService.getUserById("0"));
+				() -> playerService.getUserById((long)(0)));
 	}
 	
 	@Test
@@ -108,11 +108,10 @@ class PlayerServiceTest {
 	
 	@Test
 	void testDeletePlayer() {
-		String p1IDString = playerOneID.toString();
 		when(playerRepo.getUserById(p1.getId())).thenReturn(Optional.of(p1));
 		when(playerRepo.removeUser(p1)).thenReturn(p1);
 		
-		User returnedPlayer = playerService.deleteUser(p1IDString);
+		User returnedPlayer = playerService.deleteUser(playerOneID);
 		verify(playerRepo).removeUser(playerCaptor.capture());
 		
 		assertEquals(p1, playerCaptor.getValue());
@@ -121,8 +120,7 @@ class PlayerServiceTest {
 	
 	@Test
 	void testDeletePlayerIfNotPresentShouldThrowsANotFoundException() {
-		String p1IDString = playerOneID.toString();
-		assertThrows(NotFoundException.class, () -> playerService.deleteUser(p1IDString));
+		assertThrows(NotFoundException.class, () -> playerService.deleteUser(playerOneID));
 	}
 	
 	@Test
@@ -130,7 +128,7 @@ class PlayerServiceTest {
 		when(playerRepo.getUserById(p1.getId())).thenReturn(Optional.of(p1));
 		when(playerRepo.mergeUser(p1)).thenReturn(p1);
 		
-		User returnedPlayer = playerService.updateUser(p1.getId().toString(), p1);
+		User returnedPlayer = playerService.updateUser(p1.getId(), p1);
 		
 		verify(playerRepo).mergeUser(p1);
 		assertEquals(returnedPlayer, p1);

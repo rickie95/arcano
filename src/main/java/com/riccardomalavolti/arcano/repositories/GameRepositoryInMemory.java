@@ -18,14 +18,12 @@ import com.riccardomalavolti.arcano.model.User;
 public class GameRepositoryInMemory implements GameRepository {
 	
 	private static Map<Long, Game> gameList = new HashMap<>();
-	private static Long gameIdCounter = (long) 0;
+	private static Long gameIdCounter = (long) -1;
 
 	@Override
 	public synchronized Game createGame(User playerOne, User playerTwo) {
-		/*
-		 *  TODO: renderlo più generico, permettendo più giocatori 
-		 *  e diversi punteggi di partenza.
-		 */
+		/* TODO: renderlo più generico, permettendo più giocatori 
+		   e diversi punteggi di partenza. */
 		
 		Game game = new Game(gameIdCounter++);
 		game.setPointsForPlayer(playerOne.getId(), (short) 20);
@@ -55,6 +53,10 @@ public class GameRepositoryInMemory implements GameRepository {
 	@Override
 	public synchronized Game removeGame(Game game) {
 		return gameList.remove(game.getId());
+	}
+
+	public static Long getIdCounter() {
+		return GameRepositoryInMemory.gameIdCounter;
 	}
 
 }

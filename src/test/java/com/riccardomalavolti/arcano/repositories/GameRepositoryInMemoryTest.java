@@ -2,6 +2,7 @@ package com.riccardomalavolti.arcano.repositories;
 
 
 import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Optional;
 
@@ -12,6 +13,7 @@ import org.junit.platform.runner.JUnitPlatform;
 import org.junit.runner.RunWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.riccardomalavolti.arcano.exceptions.ConflictException;
 import com.riccardomalavolti.arcano.model.Game;
 import com.riccardomalavolti.arcano.model.User;
 
@@ -24,6 +26,7 @@ class GameRepositoryInMemoryTest {
 	@BeforeEach
 	void setUp() {
 		gameRepo = new GameRepositoryInMemory();
+		gameRepo.findAllGames().forEach(game -> gameRepo.removeGame(game));
 	}
 	
 	@Test
@@ -41,7 +44,30 @@ class GameRepositoryInMemoryTest {
 		Optional<Game> returnedGame = gameRepo.findGameById(g.getId());
 		
 		assertThat(returnedGame).isNotEmpty().contains(g);
+		assertThat(returnedGame.get().getId()).isEqualTo(GameRepositoryInMemory.getIdCounter()-1);
+		assertThat(returnedGame.get().getPointsForPlayer(p1ID)).isEqualTo((short)(20));
+		assertThat(returnedGame.get().getPointsForPlayer(p2ID)).isEqualTo((short)(20));
 	}
+	
+	@Test
+	void testAddGameShouldBeIdempotent() {
+		Long p1ID = (long) 1;
+		User playerOne = new User();
+		playerOne.setId(p1ID);
+		
+		Long p2ID = (long) 2;
+		User playerTwo = new User();
+		playerTwo.setId(p2ID);
+		
+		Game game = new Game((long)(1));
+		Game returnedGame = gameRepo.addGame(game);
+		
+		assertThat(returnedGame).isNotNull();
+		assertThat(returnedGame.getId()).isEqualTo((long)(1));
+		
+		assertThrows(ConflictException.class, () -> gameRepo.addGame(game));
+	}
+	
 	
 	@Test
 	void testFindAllGamesShouldReturnsAllGames() {

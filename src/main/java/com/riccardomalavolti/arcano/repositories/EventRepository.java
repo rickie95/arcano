@@ -25,12 +25,12 @@ public class EventRepository {
 		return eventDAO.persist(eventOne);
 	}
 
-	public Optional<Event> removeEvent(Event eventOne) {
-		return Optional.ofNullable(eventDAO.delete(eventOne));
+	public Event removeEvent(Event eventOne) {
+		return eventDAO.delete(eventOne);
 	}
 
-	public Optional<Event> updateEvent(Event eventOne) {
-		return Optional.ofNullable(eventDAO.merge(eventOne));
+	public Event updateEvent(Event eventOne) {
+		return eventDAO.merge(eventOne);
 	}
 
 }

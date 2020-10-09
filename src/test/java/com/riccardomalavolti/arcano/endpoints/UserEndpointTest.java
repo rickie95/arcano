@@ -1,10 +1,9 @@
 package com.riccardomalavolti.arcano.endpoints;
 
 import static io.restassured.RestAssured.given;
-import static io.restassured.RestAssured.when;
 import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.equalTo;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -63,13 +62,11 @@ public class UserEndpointTest extends JerseyTest {
 
 	@Test
 	public void getPlayersList() {
-		Long id1 = (long) 1;
-		String name1 = "Mike";
 		Long id2 = (long) 2;
 		String name2 = "Joe";
 		User p1 = new User();
-		p1.setId(id1);
-		p1.setUsername(name1);
+		p1.setId(playerId);
+		p1.setUsername(playerUsername);
 		
 		User p2 = new User();
 		p2.setId(id2);
@@ -87,8 +84,8 @@ public class UserEndpointTest extends JerseyTest {
             statusCode(200).
             assertThat().
             body(
-                    "[0].id", equalTo(id1.intValue()),
-                    "[0].username", equalTo(name1),
+                    "[0].id", equalTo(playerId.intValue()),
+                    "[0].username", equalTo(playerUsername),
                     "[1].id", equalTo(id2.intValue()),
                     "[1].username", equalTo(name2)
             );
@@ -96,13 +93,11 @@ public class UserEndpointTest extends JerseyTest {
 
 	@Test
 	public void getPlayerByID() {
-		Long id = (long) 1;
-		String name = "Mike";
 		User p = new User();
-		p.setId(id);
-		p.setUsername(name);
+		p.setId(playerId);
+		p.setUsername(playerUsername);
 		
-		when(playerService.getUserById(anyString()))
+		when(playerService.getUserById(anyLong()))
 			.thenReturn(p);
 
 		given().
@@ -113,25 +108,24 @@ public class UserEndpointTest extends JerseyTest {
 			statusCode(200).
 			assertThat().
 				body(
-					"id", equalTo(id.intValue()), 
-					"username", equalTo(name)
+					"id", equalTo(playerId.intValue()), 
+					"username", equalTo(playerUsername)
 					);
 		}
 
 	@Test
 	public void testPostNewPlayer() {
 		Long createdId = (long) 3;
-		String name = "Mike";
 		
 		User playerSent = new User();
-		playerSent.setUsername(name);
+		playerSent.setUsername(playerUsername);
 		
 		User playerRetuned = new User();
 		playerRetuned.setId(createdId);
-		playerRetuned.setUsername(name);
+		playerRetuned.setUsername(playerUsername);
 
 		JsonObject jsonSent = Json.createObjectBuilder()
-									.add("username", name)
+									.add("username", playerUsername)
 									.build();
 
 		when(playerService.addNewUser(playerSent)).thenReturn(playerRetuned);
@@ -146,63 +140,11 @@ public class UserEndpointTest extends JerseyTest {
 			.assertThat().
 				body(
 						"id", equalTo(createdId.intValue()), 
-						"username", equalTo(name)
+						"username", equalTo(playerUsername)
 					)
 				.header("Location", response -> endsWith(USERS + "/" + createdId));
 	}
 	
-	@Test
-	public void testDeletePlayer() {
-		User playerToBeDeleted = new User();
-		playerToBeDeleted.setId(playerId);
-		playerToBeDeleted.setUsername(playerUsername);
-		
-		when(playerService.deleteUser(playerId.toString())).thenReturn(playerToBeDeleted);
-		
-		when().
-			delete(USERS + "/" + playerId).
-		then().
-			statusCode(202).
-			assertThat().
-				body(
-						"id", equalTo(playerId.intValue()),
-						"username", equalTo(playerUsername)
-					);
-			
-	}
 	
-	@Test
-	public void testPutPlayer() {
-		String updatedName = "Joe";
-		
-		User playerSent = new User();
-		playerSent.setId(playerId);
-		playerSent.setUsername(playerUsername);
-		
-		User playerUpdated = new User();
-		playerUpdated.setId(playerId);
-		playerUpdated.setUsername(updatedName);
-		
-		JsonObject jsonSent = Json.createObjectBuilder()
-				.add("id", playerId)
-				.add("username", playerUsername)
-				.build();
-		
-		when(playerService.updateUser(playerId.toString(), playerSent))
-			.thenReturn(playerUpdated);
-		
-		given()
-			.contentType(MediaType.APPLICATION_JSON)
-			.body(jsonSent.toString()).
-		when().
-			put(USERS + "/" + playerId.toString()).
-		then().
-			statusCode(200).
-			assertThat().
-				body(
-					"id", equalTo(playerId.intValue()),
-					"username",  equalTo(updatedName)
-						);
-	}
 	
 }

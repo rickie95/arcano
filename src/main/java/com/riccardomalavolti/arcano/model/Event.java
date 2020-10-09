@@ -12,7 +12,7 @@ import javax.persistence.Transient;
 import com.riccardomalavolti.arcano.exceptions.ConflictException;
 
 @Entity
-public class Event {
+public class Event implements Ownable{
 	
 	@Id
 	@GeneratedValue
@@ -22,7 +22,7 @@ public class Event {
 	
 	@Transient private Set<User> playerList;
 	@Transient private Set<User> judgeList;
-	@Transient private Set<User> eventAdministratorList;
+	@Transient private Set<User> adminList;
 
 	
 	public void setId(long id) {
@@ -39,6 +39,10 @@ public class Event {
 
 	public void setJudgeList(Set<User> judgeList) {
 		this.judgeList = judgeList;
+	}
+	
+	public void setAdminList(Set<User> adminList) {
+		this.adminList = adminList;
 	}
 
 	@Override
@@ -98,6 +102,18 @@ public class Event {
 	
 	public List<User> getJudgeList(){
 		return new ArrayList<>(judgeList);
+	}
+	
+	public User addAdmin(User admin) {
+		if(adminList.add(admin))
+			return admin;
+		
+		throw new ConflictException(String.format("%s is already an admin", admin.getUsername()));
+	}
+
+	@Override
+	public boolean isOwnedBy(User user) {
+		return adminList.contains(user);
 	}
 
 }

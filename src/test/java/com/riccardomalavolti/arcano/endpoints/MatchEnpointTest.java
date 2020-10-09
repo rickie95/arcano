@@ -6,8 +6,12 @@ import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.doNothing;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -16,6 +20,7 @@ import javax.json.Json;
 import javax.json.JsonObject;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.SecurityContext;
 
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -24,6 +29,7 @@ import org.glassfish.jersey.test.TestProperties;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import com.riccardomalavolti.arcano.endpoints.rest.MatchEndpoint;
@@ -39,6 +45,7 @@ public class MatchEnpointTest extends JerseyTest {
     private final Long matchId = (long) 1;
 
     @Mock private MatchService matchService;
+    @Mock private SecurityContext securityContext;
 
     @SuppressWarnings("deprecation")
 	@Override
@@ -89,7 +96,7 @@ public class MatchEnpointTest extends JerseyTest {
     	Match match1 = new Match();
         match1.setId(matchId);
         
-        when(matchService.getMatchById(matchId.toString())).thenReturn(match1);
+        when(matchService.getMatchById(matchId)).thenReturn(match1);
         
         given()
         	.accept(MediaType.APPLICATION_JSON).
@@ -102,73 +109,7 @@ public class MatchEnpointTest extends JerseyTest {
         			"id", equalTo(matchId.intValue())
         			);
     }
-    
-    @Test
-    public void testDeleteMatchShouldReturnTheEntityOnlyOnce() {
-    	Match match = new Match();
-        match.setId(matchId);
-    	when(matchService.deleteMatch(matchId.toString()))
-    		.thenReturn(match)
-    		.thenReturn(null);
-    	
-
-        given()
-        	.accept(MediaType.APPLICATION_JSON).
-        when()
-        	.delete(MatchEndpoint.BASE_PATH + "/" + matchId.toString()).
-        then()
-        	.statusCode(202)
-        	.assertThat()
-        	.body(
-        			"id", equalTo(matchId.intValue())
-        			);
-        
-        given()
-    		.accept(MediaType.APPLICATION_JSON).
-    		when()
-    		.delete(MatchEndpoint.BASE_PATH + "/" + matchId.toString()).
-	    then()
-	    	.statusCode(202)
-	    	.assertThat()
-	    	.body(
-	    			is(emptyOrNullString())
-	    			);
-	    	
-    }
-    
-    @Test
-    public void testUpdateAMatchShouldNotModifyItsId() {
-    	Match newMatch = new Match();
-        newMatch.setPlayerOneScore(2);
-        newMatch.setPlayerTwoScore(1);
-        
-        Match updatedMatch = new Match();
-        updatedMatch.setId(matchId);
-        updatedMatch.setPlayerOneScore(2);
-        updatedMatch.setPlayerTwoScore(1);
-        
-        
-        JsonObject newMatchJSON = Json.createObjectBuilder()
-				.add("playerOneScore", 2)
-				.add("playerTwoScore", 1)
-				.build();
-        
-        when(matchService.updateMatch(matchId.toString(), newMatch)).thenReturn(updatedMatch);
-        
-        given()
-	    	.contentType(MediaType.APPLICATION_JSON)
-	    	.body(newMatchJSON.toString()).
-	    when()
-	    	.put(MatchEndpoint.BASE_PATH + "/" + matchId.toString()).
-	    then()
-	    	.statusCode(200)
-	    	.assertThat()
-	    	.body(
-	    			"id", equalTo(matchId.intValue()),
-	    			"playerOneScore", equalTo(2),
-	    			"playerTwoScore", equalTo(1)
-	    			);
-    }
+   
     
     @Test
     public void testAddMatchShouldReturnTheURLofTheNewMatch() {

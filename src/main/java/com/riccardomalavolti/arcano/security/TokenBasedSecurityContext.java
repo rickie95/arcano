@@ -14,28 +14,6 @@ public class TokenBasedSecurityContext implements SecurityContext {
     private AuthenticatedUser user;
     private String token;
     private final boolean secure;
-    
-    private class AuthenticatedUser implements Principal {
-    	
-    	private User user;
-    	
-        public AuthenticatedUser(User user) {
-            this.user = user;
-        }
-
-        public Set<String> getAuthorities() {
-        	Set<String> roles = new HashSet<>();
-        	roles.add(user.getRole().toString());
-            return Collections.unmodifiableSet(roles);
-        }
-
-		@Override
-		public String getName() {
-			return user.getUsername();
-		}
-
-    	
-    }
 
     public TokenBasedSecurityContext(User user, String token, boolean secure) {
         this.user = new AuthenticatedUser(user);

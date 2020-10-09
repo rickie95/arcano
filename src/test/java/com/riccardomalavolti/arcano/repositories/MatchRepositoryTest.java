@@ -61,7 +61,7 @@ class MatchRepositoryTest {
 		match.setId((long)(1));
 		when(matchDAO.delete(match)).thenReturn(match);
 		
-		Match removedMatch = matchRepo.removeMatch(match).get();
+		Match removedMatch = matchRepo.removeMatch(match);
 		
 		assertThat(removedMatch).isEqualTo(match);
 	}
@@ -72,7 +72,7 @@ class MatchRepositoryTest {
 		match.setId((long)(1));
 		when(matchDAO.delete(match)).thenReturn(null);
 		
-		assertThat(matchRepo.removeMatch(match)).isEmpty();
+		assertThat(matchRepo.removeMatch(match)).isNull();
 	}
 	
 	@Test
@@ -99,7 +99,7 @@ class MatchRepositoryTest {
 		
 		when(matchDAO.merge(match)).thenReturn(match);
 		
-		Match returnedMatch = matchRepo.updateMatch(match).get();
+		Match returnedMatch = matchRepo.updateMatch(match);
 		assertThat(returnedMatch).isEqualTo(match);
 	}
 	
@@ -110,7 +110,7 @@ class MatchRepositoryTest {
 		
 		when(matchDAO.merge(match)).thenReturn(null);
 		
-		assertThat(matchRepo.updateMatch(match)).isEmpty();
+		assertThat(matchRepo.updateMatch(match)).isNull();
 	}
 	
 }

@@ -89,9 +89,9 @@ class EventRepositoryTest {
 
 		when(eventDAO.delete(eventOne)).thenReturn(eventOne);
 
-		Optional<Event> deletedEvent = eventRepo.removeEvent(eventOne);
+		Event deletedEvent = eventRepo.removeEvent(eventOne);
 
-		assertThat(deletedEvent).isPresent().hasValue(eventOne);
+		assertThat(deletedEvent).isEqualTo(eventOne);
 	}
 
 	@Test
@@ -102,9 +102,9 @@ class EventRepositoryTest {
 
 		when(eventDAO.delete(eventOne)).thenReturn(null);
 
-		Optional<Event> deletedEvent = eventRepo.removeEvent(eventOne);
+		Event deletedEvent = eventRepo.removeEvent(eventOne);
 
-		assertThat(deletedEvent).isEmpty();
+		assertThat(deletedEvent).isNull();
 	}
 	
 	@Test
@@ -115,9 +115,9 @@ class EventRepositoryTest {
 
 		when(eventDAO.merge(eventOne)).thenReturn(eventOne);
 
-		Optional<Event> updatedEvent = eventRepo.updateEvent(eventOne);
+		Event updatedEvent = eventRepo.updateEvent(eventOne);
 
-		assertThat(updatedEvent).isPresent().hasValue(eventOne);
+		assertThat(updatedEvent).isEqualTo(eventOne);
 	}
 	
 	@Test
@@ -128,9 +128,9 @@ class EventRepositoryTest {
 
 		when(eventDAO.merge(eventOne)).thenReturn(null);
 
-		Optional<Event> updatedEvent = eventRepo.updateEvent(eventOne);
+		Event updatedEvent = eventRepo.updateEvent(eventOne);
 
-		assertThat(updatedEvent).isEmpty();
+		assertThat(updatedEvent).isNull();
 	}
 
 }

@@ -6,7 +6,7 @@ import javax.persistence.Id;
 import javax.validation.constraints.NotNull;
 
 @Entity
-public class User {
+public class User implements Ownable {
 	
 	@Id
 	@GeneratedValue
@@ -93,6 +93,11 @@ public class User {
 	@Override
 	public String toString() {
 		return "Player [id=" + id + ", username=" + username + "]";
+	}
+
+	@Override
+	public boolean isOwnedBy(User user) {
+		return this.equals(user);
 	}
 
 }

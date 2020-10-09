@@ -8,13 +8,14 @@ import javax.inject.Inject;
 import javax.persistence.EntityExistsException;
 import javax.ws.rs.NotFoundException;
 
+import com.riccardomalavolti.arcano.exceptions.AccessDeniedException;
 import com.riccardomalavolti.arcano.exceptions.ConflictException;
 import com.riccardomalavolti.arcano.model.User;
 import com.riccardomalavolti.arcano.repositories.UserRepository;
 
 @RequestScoped
 @Default
-public class UserService {
+public class UserService implements OwnershipVerifier {
 	
 	@Inject
 	private UserRepository userRepo;
@@ -23,9 +24,9 @@ public class UserService {
 		return userRepo.getAllPlayers();
 	}
 
-	public User getUserById(String userId) {
+	public User getUserById(Long userId) {
 		return userRepo
-				.getUserById(Long.parseLong(userId))
+				.getUserById(userId)
 				.orElseThrow(() -> new NotFoundException("No player exist with id" + userId));
 	}
 	
@@ -42,16 +43,22 @@ public class UserService {
 		}
 	}
 
-	public User updateUser(String userId, User user) {
+	public User updateUser(Long userId, User user) {
 		User accessedUser = getUserById(userId);		
 		
 		user.setId(accessedUser.getId());
 		return userRepo.mergeUser(user);
 	}
 
-	public User deleteUser(String userId) {
+	public User deleteUser(Long userId) {
 		User requestedUser = getUserById(userId);
 		return userRepo.removeUser(requestedUser);
+	}
+
+	@Override
+	public void isUserOwnerOfResource(String userUsername, Long userId) {
+		if(!getUserById(userId).getUsername().equals(userUsername))
+			throw new AccessDeniedException("You do not own this account");
 	}
 
 }
