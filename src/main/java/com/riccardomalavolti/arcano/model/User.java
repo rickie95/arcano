@@ -7,7 +7,7 @@ import javax.validation.constraints.NotNull;
 
 @Entity
 public class User implements Ownable {
-	
+
 	@Id
 	@GeneratedValue
 	private Long id;

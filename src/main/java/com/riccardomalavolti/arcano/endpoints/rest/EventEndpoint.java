@@ -43,7 +43,7 @@ public class EventEndpoint {
 	
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
-	@RolesAllowed(Role.Values.ADMIN_VALUE)
+	@PermitAll
 	public Response createNewEvent(Event event, @Context UriInfo uriInfo) throws URISyntaxException {
 		Event saved = eventService.createEvent(event);
 		return Response.created(new URI(uriInfo.getAbsolutePath() + "/" + saved.getId()))

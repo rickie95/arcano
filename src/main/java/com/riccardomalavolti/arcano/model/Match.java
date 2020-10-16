@@ -9,8 +9,10 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
 
-@Entity(name="incontro")
+@Entity(name=Match.ENTITY_NAME)
 public class Match {
+	
+	public static final String ENTITY_NAME = "Incontro";
 
 	@Id
 	@GeneratedValue
