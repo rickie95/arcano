@@ -1,13 +1,17 @@
 package com.riccardomalavolti.arcano.model;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.Transient;
+import javax.persistence.JoinTable;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 
 import com.riccardomalavolti.arcano.exceptions.ConflictException;
 
@@ -20,10 +24,24 @@ public class Event implements Ownable{
 
 	private String name;
 	
-	@Transient private Set<User> playerList;
-	@Transient private Set<User> judgeList;
-	@Transient private Set<User> adminList;
-
+	
+	@ManyToMany(fetch=FetchType.EAGER)
+	@JoinTable(name="EVENT_PLAYERS", 
+		joinColumns={@JoinColumn(name="Event_id")}, 
+		inverseJoinColumns={@JoinColumn(name="Player_id")})
+	private Set<User> playerList;
+	
+	@ManyToMany(fetch=FetchType.EAGER)
+	@JoinTable(name="EVENT_JUDGES", 
+		joinColumns={@JoinColumn(name="Event_id")}, 
+		inverseJoinColumns={@JoinColumn(name="Judge_id")})
+	private Set<User> judgeList;
+	
+	@ManyToMany(fetch=FetchType.EAGER)
+	@JoinTable(name="EVENT_ADMINS", 
+		joinColumns={@JoinColumn(name="Event_id")}, 
+		inverseJoinColumns={@JoinColumn(name="Admin_id")})
+	private Set<User> adminList;
 	
 	public void setId(long id) {
 		this.id = id;
@@ -34,15 +52,37 @@ public class Event implements Ownable{
 	}
 
 	public void setPlayerList(Set<User> playerList) {
+		if(playerList == null)
+			playerList = new HashSet<>();
+		
 		this.playerList = playerList;
 	}
 
 	public void setJudgeList(Set<User> judgeList) {
+		if(judgeList == null)
+			judgeList = new HashSet<>();
+		
 		this.judgeList = judgeList;
 	}
 	
 	public void setAdminList(Set<User> adminList) {
+		if(adminList == null)
+			adminList = new HashSet<>();
+		
 		this.adminList = adminList;
+	}
+	
+	public List<User> getPlayerList(){
+		System.out.println(this);
+		return new ArrayList<>(playerList);
+	}
+	
+	public List<User> getJudgeList(){
+		return new ArrayList<>(judgeList);
+	}
+	
+	public List<User> getAdminList() {
+		return new ArrayList<>(adminList);
 	}
 
 	@Override
@@ -89,9 +129,7 @@ public class Event implements Ownable{
 		throw new ConflictException("Player is already enrolled");
 	}
 	
-	public List<User> getPlayerList(){
-		return new ArrayList<>(playerList);
-	}
+	
 	
 	public User addJudge(User judge) {
 		if(judgeList.add(judge))
@@ -100,15 +138,19 @@ public class Event implements Ownable{
 		throw new ConflictException("Judge is already enrolled");
 	}
 	
-	public List<User> getJudgeList(){
-		return new ArrayList<>(judgeList);
-	}
+	
 	
 	public User addAdmin(User admin) {
 		if(adminList.add(admin))
 			return admin;
 		
 		throw new ConflictException(String.format("%s is already an admin", admin.getUsername()));
+	}
+
+	@Override
+	public String toString() {
+		return "Event [id=" + id + ", name=" + name + ", playerList=" + playerList + ", judgeList=" + judgeList
+				+ ", adminList=" + adminList + "]";
 	}
 
 	@Override
