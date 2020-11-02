@@ -5,12 +5,11 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.ws.rs.NotFoundException;
 
-import com.riccardomalavolti.arcano.exceptions.AccessDeniedException;
 import com.riccardomalavolti.arcano.model.Match;
 import com.riccardomalavolti.arcano.model.User;
 import com.riccardomalavolti.arcano.repositories.MatchRepository;
 
-public class MatchService implements OwnershipVerifier {
+public class MatchService {
 
 	public static final String NO_MATCH_FOUND_WITH_ID = "No match found with id %s";
 	
@@ -19,6 +18,9 @@ public class MatchService implements OwnershipVerifier {
 	
 	@Inject
 	private UserService userService;
+	
+	@Inject 
+	private AuthorizationService authorization;
 	
 	public List<Match> getAllMatches() {
 		return matchRepo.getAllMatches();
@@ -43,21 +45,22 @@ public class MatchService implements OwnershipVerifier {
 		return matchRepo.addMatch(match);
 	}
 	
-	public Match deleteMatch(Long matchId) {
-		Match m = getMatchById(matchId);
-		return matchRepo.removeMatch(m);
+	public Match deleteMatch(Long matchId, String requesterUsername) {
+		Match requestedMatch = getMatchById(matchId);
+		authorization.verifyOwnershipOf(requestedMatch, requesterUsername);
+		
+		return matchRepo.removeMatch(requestedMatch);
 	}
 
-	public Match updateMatch(Long matchId, Match newMatch) {
+	public Match updateMatch(Long matchId, Match newMatch, String requesterUsername) {
+		Match requestedMatch = getMatchById(matchId);
+		authorization.verifyOwnershipOf(requestedMatch, requesterUsername);
+		
 		newMatch.setId(getMatchById(matchId).getId());
 		return matchRepo.updateMatch(newMatch);
 	}
 
-	@Override
-	public void isUserOwnerOfResource(String userUsername, Long resourceId) {
-		Match match = getMatchById(resourceId);
-		User requester = userService.getUserByUsername(userUsername);
-		if(!match.getParentEvent().isOwnedBy(requester))
-			throw new AccessDeniedException("You are not the owner of this resource");
+	public List<Match> getMatchListForEvent(Long eventId, boolean fetchOnlyInProgress) {
+		return matchRepo.getMatchForEvent(eventId, fetchOnlyInProgress);
 	}
 }

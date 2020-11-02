@@ -80,4 +80,13 @@ public class Game {
 			return false;
 		return true;
 	}
+	
+	private void setWinner(Long playerId) {
+		setPointsForPlayer(playerId, (short)20);
+	}
+
+	public void withdrawPlayer(Long playerId) {
+		setPointsForPlayer(playerId, (short)0);
+		setWinner(opponentOf(playerId));
+	}
 }

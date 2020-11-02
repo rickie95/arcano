@@ -3,6 +3,7 @@ package com.riccardomalavolti.arcano.endpoints.rest;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
@@ -21,6 +22,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
+import com.riccardomalavolti.arcano.dto.MatchDTO;
+import com.riccardomalavolti.arcano.dto.MatchMapper;
 import com.riccardomalavolti.arcano.model.Match;
 import com.riccardomalavolti.arcano.model.Role;
 import com.riccardomalavolti.arcano.service.MatchService;
@@ -37,8 +40,8 @@ public class MatchEndpoint {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@PermitAll
-	public List<Match> getMatches(){
-		return matchService.getAllMatches();
+	public List<MatchDTO> getMatches(){
+		return matchService.getAllMatches().stream().map(MatchMapper::toDTO).collect(Collectors.toList());
 	}
 	
 	@GET
@@ -47,6 +50,14 @@ public class MatchEndpoint {
 	@PermitAll
 	public Match getMatchById(@PathParam("id") String matchId) {
 		return matchService.getMatchById(Long.parseLong(matchId));
+	}
+	
+	@GET
+	@Path("ofEvent/{eventId}")
+	@Produces(MediaType.APPLICATION_JSON)
+	@PermitAll
+	public List<Match> getMatchListForEvent(@PathParam("eventId") Long eventId, boolean fetchOnlyInProgress) {
+		return  matchService.getMatchListForEvent(eventId, fetchOnlyInProgress);
 	}
 	
 	@POST
@@ -64,16 +75,9 @@ public class MatchEndpoint {
 	@Produces(MediaType.APPLICATION_JSON)
 	@RolesAllowed(Role.Values.ADMIN_VALUE)
 	public Response deleteMatch(@PathParam("id") String matchId) {
-		verifyOwnershipOf(Long.parseLong(matchId));
-		
 		return Response
-				.accepted(matchService.deleteMatch(Long.parseLong(matchId)))
+				.accepted(matchService.deleteMatch(Long.parseLong(matchId), getRequester()))
 				.build();
-	}
-	
-	private void verifyOwnershipOf(Long matchId) {
-		String requesterUsername = context.getUserPrincipal().getName();
-		matchService.isUserOwnerOfResource(requesterUsername, matchId);
 	}
 
 	@PUT
@@ -82,10 +86,13 @@ public class MatchEndpoint {
 	@Produces(MediaType.APPLICATION_JSON)
 	@RolesAllowed(Role.Values.ADMIN_VALUE)
 	public Response updateMatch(@PathParam("id") String matchId, Match updatedMatch) {
-		verifyOwnershipOf(Long.parseLong(matchId));
 		return Response
-				.ok(matchService.updateMatch(Long.parseLong(matchId), updatedMatch))
+				.ok(matchService.updateMatch(Long.parseLong(matchId), updatedMatch, getRequester()))
 				.build();
+	}
+	
+	private String getRequester() {
+		return context.getUserPrincipal().getName();
 	}
 	
 }

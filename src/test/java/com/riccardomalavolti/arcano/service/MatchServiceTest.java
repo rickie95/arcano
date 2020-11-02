@@ -1,14 +1,12 @@
 package com.riccardomalavolti.arcano.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,8 +21,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.riccardomalavolti.arcano.exceptions.AccessDeniedException;
-import com.riccardomalavolti.arcano.model.Event;
 import com.riccardomalavolti.arcano.model.Match;
 import com.riccardomalavolti.arcano.model.User;
 import com.riccardomalavolti.arcano.repositories.MatchRepository;
@@ -39,6 +35,7 @@ class MatchServiceTest {
 
 	@Mock MatchRepository matchRepo;
 	@Mock UserService userService;
+	@Mock AuthorizationService authService;
 
 	@InjectMocks
 	MatchService matchService;
@@ -125,71 +122,32 @@ class MatchServiceTest {
 	
 	@Test
 	void testDeleteMatch() {
+		String owner = "FOO";
 		when(matchRepo.getMatchById(matchId)).thenReturn(Optional.of(match));
 		when(matchRepo.removeMatch(match)).thenReturn(match);
 		
-		Match returnedMatch = matchService.deleteMatch(matchId);
+		Match returnedMatch = matchService.deleteMatch(matchId, owner);
 		
+		verify(authService).verifyOwnershipOf(match, owner);
 		assertThat(returnedMatch).isNotNull();
 		assertThat(returnedMatch.getId()).isEqualTo(matchId);
 	}
 	
 	@Test
 	void testUpdateMatch() {
+		String owner = "FOO";
 		Match newMatch = new Match();
 		newMatch.setPlayerOneScore(0);
 		when(matchRepo.getMatchById(matchId)).thenReturn(Optional.of(match));
 		when(matchRepo.updateMatch(newMatch)).thenReturn(newMatch);
 		
 		
-		Match returnedMatch = matchService.updateMatch(matchId, newMatch);
+		Match returnedMatch = matchService.updateMatch(matchId, newMatch, owner);
 		
+		verify(authService).verifyOwnershipOf(match, owner);
 		assertThat(returnedMatch).isNotNull();
 		assertThat(returnedMatch.getId()).isEqualTo(matchId);
 		assertThat(returnedMatch.getPlayerOneScore()).isEqualByComparingTo((short)(0));
-	}
-	
-	@Test
-	void testIsUserOwnerOfMatchShouldDoNothingIfItsTrue() {
-		User user = new User();
-		String userUsername = "Foo";
-		Event eventOwnedByUser = new Event();
-		eventOwnedByUser.setAdminList(new HashSet<User>());
-		eventOwnedByUser.addAdmin(user);
-		match.setParentEvent(eventOwnedByUser);
-		user.setUsername(userUsername);
-		when(matchRepo.getMatchById(matchId)).thenReturn(Optional.of(match));
-		when(userService.getUserByUsername(userUsername)).thenReturn(user);
-		
-		assertThatCode(
-				() -> matchService.isUserOwnerOfResource(userUsername, matchId)
-				).doesNotThrowAnyException();
-		
-	}
-	
-	@Test
-	void testIsUserOwnerOfMatchShouldThrowsAccessDeniedException() {
-		User user = new User();
-		user.setId((long)(1));
-		String userUsername = "Foo";
-		user.setUsername(userUsername);
-		
-		User realOwner = new User();
-		realOwner.setId((long)(2));
-		realOwner.setUsername("Owner");
-		
-		Event eventOwnedByUser = new Event();
-		eventOwnedByUser.setAdminList(new HashSet<User>());
-		eventOwnedByUser.addAdmin(realOwner);
-		
-		match.setParentEvent(eventOwnedByUser);
-		
-		when(matchRepo.getMatchById(matchId)).thenReturn(Optional.of(match));
-		when(userService.getUserByUsername(userUsername)).thenReturn(user);
-		
-		assertThatThrownBy( () -> matchService.isUserOwnerOfResource(userUsername, matchId))
-			.isInstanceOf(AccessDeniedException.class);
-		
 	}
 
 }

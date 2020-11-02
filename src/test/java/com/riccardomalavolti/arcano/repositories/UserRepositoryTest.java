@@ -50,7 +50,7 @@ class UserRepositoryTest {
 	
 	@Test
 	void testRetrivingAllUsersIfListIsNull() {
-		List<User> userList = userRepo.getAllPlayers();
+		List<User> userList = userRepo.getAllUsers();
 		Mockito.verify(userDAO).findAll();
 		assertThat(userList).isEmpty();
 	}
@@ -60,7 +60,7 @@ class UserRepositoryTest {
 		List<User> userCollection = new ArrayList<User>(Arrays.asList(user));
 		when(userDAO.findAll()).thenReturn(userCollection);
 		
-		List<User> userList = userRepo.getAllPlayers();
+		List<User> userList = userRepo.getAllUsers();
 		Mockito.verify(userDAO).findAll();
 		assertThat(userList).containsExactlyElementsOf(userCollection);
 	}

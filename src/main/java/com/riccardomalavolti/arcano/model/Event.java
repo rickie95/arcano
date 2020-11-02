@@ -9,8 +9,8 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinTable;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 
 import com.riccardomalavolti.arcano.exceptions.ConflictException;
@@ -73,7 +73,6 @@ public class Event implements Ownable{
 	}
 	
 	public List<User> getPlayerList(){
-		System.out.println(this);
 		return new ArrayList<>(playerList);
 	}
 	
@@ -132,6 +131,9 @@ public class Event implements Ownable{
 	
 	
 	public User addJudge(User judge) {
+		if(judge.getRole() != Role.JUDGE)
+			throw new IllegalArgumentException("User is not a judge");
+		
 		if(judgeList.add(judge))
 			return judge;
 		
@@ -141,6 +143,9 @@ public class Event implements Ownable{
 	
 	
 	public User addAdmin(User admin) {
+		if(admin.getRole() != Role.ADMINISTRATOR)
+			throw new IllegalArgumentException("User is not a administrator");
+		
 		if(adminList.add(admin))
 			return admin;
 		

@@ -1,8 +1,8 @@
 package com.riccardomalavolti.arcano.endpoints;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.endsWith;
+import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -12,6 +12,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import javax.json.Json;
+import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.core.Application;
@@ -28,7 +29,6 @@ import org.mockito.MockitoAnnotations;
 
 import com.riccardomalavolti.arcano.endpoints.rest.EventEndpoint;
 import com.riccardomalavolti.arcano.model.Event;
-import com.riccardomalavolti.arcano.model.User;
 import com.riccardomalavolti.arcano.model.User;
 import com.riccardomalavolti.arcano.service.EventService;
 
@@ -64,10 +64,12 @@ public class EventEndpointTest extends JerseyTest {
 		eOne.setId((long)(1));
 		eOne.setJudgeList(new HashSet<User>());
 		eOne.setPlayerList(new HashSet<User>());
+		eOne.setAdminList(new HashSet<User>());
 		Event eTwo = new Event();
 		eTwo.setId((long)(2));
 		eTwo.setJudgeList(new HashSet<User>());
 		eTwo.setPlayerList(new HashSet<User>());
+		eTwo.setAdminList(new HashSet<User>());
 		
 		List<Event> eventList = new ArrayList<>(Arrays.asList(eOne, eTwo));
 		
@@ -95,6 +97,7 @@ public class EventEndpointTest extends JerseyTest {
 		eOne.setId(id);
 		eOne.setJudgeList(new HashSet<User>());
 		eOne.setPlayerList(new HashSet<User>());
+		eOne.setAdminList(new HashSet<User>());
 		
 		when(eventService.getEventById(id)).thenReturn(eOne);
 		
@@ -133,11 +136,17 @@ public class EventEndpointTest extends JerseyTest {
 		createdEvent.setName("Foo");
 		createdEvent.setJudgeList(new HashSet<User>());
 		createdEvent.setPlayerList(new HashSet<User>());
+		createdEvent.setAdminList(new HashSet<User>());
 		
 		when(eventService.createEvent(any(Event.class))).thenReturn(createdEvent);
 		
+		JsonArray emptyArray = Json.createArrayBuilder().build();
+		
 		JsonObject eventJson = Json.createObjectBuilder()
 					 .add("name", event.getName())
+					 .add("playerList", emptyArray)
+					 .add("adminList", emptyArray)
+					 .add("judgeList", emptyArray)
 				 .build();
 		
 		given()

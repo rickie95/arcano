@@ -15,17 +15,17 @@ public class UserRepository {
 	final UserDAO userDAO;
 	
 	@Inject
-	public UserRepository(UserDAO playerDAO) {
-		this.userDAO = playerDAO;
+	public UserRepository(UserDAO userDAO) {
+		this.userDAO = userDAO;
 		this.userDAO.setClass(User.class);
 	}
 
-	public List<User> getAllPlayers() {
+	public List<User> getAllUsers() {
 		return userDAO.findAll();
 	}
 
-	public Optional<User> getUserById(Long playerId) {
-		return Optional.ofNullable(userDAO.findById(playerId));
+	public Optional<User> getUserById(Long userId) {
+		return Optional.ofNullable(userDAO.findById(userId));
 	}
 	
 	public Optional<User> getUserByUsername(String username) {
@@ -36,12 +36,12 @@ public class UserRepository {
 		return userDAO.persist(p);
 	}
 
-	public User removeUser(User player) {
-		return userDAO.delete(player);
+	public User removeUser(User user) {
+		return userDAO.delete(user);
 	}
 
-	public User mergeUser(User player) {
-		return userDAO.merge(player);		
+	public User mergeUser(User user) {
+		return userDAO.merge(user);		
 	}
 
 	public void authenticate(User user) {

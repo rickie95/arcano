@@ -56,10 +56,7 @@ public class EventEndpoint {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@RolesAllowed(Role.Values.ADMIN_VALUE)
-	public Response removeEvent(@PathParam("id") String eventId) {
-		
-		verifyOwnershipOf(eventId);
-		
+	public Response removeEvent(@PathParam("id") String eventId) {		
 		return Response.accepted(eventService.removeEvent(Long.parseLong(eventId))).build();
 	}
 
@@ -73,6 +70,7 @@ public class EventEndpoint {
 	@GET
 	@Path("{id}/players")
 	@Produces(MediaType.APPLICATION_JSON)
+	 
 	@PermitAll
 	public List<User> getPlayersForEvent(@PathParam("id") String eventId) {
 		return eventService.getPlayersForEvent(Long.parseLong(eventId));
@@ -103,13 +101,8 @@ public class EventEndpoint {
 	@Produces(MediaType.APPLICATION_JSON)
 	@RolesAllowed(Role.Values.ADMIN_VALUE)
 	public Response enrollJudgeInEvent(@PathParam("id") String eventId, User judge) {
-		verifyOwnershipOf(eventId);
-		return Response.accepted(eventService.enrollJudgeInEvent(judge, Long.parseLong(eventId))).build();
-	}
-	
-	private void verifyOwnershipOf(String eventId) {
-		String requesterUsername = context.getUserPrincipal().getName();
-		eventService.isUserOwnerOfResource(requesterUsername, Long.parseLong(eventId));
+		return Response.accepted(eventService.enrollJudgeInEvent(judge, Long.parseLong(eventId), 
+				context.getUserPrincipal().getName())).build();
 	}
 
 }

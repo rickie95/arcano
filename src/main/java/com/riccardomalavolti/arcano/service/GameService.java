@@ -49,4 +49,11 @@ public class GameService {
 		return getGameById(gameId).opponentOf(playerId);
 	}
 
+	public void withdrawPlayer(Long gameId, Long playerId) {
+		Game game = getGameById(gameId);
+		game.withdrawPlayer(playerId);
+		game.endGame();
+		
+	}
+
 }

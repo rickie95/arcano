@@ -1,9 +1,6 @@
 package com.riccardomalavolti.arcano.security;
 
 import java.security.Principal;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
 
 import javax.ws.rs.core.SecurityContext;
 

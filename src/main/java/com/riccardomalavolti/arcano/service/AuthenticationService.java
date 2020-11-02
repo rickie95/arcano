@@ -4,6 +4,7 @@ import java.security.Key;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.ws.rs.NotAuthorizedException;
 
 import com.riccardomalavolti.arcano.model.User;
 import com.riccardomalavolti.arcano.repositories.UserRepository;
@@ -58,9 +59,19 @@ public class AuthenticationService {
 		return tokenDetails;
 	}
 
+	/*
+	 * Parse a JWT and extracts the username of the authenticated user.
+	 * 
+	 * @param authenticationToken
+	 * @return a String with the authenticated User.
+	 */
 	public String parseToken(String authenticationToken) {
-		Claims claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(authenticationToken).getBody();
-		
+		Claims claims;
+		try {
+			 claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(authenticationToken).getBody();
+		} catch (JwtException ex){
+			throw new NotAuthorizedException("Your token is either invalid or expired");
+		}
 		return claims.getSubject();
 	}
 }

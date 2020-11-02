@@ -55,19 +55,25 @@ public class WebSocketEndpoint {
 	}
 
 	@OnMessage
-	public void message(Session session, String message) throws IOException, EncodeException {
+	public void updatePoints(Session session, Short points) throws IOException, EncodeException {
 		// update game
-		Short points = Short.parseShort(message);
+		//Short points = Short.parseShort(message);
 		gameService.setPointsForPlayerInGame(gameSession.gameId, gameSession.playerId, points);
 		
 		// send notification at the opponent
 		String opponentId = opponents.get(gameSession.playerId.toString());
-		sendMessage(sessions.get(opponentId).endpoint, message);
+		sendMessage(sessions.get(opponentId).endpoint, points);
+	}
+	
+	public void message(Session session, boolean hasResign) throws IOException, EncodeException {
+		gameService.withdrawPlayer(gameSession.gameId, gameSession.playerId);
+		
+		String opponentId = opponents.get(gameSession.playerId.toString());
+		sendMessage(sessions.get(opponentId).endpoint, hasResign);
 	}
 
 	@OnClose
 	public void onClose(Session session) throws IOException {
-		System.out.println(String.format("%s has left the chat.", sessions.get(session.getId())));
 		sessions.remove(session.getId());
 	}
 
@@ -76,7 +82,7 @@ public class WebSocketEndpoint {
 		// Do error handling here
 	}
 
-	private static synchronized void sendMessage(WebSocketEndpoint endpoint, String message) 
+	private static synchronized void sendMessage(WebSocketEndpoint endpoint, Object message) 
 			throws IOException, EncodeException {
 		try {
 			endpoint.session.getBasicRemote().sendObject(message);
