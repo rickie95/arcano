@@ -18,6 +18,12 @@ public class User implements Ownable {
 	
 	private String name;
 	private String surname;
+	
+	public User() {};
+
+	public User(long id) {
+		this.id = id;
+	}
 
 	public String getPassword() {
 		return password;

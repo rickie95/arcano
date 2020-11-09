@@ -22,6 +22,17 @@ public class MatchService {
 	@Inject 
 	private AuthorizationService authorization;
 	
+	public MatchService() {
+		
+	}
+	
+	public MatchService(MatchRepository matchRepository, UserService userService, AuthorizationService authService) {
+		this();
+		this.matchRepo = matchRepository;
+		this.userService = userService;
+		this.authorization = authService;
+	}
+	
 	public List<Match> getAllMatches() {
 		return matchRepo.getAllMatches();
 	}

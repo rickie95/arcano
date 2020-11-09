@@ -8,14 +8,14 @@ public class MatchMapper {
 	
 	private static ModelMapper mapper;
 	
-	public static MatchDTO toDTO(Match match) {
+	private MatchMapper() {
+		throw new IllegalStateException("Utility class");
+	}
+	
+	public static MatchDTO toMatchDTO(Match match) {
 		mapper = new ModelMapper();
 		return mapper.map(match, MatchDTO.class);
 	}
-	
-	public static Match toModel(MatchDTO matchDto) {
-		mapper = new ModelMapper();
-		return mapper.map(matchDto, Match.class);
-	}
+
 
 }

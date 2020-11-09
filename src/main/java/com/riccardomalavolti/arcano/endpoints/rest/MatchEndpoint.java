@@ -41,7 +41,7 @@ public class MatchEndpoint {
 	@Produces(MediaType.APPLICATION_JSON)
 	@PermitAll
 	public List<MatchDTO> getMatches(){
-		return matchService.getAllMatches().stream().map(MatchMapper::toDTO).collect(Collectors.toList());
+		return matchService.getAllMatches().stream().map(MatchMapper::toMatchDTO).collect(Collectors.toList());
 	}
 	
 	@GET

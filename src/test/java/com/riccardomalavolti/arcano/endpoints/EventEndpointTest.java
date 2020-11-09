@@ -29,6 +29,7 @@ import org.mockito.MockitoAnnotations;
 
 import com.riccardomalavolti.arcano.endpoints.rest.EventEndpoint;
 import com.riccardomalavolti.arcano.model.Event;
+import com.riccardomalavolti.arcano.model.Role;
 import com.riccardomalavolti.arcano.model.User;
 import com.riccardomalavolti.arcano.service.EventService;
 
@@ -169,6 +170,9 @@ public class EventEndpointTest extends JerseyTest {
 	@Test
 	public void testEnrollAPlayerInAEvent() {
 		Long eventId = (long) 1;
+		Event event = new Event();
+		event.setId(eventId);
+		
 		Long playerId = (long) 2;
 		String playerUsername = "Mike";
 		
@@ -176,23 +180,18 @@ public class EventEndpointTest extends JerseyTest {
 		player.setId(playerId);
 		player.setUsername(playerUsername);
 		
-		when(eventService.enrollPlayerInEvent(player, eventId)).thenReturn(player);
-		JsonObject playerJson = Json.createObjectBuilder()
-					 .add("id", player.getId())
-					 .add("username", player.getUsername())
-				 .build();
+		when(eventService.enrollPlayerInEvent(playerId, eventId)).thenReturn(event);
 		
 		given()
-			.contentType(MediaType.APPLICATION_JSON)
-			.body(playerJson.toString()).
+			.contentType(MediaType.APPLICATION_JSON).
 		when()
 			// events/{event_id}/enroll
-			.put(EventEndpoint.BASE_PATH + String.format("/%s/players", eventId)).
+			.put(EventEndpoint.BASE_PATH + String.format("/%s/players/%s", eventId, playerId)).
 		then()
 			.statusCode(202)
 			.assertThat()
 				.body(
-						"id", equalTo(playerId.intValue())
+						"id", equalTo(eventId.intValue())
 					 );
 	}
 	
@@ -206,7 +205,7 @@ public class EventEndpointTest extends JerseyTest {
 		player.setId(playerId);
 		player.setUsername(playerUsername);
 		
-		when(eventService.enrollPlayerInEvent(player, eventId))
+		when(eventService.enrollPlayerInEvent(playerId, eventId))
 			.thenAnswer(invocation -> {throw new NotFoundException("");});
 		
 		JsonObject playerJson = Json.createObjectBuilder()
@@ -224,6 +223,66 @@ public class EventEndpointTest extends JerseyTest {
 			.statusCode(404);
 	}
 	
+	@Test
+	public void testGetPlayerListByEventId() {
+		Long eventId = (long) 1;
+		Event event = new Event(eventId);
+		
+		User playerOne = new User((long) 2);
+		User playerTwo = new User((long) 3);
+		
+		event.enrollPlayer(playerOne);
+		event.enrollPlayer(playerTwo);
+		
+		List<User> playerList = new ArrayList<>(Arrays.asList(playerOne, playerTwo));
+		
+		when(eventService.getPlayersForEvent(eventId)).thenReturn(playerList);
+		
+		
+		given()
+			.accept(MediaType.APPLICATION_JSON).
+		when()
+			.get(EventEndpoint.BASE_PATH + String.format("/%s/players", eventId)).
+		then()
+			.statusCode(200)
+			.assertThat()
+				.body(
+						"[0].id", equalTo(playerOne.getId().intValue()),
+						"[1].id", equalTo(playerTwo.getId().intValue())
+					);
+		
+	}
 	
+	@Test
+	public void testGetJudgeListByEventId() {
+		Long eventId = (long) 1;
+		Event event = new Event(eventId);
+		
+		User playerOne = new User((long) 2);
+		playerOne.setRole(Role.JUDGE);
+		User playerTwo = new User((long) 3);
+		playerTwo.setRole(Role.JUDGE);
 
+		
+		event.enrollPlayer(playerOne);
+		event.enrollPlayer(playerTwo);
+		
+		List<User> playerList = new ArrayList<>(Arrays.asList(playerOne, playerTwo));
+		
+		when(eventService.getJudgeList(eventId)).thenReturn(playerList);
+		
+		
+		given()
+			.accept(MediaType.APPLICATION_JSON).
+		when()
+			.get(EventEndpoint.BASE_PATH + String.format("/%s/judges", eventId)).
+		then()
+			.statusCode(200)
+			.assertThat()
+				.body(
+						"[0].id", equalTo(playerOne.getId().intValue()),
+						"[1].id", equalTo(playerTwo.getId().intValue())
+					);
+	}
+	
 }

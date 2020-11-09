@@ -21,6 +21,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.riccardomalavolti.arcano.model.Event;
 import com.riccardomalavolti.arcano.model.Match;
 import com.riccardomalavolti.arcano.model.User;
 import com.riccardomalavolti.arcano.repositories.MatchRepository;
@@ -148,6 +149,27 @@ class MatchServiceTest {
 		assertThat(returnedMatch).isNotNull();
 		assertThat(returnedMatch.getId()).isEqualTo(matchId);
 		assertThat(returnedMatch.getPlayerOneScore()).isEqualByComparingTo((short)(0));
+	}
+	
+	@Test
+	void testGetMatchListForEvent() {
+		Event event = new Event();
+		event.setId((long)5);
+		
+		Match match2 = new Match();
+		match2.setId((long)(2));
+		match2.setParentEvent(event);
+		
+		match.setParentEvent(event);
+		
+		List<Match> matchList = new ArrayList<>(Arrays.asList(match, match2));
+		
+		when(matchRepo.getMatchForEvent(event.getId(), true)).thenReturn(matchList);
+		
+		List<Match> returnedList = matchService.getMatchListForEvent(event.getId(), true);
+		
+		verify(matchRepo).getMatchForEvent(event.getId(), true);
+		assertThat(returnedList).contains(match, match2);
 	}
 
 }

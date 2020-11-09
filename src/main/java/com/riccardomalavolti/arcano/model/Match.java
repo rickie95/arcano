@@ -37,6 +37,15 @@ public class Match implements Ownable {
 	@Transient User winner;
 	@Transient List<Game> gameList;
 	@Transient boolean matchEnded;
+	
+	public Match() {
+		
+	}
+
+	public Match(Long matchId) {
+		this();
+		this.id = matchId;
+	}
 
 	public boolean isMatchEnded() {
 		return matchEnded;

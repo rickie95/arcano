@@ -13,10 +13,14 @@ public class Game {
 	
 	private Map<Long, Short> gamePoints;
 	
-	public Game(Long id) {
-		this.id = id;
+	public Game() {
 		this.isEnded = false;
 		gamePoints = new ConcurrentHashMap<>();
+	}
+	
+	public Game(Long id) {
+		this();
+		this.id = id;
 	}
 	
 	public synchronized void setPointsForPlayer(Long playerId, Short points) {

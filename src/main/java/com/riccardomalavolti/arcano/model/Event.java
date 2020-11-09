@@ -16,33 +16,77 @@ import javax.persistence.ManyToMany;
 import com.riccardomalavolti.arcano.exceptions.ConflictException;
 
 @Entity
-public class Event implements Ownable{
-	
+public class Event implements Ownable {
+
 	@Id
 	@GeneratedValue
 	private Long id;
 
 	private String name;
-	
-	
-	@ManyToMany(fetch=FetchType.EAGER)
-	@JoinTable(name="EVENT_PLAYERS", 
-		joinColumns={@JoinColumn(name="Event_id")}, 
-		inverseJoinColumns={@JoinColumn(name="Player_id")})
+
+	@ManyToMany(fetch = FetchType.EAGER)
+	@JoinTable(name = "EVENT_PLAYERS", joinColumns = { @JoinColumn(name = "Event_id") }, inverseJoinColumns = {
+			@JoinColumn(name = "Player_id") })
 	private Set<User> playerList;
-	
-	@ManyToMany(fetch=FetchType.EAGER)
-	@JoinTable(name="EVENT_JUDGES", 
-		joinColumns={@JoinColumn(name="Event_id")}, 
-		inverseJoinColumns={@JoinColumn(name="Judge_id")})
+
+	@ManyToMany(fetch = FetchType.EAGER)
+	@JoinTable(name = "EVENT_JUDGES", joinColumns = { @JoinColumn(name = "Event_id") }, inverseJoinColumns = {
+			@JoinColumn(name = "Judge_id") })
 	private Set<User> judgeList;
-	
-	@ManyToMany(fetch=FetchType.EAGER)
-	@JoinTable(name="EVENT_ADMINS", 
-		joinColumns={@JoinColumn(name="Event_id")}, 
-		inverseJoinColumns={@JoinColumn(name="Admin_id")})
+
+	@ManyToMany(fetch = FetchType.EAGER)
+	@JoinTable(name = "EVENT_ADMINS", joinColumns = { @JoinColumn(name = "Event_id") }, inverseJoinColumns = {
+			@JoinColumn(name = "Admin_id") })
 	private Set<User> adminList;
+
+	public Event() {
+		playerList = new HashSet<>();
+		adminList = new HashSet<>();
+		judgeList = new HashSet<>();
+	}
 	
+	public Event(Long id) {
+		this();
+		this.setId(id);
+	}
+	
+	public Event(Long id, String name) {
+		this(id);
+		this.setName(name);
+	}
+
+	public User enrollPlayer(User player) {
+		if (playerList.add(player))
+			return player;
+
+		throw new ConflictException("Player is already enrolled");
+	}
+
+	public User addJudge(User judge) {
+		if (judge.getRole() != Role.JUDGE)
+			throw new IllegalArgumentException("User is not a judge");
+
+		if (judgeList.add(judge))
+			return judge;
+
+		throw new ConflictException("Judge is already enrolled");
+	}
+
+	public User addAdmin(User admin) {
+		if (admin.getRole() != Role.ADMINISTRATOR)
+			throw new IllegalArgumentException("User is not a administrator");
+
+		if (adminList.add(admin))
+			return admin;
+
+		throw new ConflictException(String.format("%s is already an admin", admin.getUsername()));
+	}
+
+	@Override
+	public boolean isOwnedBy(User user) {
+		return adminList.contains(user);
+	}
+
 	public void setId(long id) {
 		this.id = id;
 	}
@@ -52,34 +96,25 @@ public class Event implements Ownable{
 	}
 
 	public void setPlayerList(Set<User> playerList) {
-		if(playerList == null)
-			playerList = new HashSet<>();
-		
 		this.playerList = playerList;
 	}
 
 	public void setJudgeList(Set<User> judgeList) {
-		if(judgeList == null)
-			judgeList = new HashSet<>();
-		
 		this.judgeList = judgeList;
 	}
-	
+
 	public void setAdminList(Set<User> adminList) {
-		if(adminList == null)
-			adminList = new HashSet<>();
-		
 		this.adminList = adminList;
 	}
-	
-	public List<User> getPlayerList(){
+
+	public List<User> getPlayerList() {
 		return new ArrayList<>(playerList);
 	}
-	
-	public List<User> getJudgeList(){
+
+	public List<User> getJudgeList() {
 		return new ArrayList<>(judgeList);
 	}
-	
+
 	public List<User> getAdminList() {
 		return new ArrayList<>(adminList);
 	}
@@ -121,46 +156,10 @@ public class Event implements Ownable{
 		return this.name;
 	}
 
-	public User enrollPlayer(User player) {
-		if(playerList.add(player))
-			return player;
-		
-		throw new ConflictException("Player is already enrolled");
-	}
-	
-	
-	
-	public User addJudge(User judge) {
-		if(judge.getRole() != Role.JUDGE)
-			throw new IllegalArgumentException("User is not a judge");
-		
-		if(judgeList.add(judge))
-			return judge;
-		
-		throw new ConflictException("Judge is already enrolled");
-	}
-	
-	
-	
-	public User addAdmin(User admin) {
-		if(admin.getRole() != Role.ADMINISTRATOR)
-			throw new IllegalArgumentException("User is not a administrator");
-		
-		if(adminList.add(admin))
-			return admin;
-		
-		throw new ConflictException(String.format("%s is already an admin", admin.getUsername()));
-	}
-
 	@Override
 	public String toString() {
 		return "Event [id=" + id + ", name=" + name + ", playerList=" + playerList + ", judgeList=" + judgeList
 				+ ", adminList=" + adminList + "]";
-	}
-
-	@Override
-	public boolean isOwnedBy(User user) {
-		return adminList.contains(user);
 	}
 
 }

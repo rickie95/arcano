@@ -3,9 +3,10 @@ package com.riccardomalavolti.arcano.dto;
 public class MatchDTO {
 	
 	Long id;
-	Long playerOneId;
-	Long playerTwoId;
-	Long parentEvent;
+	UserDTO userOne;
+	UserDTO userTwo;
+	
+	EventDTO parentEvent;
 	
 	short playerOneScore;
 	short playerTwoScore;
@@ -17,22 +18,22 @@ public class MatchDTO {
 	public void setId(Long id) {
 		this.id = id;
 	}
-	public Long getPlayerOneId() {
-		return playerOneId;
+	public UserDTO getUserOne() {
+		return userOne;
 	}
-	public void setPlayerOneId(Long playerOneId) {
-		this.playerOneId = playerOneId;
+	public void setUserOne(UserDTO userOne) {
+		this.userOne = userOne;
 	}
-	public Long getPlayerTwoId() {
-		return playerTwoId;
+	public UserDTO getUserTwo() {
+		return userTwo;
 	}
-	public void setPlayerTwoId(Long playerTwoId) {
-		this.playerTwoId = playerTwoId;
-	}
-	public Long getParentEvent() {
+	public void setUserTwo(UserDTO userTwo) {
+		this.userTwo = userTwo;
+	}	
+	public EventDTO getParentEvent() {
 		return parentEvent;
 	}
-	public void setParentEvent(Long parentEvent) {
+	public void setParentEvent(EventDTO parentEvent) {
 		this.parentEvent = parentEvent;
 	}
 	public short getPlayerOneScore() {

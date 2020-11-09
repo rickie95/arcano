@@ -3,6 +3,7 @@ package com.riccardomalavolti.arcano.endpoints.rest;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
@@ -21,9 +22,12 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
+import com.riccardomalavolti.arcano.dto.EventDTO;
+import com.riccardomalavolti.arcano.dto.EventMapper;
+import com.riccardomalavolti.arcano.dto.UserDTO;
+import com.riccardomalavolti.arcano.dto.UserMapper;
 import com.riccardomalavolti.arcano.model.Event;
 import com.riccardomalavolti.arcano.model.Role;
-import com.riccardomalavolti.arcano.model.User;
 import com.riccardomalavolti.arcano.service.EventService;
 
 @PermitAll
@@ -37,8 +41,9 @@ public class EventEndpoint {
 	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<Event> getAllEvents(){
-		return eventService.getAllEvents();
+	public List<EventDTO> getAllEvents(){
+		return eventService.getAllEvents().stream()
+				.map(EventMapper::toEventDTO).collect(Collectors.toList());
 	}
 	
 	@POST
@@ -52,56 +57,57 @@ public class EventEndpoint {
 	}
 	
 	@DELETE
-	@Path("{id}")
+	@Path("{eventId}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@RolesAllowed(Role.Values.ADMIN_VALUE)
-	public Response removeEvent(@PathParam("id") String eventId) {		
-		return Response.accepted(eventService.removeEvent(Long.parseLong(eventId))).build();
+	public Response removeEvent(@PathParam("eventId") Long eventId) {		
+		return Response.accepted(eventService.removeEvent(eventId)).build();
 	}
 
 	@GET
-	@Path("{id}")
+	@Path("{eventId}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Event getEventById(@PathParam("id") String eventId) {
-		return eventService.getEventById(Long.parseLong(eventId));
+	public Event getEventById(@PathParam("eventId") Long eventId) {
+		return eventService.getEventById(eventId);
 	}
 	
 	@GET
-	@Path("{id}/players")
+	@Path("{eventId}/players")
 	@Produces(MediaType.APPLICATION_JSON)
-	 
 	@PermitAll
-	public List<User> getPlayersForEvent(@PathParam("id") String eventId) {
-		return eventService.getPlayersForEvent(Long.parseLong(eventId));
+	public List<UserDTO> getPlayersForEvent(@PathParam("eventId") Long eventId) {
+		return eventService.getPlayersForEvent(eventId).stream()
+				.map(UserMapper::toUserDTO).collect(Collectors.toList());
 	}
 	
 	
 	@PUT
-	@Path("{id}/players")
+	@Path("{eventId}/players/{playerId}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response enrollPlayerInEvent(@PathParam("id") String eventId, User player) {
+	public Response enrollPlayerInEvent(@PathParam("eventId") Long eventId, @PathParam("playerId") Long playerId) {
 		return Response
-				.accepted(eventService.enrollPlayerInEvent(player, Long.parseLong(eventId)))
+				.accepted(eventService.enrollPlayerInEvent(playerId, eventId))
 				.build();
 	}
 	
 	@GET
-	@Path("{id}/judges")
+	@Path("{eventId}/judges")
 	@Produces(MediaType.APPLICATION_JSON)
 	@PermitAll
-	public List<User> getJudgeList(@PathParam("id") String eventId) {
-		return eventService.getJudgeList(Long.parseLong(eventId));
+	public List<UserDTO> getJudgeList(@PathParam("eventId") Long eventId) {
+		return eventService.getJudgeList(eventId).stream()
+				.map(UserMapper::toUserDTO).collect(Collectors.toList());
 	}
 	
 	@PUT
-	@Path("{id}/judges")
+	@Path("{eventId}/judges/{judgeId}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@RolesAllowed(Role.Values.ADMIN_VALUE)
-	public Response enrollJudgeInEvent(@PathParam("id") String eventId, User judge) {
-		return Response.accepted(eventService.enrollJudgeInEvent(judge, Long.parseLong(eventId), 
+	public Response enrollJudgeInEvent(@PathParam("eventId") Long eventId, @PathParam("judgeId") Long judgeId) {
+		return Response.accepted(eventService.enrollJudgeInEvent(judgeId, eventId, 
 				context.getUserPrincipal().getName())).build();
 	}
 

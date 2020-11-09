@@ -20,6 +20,16 @@ public class UserService {
 	
 	@Inject 
 	private AuthorizationService authorization;
+	
+	public UserService() {
+		
+	}
+	
+	public UserService(UserRepository userRepo, AuthorizationService authService) {
+		this();
+		this.userRepo = userRepo;
+		this.authorization = authService;
+	}
 
 	public List<User> getAllUsers() {
 		return userRepo.getAllUsers();

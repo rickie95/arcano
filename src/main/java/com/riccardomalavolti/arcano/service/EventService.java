@@ -6,6 +6,7 @@ import javax.inject.Inject;
 import javax.ws.rs.NotFoundException;
 
 import com.riccardomalavolti.arcano.model.Event;
+import com.riccardomalavolti.arcano.model.Role;
 import com.riccardomalavolti.arcano.model.User;
 import com.riccardomalavolti.arcano.repositories.EventRepository;
 
@@ -27,8 +28,11 @@ public class EventService {
 				.orElseThrow(() -> new NotFoundException(String.format(NO_EVENT_FOUND_WITH_ID, eventId)));
 	}
 
-	public User enrollPlayerInEvent(User player, Long eventId) {
-		return getEventById(eventId).enrollPlayer(player);
+	public Event enrollPlayerInEvent(Long playerId, Long eventId) {
+		User user = userService.getUserById(playerId);
+		Event event = getEventById(eventId);
+		event.enrollPlayer(user);
+		return event;
 	}
 
 	public Event createEvent(Event event) {
@@ -47,7 +51,11 @@ public class EventService {
 		return eventRepo.updateEvent(event);
 	}
 
-	public User enrollJudgeInEvent(User judge, Long eventId, String requesterUsername) {
+	public User enrollJudgeInEvent(Long judgeId, Long eventId, String requesterUsername) {
+		User judge = userService.getUserById(judgeId);
+		if(judge.getRole() != Role.JUDGE)
+			throw new IllegalArgumentException("Not a valid judge");
+		
 		Event requestedEvent = getEventById(eventId);
 		authService.verifyOwnershipOf(requestedEvent, requesterUsername);
 		
