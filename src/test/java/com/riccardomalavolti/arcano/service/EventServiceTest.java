@@ -20,6 +20,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.riccardomalavolti.arcano.dto.EventBrief;
+import com.riccardomalavolti.arcano.dto.EventDetails;
+import com.riccardomalavolti.arcano.dto.EventMapper;
+import com.riccardomalavolti.arcano.dto.UserMapper;
 import com.riccardomalavolti.arcano.model.Event;
 import com.riccardomalavolti.arcano.model.User;
 import com.riccardomalavolti.arcano.repositories.EventRepository;
@@ -45,9 +49,11 @@ class EventServiceTest {
 		List<Event> eventList = new ArrayList<Event>(Arrays.asList(eventOne, eventTwo));
 		when(eventRepo.getAllEvents()).thenReturn(eventList);
 		
-		List<Event> returnedList = eventService.getAllEvents();
+		List<EventBrief> returnedList = eventService.getAllEvents();
 		
-		assertThat(returnedList).contains(eventOne, eventTwo);
+		assertThat(returnedList).contains(
+				EventMapper.toEventBrief(eventOne), 
+				EventMapper.toEventBrief(eventTwo));
 	}
 	
 	@Test
@@ -55,7 +61,7 @@ class EventServiceTest {
 		List<Event> eventList = new ArrayList<Event>();
 		when(eventRepo.getAllEvents()).thenReturn(eventList);
 		
-		List<Event> returnedList = eventService.getAllEvents();
+		List<EventBrief> returnedList = eventService.getAllEvents();
 		
 		assertThat(returnedList).isEmpty();
 	}
@@ -67,9 +73,9 @@ class EventServiceTest {
 		
 		when(eventRepo.getEventById(eventOne.getId())).thenReturn(Optional.of(eventOne));
 		
-		Event result = eventService.getEventById(eventOne.getId());
+		EventDetails result = eventService.getEventById(eventOne.getId());
 		
-		assertThat(result).isEqualTo(eventOne);
+		assertThat(result.getId()).isEqualTo(eventOne.getId());
 	}
 	
 	@Test
@@ -91,10 +97,10 @@ class EventServiceTest {
 		when(eventRepo.getEventById(event.getId())).thenReturn(Optional.of(event));
 		when(userService.getUserById(user.getId())).thenReturn(user);
 		
-		Event result = eventService.enrollPlayerInEvent(user.getId(), event.getId());
+		EventDetails result = eventService.enrollPlayerInEvent(user.getId(), event.getId());
 		
-		assertThat(result).isEqualTo(event);
-		assertThat(result.getPlayerList()).contains(user);
+		assertThat(result.getId()).isEqualTo(event.getId());
+		assertThat(result.getPlayerList()).contains(UserMapper.toUserBrief(user));
 	}
 	
 	@Test

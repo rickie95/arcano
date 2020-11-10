@@ -7,9 +7,9 @@ public class EventDetails {
 	Long id;
 	String name;
 	
-	Set<UserDTO> playerList;
-	Set<UserDTO> judgeList;
-	Set<UserDTO> adminList;
+	Set<UserBrief> playerList;
+	Set<UserBrief> judgeList;
+	Set<UserBrief> adminList;
 	
 	public Long getId() {
 		return id;
@@ -23,22 +23,22 @@ public class EventDetails {
 	public void setName(String name) {
 		this.name = name;
 	}
-	public Set<UserDTO> getPlayerList() {
+	public Set<UserBrief> getPlayerList() {
 		return playerList;
 	}
-	public void setPlayerList(Set<UserDTO> playerList) {
+	public void setPlayerList(Set<UserBrief> playerList) {
 		this.playerList = playerList;
 	}
-	public Set<UserDTO> getJudgeList() {
+	public Set<UserBrief> getJudgeList() {
 		return judgeList;
 	}
-	public void setJudgeList(Set<UserDTO> judgeList) {
+	public void setJudgeList(Set<UserBrief> judgeList) {
 		this.judgeList = judgeList;
 	}
-	public Set<UserDTO> getAdminList() {
+	public Set<UserBrief> getAdminList() {
 		return adminList;
 	}
-	public void setAdminList(Set<UserDTO> adminList) {
+	public void setAdminList(Set<UserBrief> adminList) {
 		this.adminList = adminList;
 	}
 	

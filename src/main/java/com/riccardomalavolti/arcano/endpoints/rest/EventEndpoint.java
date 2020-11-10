@@ -3,7 +3,6 @@ package com.riccardomalavolti.arcano.endpoints.rest;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
@@ -22,10 +21,9 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
-import com.riccardomalavolti.arcano.dto.EventDTO;
-import com.riccardomalavolti.arcano.dto.EventMapper;
-import com.riccardomalavolti.arcano.dto.UserDTO;
-import com.riccardomalavolti.arcano.dto.UserMapper;
+import com.riccardomalavolti.arcano.dto.EventBrief;
+import com.riccardomalavolti.arcano.dto.EventDetails;
+import com.riccardomalavolti.arcano.dto.UserBrief;
 import com.riccardomalavolti.arcano.model.Event;
 import com.riccardomalavolti.arcano.model.Role;
 import com.riccardomalavolti.arcano.service.EventService;
@@ -41,16 +39,15 @@ public class EventEndpoint {
 	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<EventDTO> getAllEvents(){
-		return eventService.getAllEvents().stream()
-				.map(EventMapper::toEventDTO).collect(Collectors.toList());
+	public List<EventBrief> getAllEvents(){
+		return eventService.getAllEvents();
 	}
 	
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	@PermitAll
 	public Response createNewEvent(Event event, @Context UriInfo uriInfo) throws URISyntaxException {
-		Event saved = eventService.createEvent(event);
+		EventDetails saved = eventService.createEvent(event);
 		return Response.created(new URI(uriInfo.getAbsolutePath() + "/" + saved.getId()))
 				.entity(saved)
 				.build();
@@ -62,13 +59,13 @@ public class EventEndpoint {
 	@Produces(MediaType.APPLICATION_JSON)
 	@RolesAllowed(Role.Values.ADMIN_VALUE)
 	public Response removeEvent(@PathParam("eventId") Long eventId) {		
-		return Response.accepted(eventService.removeEvent(eventId)).build();
+		return Response.accepted(eventService.removeEvent(eventId, context.getUserPrincipal().getName())).build();
 	}
 
 	@GET
 	@Path("{eventId}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Event getEventById(@PathParam("eventId") Long eventId) {
+	public EventDetails getEventById(@PathParam("eventId") Long eventId) {
 		return eventService.getEventById(eventId);
 	}
 	
@@ -76,9 +73,8 @@ public class EventEndpoint {
 	@Path("{eventId}/players")
 	@Produces(MediaType.APPLICATION_JSON)
 	@PermitAll
-	public List<UserDTO> getPlayersForEvent(@PathParam("eventId") Long eventId) {
-		return eventService.getPlayersForEvent(eventId).stream()
-				.map(UserMapper::toUserDTO).collect(Collectors.toList());
+	public List<UserBrief> getPlayersForEvent(@PathParam("eventId") Long eventId) {
+		return eventService.getPlayersForEvent(eventId);
 	}
 	
 	
@@ -96,9 +92,8 @@ public class EventEndpoint {
 	@Path("{eventId}/judges")
 	@Produces(MediaType.APPLICATION_JSON)
 	@PermitAll
-	public List<UserDTO> getJudgeList(@PathParam("eventId") Long eventId) {
-		return eventService.getJudgeList(eventId).stream()
-				.map(UserMapper::toUserDTO).collect(Collectors.toList());
+	public List<UserBrief> getJudgeList(@PathParam("eventId") Long eventId) {
+		return eventService.getJudgeList(eventId);
 	}
 	
 	@PUT

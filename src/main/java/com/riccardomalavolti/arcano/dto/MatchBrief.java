@@ -1,12 +1,12 @@
 package com.riccardomalavolti.arcano.dto;
 
-public class MatchDTO {
+public class MatchBrief {
 	
 	Long id;
-	UserDTO userOne;
-	UserDTO userTwo;
+	UserBrief userOne;
+	UserBrief userTwo;
 	
-	EventDTO parentEvent;
+	EventBrief parentEvent;
 	
 	short playerOneScore;
 	short playerTwoScore;
@@ -18,22 +18,22 @@ public class MatchDTO {
 	public void setId(Long id) {
 		this.id = id;
 	}
-	public UserDTO getUserOne() {
+	public UserBrief getUserOne() {
 		return userOne;
 	}
-	public void setUserOne(UserDTO userOne) {
+	public void setUserOne(UserBrief userOne) {
 		this.userOne = userOne;
 	}
-	public UserDTO getUserTwo() {
+	public UserBrief getUserTwo() {
 		return userTwo;
 	}
-	public void setUserTwo(UserDTO userTwo) {
+	public void setUserTwo(UserBrief userTwo) {
 		this.userTwo = userTwo;
 	}	
-	public EventDTO getParentEvent() {
+	public EventBrief getParentEvent() {
 		return parentEvent;
 	}
-	public void setParentEvent(EventDTO parentEvent) {
+	public void setParentEvent(EventBrief parentEvent) {
 		this.parentEvent = parentEvent;
 	}
 	public short getPlayerOneScore() {

@@ -1,10 +1,16 @@
 package com.riccardomalavolti.arcano.service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.ws.rs.NotFoundException;
 
+import com.riccardomalavolti.arcano.dto.EventBrief;
+import com.riccardomalavolti.arcano.dto.EventDetails;
+import com.riccardomalavolti.arcano.dto.EventMapper;
+import com.riccardomalavolti.arcano.dto.UserBrief;
+import com.riccardomalavolti.arcano.dto.UserMapper;
 import com.riccardomalavolti.arcano.model.Event;
 import com.riccardomalavolti.arcano.model.Role;
 import com.riccardomalavolti.arcano.model.User;
@@ -19,55 +25,74 @@ public class EventService {
 	
 	@Inject AuthorizationService authService;
 	
-	public List<Event> getAllEvents() {
-		return eventRepo.getAllEvents();
-	}
-
-	public Event getEventById(Long eventId) {
-		return eventRepo.getEventById(eventId)
-				.orElseThrow(() -> new NotFoundException(String.format(NO_EVENT_FOUND_WITH_ID, eventId)));
-	}
-
-	public Event enrollPlayerInEvent(Long playerId, Long eventId) {
-		User user = userService.getUserById(playerId);
-		Event event = getEventById(eventId);
-		event.enrollPlayer(user);
-		return event;
-	}
-
-	public Event createEvent(Event event) {
-		return eventRepo.addEvent(event);
-	}
-
-	public Event removeEvent(Long eventId) {
-		return eventRepo.removeEvent(getEventById(eventId));
+	public EventService() {};
+	
+	public EventService(EventRepository eventRepository, UserService userService, AuthorizationService authService) {
+		this.eventRepo = eventRepository;
+		this.userService = userService;
+		this.authService = authService;
 	}
 	
-	public Event updateEvent(Long eventId, Event event, String requesterUsername) {
-		Event requestedEvent = getEventById(eventId);
+	public List<EventBrief> getAllEvents() {
+		return eventRepo.getAllEvents().stream()
+				.map(EventMapper::toEventBrief).collect(Collectors.toList());
+	}
+	
+	private Event retriveEventById(Long eventId) {
+		return eventRepo.getEventById(eventId)
+		.orElseThrow(() -> new NotFoundException(String.format(NO_EVENT_FOUND_WITH_ID, eventId)));
+	}
+
+	public EventDetails getEventById(Long eventId) {
+		return EventMapper.toEventDetails(retriveEventById(eventId));
+	}
+
+	public EventDetails enrollPlayerInEvent(Long playerId, Long eventId) {
+		User user = userService.getUserById(playerId);
+		Event event = retriveEventById(eventId);
+		event.enrollPlayer(user);
+		return EventMapper.toEventDetails(event);
+	}
+
+	public EventDetails createEvent(Event event) {
+		return EventMapper.toEventDetails(eventRepo.addEvent(event));
+	}
+
+	public EventDetails removeEvent(Long eventId, String requesterUsername) {
+		Event requestedEvent = retriveEventById(eventId);
+		authService.verifyOwnershipOf(requestedEvent, requesterUsername);
+		return EventMapper.toEventDetails(eventRepo.removeEvent(requestedEvent));
+	}
+	
+	public EventDetails updateEvent(Long eventId, Event event, String requesterUsername) {
+		Event requestedEvent = retriveEventById(eventId);
 		authService.verifyOwnershipOf(requestedEvent, requesterUsername);
 		event.setId(requestedEvent.getId());
 		
-		return eventRepo.updateEvent(event);
+		return EventMapper.toEventDetails(eventRepo.updateEvent(event));
 	}
 
-	public User enrollJudgeInEvent(Long judgeId, Long eventId, String requesterUsername) {
+	public UserBrief enrollJudgeInEvent(Long judgeId, Long eventId, String requesterUsername) {
 		User judge = userService.getUserById(judgeId);
 		if(judge.getRole() != Role.JUDGE)
 			throw new IllegalArgumentException("Not a valid judge");
 		
-		Event requestedEvent = getEventById(eventId);
+		Event requestedEvent = retriveEventById(eventId);
 		authService.verifyOwnershipOf(requestedEvent, requesterUsername);
 		
-		return requestedEvent.addJudge(judge);
+		return UserMapper.toUserBrief(requestedEvent.addJudge(judge));
 	}
 
-	public List<User> getJudgeList(Long eventId) {
-		return getEventById(eventId).getJudgeList();
+	public List<UserBrief> getJudgeList(Long eventId) {
+		return retriveEventById(eventId).getJudgeList()
+				.stream().map(UserMapper::toUserBrief).collect(Collectors.toList());
+				
 	}
 
-	public List<User> getPlayersForEvent(Long eventId) {
-		return getEventById(eventId).getPlayerList();
+	public List<UserBrief> getPlayersForEvent(Long eventId) {
+		return retriveEventById(eventId).getPlayerList()
+				.stream().map(UserMapper::toUserBrief).collect(Collectors.toList());
+				
 	}
 
 }

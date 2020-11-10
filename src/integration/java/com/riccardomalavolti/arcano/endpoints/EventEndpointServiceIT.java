@@ -10,11 +10,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
-import javax.ws.rs.NotFoundException;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.MediaType;
 
@@ -27,28 +27,32 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import com.riccardomalavolti.arcano.dto.EventBrief;
-import com.riccardomalavolti.arcano.dto.EventMapper;
-import com.riccardomalavolti.arcano.dto.UserBrief;
-import com.riccardomalavolti.arcano.dto.UserMapper;
 import com.riccardomalavolti.arcano.endpoints.rest.EventEndpoint;
 import com.riccardomalavolti.arcano.model.Event;
-import com.riccardomalavolti.arcano.model.Role;
 import com.riccardomalavolti.arcano.model.User;
+import com.riccardomalavolti.arcano.repositories.EventRepository;
+import com.riccardomalavolti.arcano.service.AuthorizationService;
 import com.riccardomalavolti.arcano.service.EventService;
+import com.riccardomalavolti.arcano.service.UserService;
 
 import io.restassured.RestAssured;
 
-
-public class EventEndpointTest extends JerseyTest {
+public class EventEndpointServiceIT extends JerseyTest {
 	
-	@Mock private EventService eventService;
+	EventService eventService;
+	
+	@Mock EventRepository eventRepo;
+	@Mock UserService userService;
+	@Mock AuthorizationService authService;
+	
 	
 	@SuppressWarnings("deprecation")
 	@Override
 	protected Application configure(){
         MockitoAnnotations.initMocks(this);
         forceSet(TestProperties.CONTAINER_PORT, "0");
+
+        eventService = new EventService(eventRepo, userService, authService);
         return new ResourceConfig(EventEndpoint.class)
             .register(new AbstractBinder() {
                 @Override
@@ -76,11 +80,9 @@ public class EventEndpointTest extends JerseyTest {
 		eTwo.setPlayerList(new HashSet<User>());
 		eTwo.setAdminList(new HashSet<User>());
 		
-		List<EventBrief> eventList = new ArrayList<>(Arrays.asList(
-				EventMapper.toEventBrief(eOne), 
-				EventMapper.toEventBrief(eTwo)));
+		List<Event> eventList = new ArrayList<>(Arrays.asList(eOne, eTwo));
 		
-		when(eventService.getAllEvents()).thenReturn(eventList);
+		when(eventRepo.getAllEvents()).thenReturn(eventList);
 		
 		given()
 			.accept(MediaType.APPLICATION_JSON).
@@ -93,9 +95,9 @@ public class EventEndpointTest extends JerseyTest {
 						"[0].id", equalTo(eOne.getId().intValue()),
 						"[1].id", equalTo(eTwo.getId().intValue())
 					);
-				
 	}
 	
+
 	@Test
 	public void testGetEventById() {
 		// Should also return a list of URL of the associated matches.
@@ -106,7 +108,7 @@ public class EventEndpointTest extends JerseyTest {
 		eOne.setPlayerList(new HashSet<User>());
 		eOne.setAdminList(new HashSet<User>());
 		
-		when(eventService.getEventById(id)).thenReturn(EventMapper.toEventDetails(eOne));
+		when(eventRepo.getEventById(id)).thenReturn(Optional.of(eOne));
 		
 		given()
 			.accept(MediaType.APPLICATION_JSON).
@@ -118,19 +120,6 @@ public class EventEndpointTest extends JerseyTest {
 				.body(
 						"id", equalTo(id.intValue())
 						);
-	}
-
-	@Test
-	public void testGetEventByIdShouldReturn404IfEventCantBeFound() {
-		Long id = (long) 1;
-		when(eventService.getEventById(id)).thenAnswer(invocation -> {throw new NotFoundException("");});
-		
-		given()
-			.accept(MediaType.APPLICATION_JSON).
-		when()
-			.get(EventEndpoint.BASE_PATH + "/" + id.toString()).
-		then()
-			.statusCode(404);
 	}
 	
 	@Test
@@ -144,7 +133,7 @@ public class EventEndpointTest extends JerseyTest {
 		createdEvent.setPlayerList(new HashSet<User>());
 		createdEvent.setAdminList(new HashSet<User>());
 		
-		when(eventService.createEvent(any(Event.class))).thenReturn(EventMapper.toEventDetails(createdEvent));
+		when(eventRepo.addEvent(any(Event.class))).thenReturn(createdEvent);
 		
 		JsonArray emptyArray = Json.createArrayBuilder().build();
 		
@@ -171,7 +160,6 @@ public class EventEndpointTest extends JerseyTest {
 						response -> endsWith(EventEndpoint.BASE_PATH + "/"+ createdEvent.getId()));
 	}
 	
-	
 	@Test
 	public void testEnrollAPlayerInAEvent() {
 		Long eventId = (long) 1;
@@ -185,7 +173,8 @@ public class EventEndpointTest extends JerseyTest {
 		player.setId(playerId);
 		player.setUsername(playerUsername);
 		
-		when(eventService.enrollPlayerInEvent(playerId, eventId)).thenReturn(EventMapper.toEventDetails(event));
+		when(userService.getUserById(player.getId())).thenReturn(player);
+		when(eventRepo.getEventById(eventId)).thenReturn(Optional.of(event));
 		
 		given()
 			.contentType(MediaType.APPLICATION_JSON).
@@ -196,36 +185,9 @@ public class EventEndpointTest extends JerseyTest {
 			.statusCode(202)
 			.assertThat()
 				.body(
-						"id", equalTo(eventId.intValue())
+						"id", equalTo(eventId.intValue()),
+						"playerList[0].id", equalTo(player.getId().intValue())
 					 );
-	}
-	
-	@Test
-	public void testEnrollInNonExistentEventShouldReturn404() {
-		Long eventId = (long) 1;
-		Long playerId = (long) 2;
-		String playerUsername = "Mike";
-		
-		User player = new User();
-		player.setId(playerId);
-		player.setUsername(playerUsername);
-		
-		when(eventService.enrollPlayerInEvent(playerId, eventId))
-			.thenAnswer(invocation -> {throw new NotFoundException("");});
-		
-		JsonObject playerJson = Json.createObjectBuilder()
-					 .add("id", player.getId())
-					 .add("username", player.getUsername())
-				 .build();
-		
-		given()
-			.contentType(MediaType.APPLICATION_JSON)
-			.body(playerJson.toString()).
-		when()
-			// events/{event_id}/enroll
-			.post(EventEndpoint.BASE_PATH + String.format("/%s/enroll", eventId)).
-		then()
-			.statusCode(404);
 	}
 	
 	@Test
@@ -239,12 +201,7 @@ public class EventEndpointTest extends JerseyTest {
 		event.enrollPlayer(playerOne);
 		event.enrollPlayer(playerTwo);
 		
-		List<UserBrief> playerList = new ArrayList<UserBrief>(Arrays.asList(
-						UserMapper.toUserBrief(playerOne), 
-						UserMapper.toUserBrief(playerTwo)));
-		
-		when(eventService.getPlayersForEvent(eventId)).thenReturn(playerList);
-		
+		when(eventRepo.getEventById(eventId)).thenReturn(Optional.of(event));
 		
 		given()
 			.accept(MediaType.APPLICATION_JSON).
@@ -257,41 +214,6 @@ public class EventEndpointTest extends JerseyTest {
 						"[0].id", equalTo(playerOne.getId().intValue()),
 						"[1].id", equalTo(playerTwo.getId().intValue())
 					);
-		
 	}
-	
-	@Test
-	public void testGetJudgeListByEventId() {
-		Long eventId = (long) 1;
-		Event event = new Event(eventId);
-		
-		User playerOne = new User((long) 2);
-		playerOne.setRole(Role.JUDGE);
-		User playerTwo = new User((long) 3);
-		playerTwo.setRole(Role.JUDGE);
 
-		
-		event.enrollPlayer(playerOne);
-		event.enrollPlayer(playerTwo);
-		
-		List<UserBrief> playerList = new ArrayList<UserBrief>(Arrays.asList(
-				UserMapper.toUserBrief(playerOne), 
-				UserMapper.toUserBrief(playerTwo)));
-		
-		when(eventService.getJudgeList(eventId)).thenReturn(playerList);
-		
-		
-		given()
-			.accept(MediaType.APPLICATION_JSON).
-		when()
-			.get(EventEndpoint.BASE_PATH + String.format("/%s/judges", eventId)).
-		then()
-			.statusCode(200)
-			.assertThat()
-				.body(
-						"[0].id", equalTo(playerOne.getId().intValue()),
-						"[1].id", equalTo(playerTwo.getId().intValue())
-					);
-	}
-	
 }

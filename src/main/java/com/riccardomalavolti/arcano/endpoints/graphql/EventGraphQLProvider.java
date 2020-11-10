@@ -9,6 +9,8 @@ import org.eclipse.microprofile.graphql.Mutation;
 import org.eclipse.microprofile.graphql.Name;
 import org.eclipse.microprofile.graphql.Query;
 
+import com.riccardomalavolti.arcano.dto.EventBrief;
+import com.riccardomalavolti.arcano.dto.EventDetails;
 import com.riccardomalavolti.arcano.model.Event;
 import com.riccardomalavolti.arcano.service.AuthenticationService;
 import com.riccardomalavolti.arcano.service.EventService;
@@ -23,22 +25,22 @@ public class EventGraphQLProvider {
 	AuthenticationService authService;
 	
 	@Query("eventList")
-	public List<Event> getEvents() {
+	public List<EventBrief> getEvents() {
 		return eventService.getAllEvents();
 	}
 	
 	@Query("eventById")
-	public Event getEventById(@Name("id") Long eventId) {
+	public EventDetails getEventById(@Name("id") Long eventId) {
 		return eventService.getEventById(eventId);
 	}
 	
 	@Mutation("addEvent")
-	public Event addEvent(Event event) {
+	public EventDetails addEvent(Event event) {
 		return eventService.createEvent(event);
 	}
 	
 	@Mutation("updateEvent")
-	public Event updateEvent(Event event, @Name("jwt") String token) {
+	public EventDetails updateEvent(Event event, @Name("jwt") String token) {
 		return eventService.updateEvent(event.getId(), event, authService.parseToken(token));
 	}
 	

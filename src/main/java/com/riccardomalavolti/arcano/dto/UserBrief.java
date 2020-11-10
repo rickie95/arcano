@@ -1,6 +1,6 @@
 package com.riccardomalavolti.arcano.dto;
 
-public class UserDTO {
+public class UserBrief {
 	
 	Long id;
 	String username;
@@ -47,7 +47,7 @@ public class UserDTO {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		UserDTO other = (UserDTO) obj;
+		UserBrief other = (UserBrief) obj;
 		if (id == null) {
 			if (other.id != null)
 				return false;

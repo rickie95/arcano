@@ -12,9 +12,9 @@ public class EventMapper {
 		throw new IllegalStateException("Utility class");
 	}
 	
-	public static EventDTO toEventDTO(Event event) {
+	public static EventBrief toEventBrief(Event event) {
 		mapper = new ModelMapper();
-		return mapper.map(event, EventDTO.class);
+		return mapper.map(event, EventBrief.class);
 	}
 	
 	public static EventDetails toEventDetails(Event event) {

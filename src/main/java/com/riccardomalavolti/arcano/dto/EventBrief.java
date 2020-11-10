@@ -1,6 +1,6 @@
 package com.riccardomalavolti.arcano.dto;
 
-public class EventDTO {
+public class EventBrief {
 	
 	Long id;
 	String name;
@@ -30,7 +30,7 @@ public class EventDTO {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		EventDTO other = (EventDTO) obj;
+		EventBrief other = (EventBrief) obj;
 		if (id == null) {
 			if (other.id != null)
 				return false;

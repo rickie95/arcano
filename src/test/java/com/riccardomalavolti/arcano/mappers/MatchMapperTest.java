@@ -8,7 +8,7 @@ import org.junit.platform.runner.JUnitPlatform;
 import org.junit.runner.RunWith;
 
 import com.riccardomalavolti.arcano.dto.EventMapper;
-import com.riccardomalavolti.arcano.dto.MatchDTO;
+import com.riccardomalavolti.arcano.dto.MatchBrief;
 import com.riccardomalavolti.arcano.dto.MatchMapper;
 import com.riccardomalavolti.arcano.dto.UserMapper;
 import com.riccardomalavolti.arcano.model.Event;
@@ -53,15 +53,15 @@ class MatchMapperTest {
 	
 	@Test
 	void testToMatchDTO() {
-		MatchDTO matchDto = MatchMapper.toMatchDTO(match);
+		MatchBrief matchDto = MatchMapper.toMatchBrief(match);
 		
 		assertThat(matchDto.getId()).isEqualTo(matchId);
 		assertThat(matchDto.isMatchEnded()).isTrue();
-		assertThat(matchDto.getUserOne()).isEqualTo(UserMapper.toUserDTO(userOne));
-		assertThat(matchDto.getUserTwo()).isEqualTo(UserMapper.toUserDTO(userTwo));
+		assertThat(matchDto.getUserOne()).isEqualTo(UserMapper.toUserBrief(userOne));
+		assertThat(matchDto.getUserTwo()).isEqualTo(UserMapper.toUserBrief(userTwo));
 		assertThat(matchDto.getPlayerOneScore()).isEqualTo((short)1);
 		assertThat(matchDto.getPlayerTwoScore()).isEqualTo((short)2);
-		assertThat(matchDto.getParentEvent()).isEqualTo(EventMapper.toEventDTO(event));
+		assertThat(matchDto.getParentEvent()).isEqualTo(EventMapper.toEventBrief(event));
 	}
 
 }

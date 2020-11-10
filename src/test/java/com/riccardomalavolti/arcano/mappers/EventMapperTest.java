@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.platform.runner.JUnitPlatform;
 import org.junit.runner.RunWith;
 
-import com.riccardomalavolti.arcano.dto.EventDTO;
+import com.riccardomalavolti.arcano.dto.EventBrief;
 import com.riccardomalavolti.arcano.dto.EventDetails;
 import com.riccardomalavolti.arcano.dto.EventMapper;
 import com.riccardomalavolti.arcano.dto.UserMapper;
@@ -51,7 +51,7 @@ class EventMapperTest {
 	
 	@Test
 	void testToEventDTO() {
-		EventDTO eventDto = EventMapper.toEventDTO(event);
+		EventBrief eventDto = EventMapper.toEventBrief(event);
 		
 		assertThat(eventDto.getId()).isEqualTo(eventId);
 		assertThat(eventDto.getName()).isEqualTo(eventName);
@@ -64,20 +64,20 @@ class EventMapperTest {
 		assertThat(eventDetails.getId()).isEqualTo(eventId);
 		assertThat(eventDetails.getName()).isEqualTo(eventName);
 		assertThat(eventDetails.getPlayerList()).contains(
-				UserMapper.toUserDTO(userOne),
-				UserMapper.toUserDTO(userTwo));
+				UserMapper.toUserBrief(userOne),
+				UserMapper.toUserBrief(userTwo));
 		
 		assertThat(eventDetails.getPlayerList()).contains(
-				UserMapper.toUserDTO(userOne),
-				UserMapper.toUserDTO(userTwo));
+				UserMapper.toUserBrief(userOne),
+				UserMapper.toUserBrief(userTwo));
 		
 		assertThat(eventDetails.getAdminList()).contains(
-				UserMapper.toUserDTO(userOne),
-				UserMapper.toUserDTO(userTwo));
+				UserMapper.toUserBrief(userOne),
+				UserMapper.toUserBrief(userTwo));
 		
 		assertThat(eventDetails.getJudgeList()).contains(
-				UserMapper.toUserDTO(userOne),
-				UserMapper.toUserDTO(userTwo));
+				UserMapper.toUserBrief(userOne),
+				UserMapper.toUserBrief(userTwo));
 		
 	}	
 

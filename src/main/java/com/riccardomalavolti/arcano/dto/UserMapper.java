@@ -12,9 +12,9 @@ private static ModelMapper mapper;
 		throw new IllegalStateException("Utility class");
 	}
 	
-	public static UserDTO toUserDTO(User user) {
+	public static UserBrief toUserBrief(User user) {
 		mapper = new ModelMapper();
-		return mapper.map(user, UserDTO.class);
+		return mapper.map(user, UserBrief.class);
 	}
 	
 

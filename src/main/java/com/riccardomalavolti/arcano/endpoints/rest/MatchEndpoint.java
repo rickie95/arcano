@@ -22,7 +22,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
-import com.riccardomalavolti.arcano.dto.MatchDTO;
+import com.riccardomalavolti.arcano.dto.MatchBrief;
 import com.riccardomalavolti.arcano.dto.MatchMapper;
 import com.riccardomalavolti.arcano.model.Match;
 import com.riccardomalavolti.arcano.model.Role;
@@ -40,8 +40,8 @@ public class MatchEndpoint {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@PermitAll
-	public List<MatchDTO> getMatches(){
-		return matchService.getAllMatches().stream().map(MatchMapper::toMatchDTO).collect(Collectors.toList());
+	public List<MatchBrief> getMatches(){
+		return matchService.getAllMatches().stream().map(MatchMapper::toMatchBrief).collect(Collectors.toList());
 	}
 	
 	@GET

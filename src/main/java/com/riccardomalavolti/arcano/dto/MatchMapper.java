@@ -12,9 +12,9 @@ public class MatchMapper {
 		throw new IllegalStateException("Utility class");
 	}
 	
-	public static MatchDTO toMatchDTO(Match match) {
+	public static MatchBrief toMatchBrief(Match match) {
 		mapper = new ModelMapper();
-		return mapper.map(match, MatchDTO.class);
+		return mapper.map(match, MatchBrief.class);
 	}
 
 
