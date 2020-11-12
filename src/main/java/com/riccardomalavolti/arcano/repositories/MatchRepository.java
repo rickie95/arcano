@@ -2,7 +2,6 @@ package com.riccardomalavolti.arcano.repositories;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -39,15 +38,8 @@ public class MatchRepository {
 		return matchDAO.merge(match);
 	}
 
-	public List<Match> getMatchForEvent(Long eventId, boolean fetchOnlyInProgress) {
-		List<Match> matchList =  matchDAO.findMatchOfEvent(eventId);
-		
-		if(fetchOnlyInProgress)
-			matchList = matchList.stream()
-					.filter(Match::isMatchEnded)
-					.collect(Collectors.toList());
-		
-		return matchList;
+	public List<Match> getMatchForEvent(Long eventId) {
+		return matchDAO.findMatchOfEvent(eventId);
 	}
 
 }

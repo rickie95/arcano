@@ -1,4 +1,4 @@
-package com.riccardomalavolti.arcano.endpoints;
+package com.riccardomalavolti.arcano.service;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.endsWith;
@@ -31,9 +31,6 @@ import com.riccardomalavolti.arcano.endpoints.rest.EventEndpoint;
 import com.riccardomalavolti.arcano.model.Event;
 import com.riccardomalavolti.arcano.model.User;
 import com.riccardomalavolti.arcano.repositories.EventRepository;
-import com.riccardomalavolti.arcano.service.AuthorizationService;
-import com.riccardomalavolti.arcano.service.EventService;
-import com.riccardomalavolti.arcano.service.UserService;
 
 import io.restassured.RestAssured;
 
@@ -173,7 +170,7 @@ public class EventEndpointServiceIT extends JerseyTest {
 		player.setId(playerId);
 		player.setUsername(playerUsername);
 		
-		when(userService.getUserById(player.getId())).thenReturn(player);
+		when(userService.getUserById(playerId)).thenReturn(player);
 		when(eventRepo.getEventById(eventId)).thenReturn(Optional.of(event));
 		
 		given()

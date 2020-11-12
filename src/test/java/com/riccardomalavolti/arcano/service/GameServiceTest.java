@@ -1,11 +1,10 @@
 package com.riccardomalavolti.arcano.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.mock;
-import static org.mockito.ArgumentMatchers.anyLong;
-
-import static org.assertj.core.api.Assertions.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,8 +12,6 @@ import java.util.List;
 import java.util.Optional;
 
 import javax.ws.rs.NotFoundException;
-
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,10 +22,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.riccardomalavolti.arcano.dto.UserDetails;
+import com.riccardomalavolti.arcano.dto.UserMapper;
 import com.riccardomalavolti.arcano.model.Game;
 import com.riccardomalavolti.arcano.model.User;
 import com.riccardomalavolti.arcano.repositories.GameRepository;
-import com.riccardomalavolti.arcano.repositories.UserRepository;
 
 @ExtendWith(MockitoExtension.class)
 @RunWith(JUnitPlatform.class)
@@ -38,7 +36,7 @@ class GameServiceTest {
 	private static final Long playerOneId = (long) 1;
 	private static final Long playerTwoId = (long) 2;
 
-	@Mock private UserRepository playerRepository;
+	@Mock private UserService userService;
 	@Mock private GameRepository gameRepository;
 	@Mock private Game mockedGame;
 	
@@ -149,24 +147,22 @@ class GameServiceTest {
 		
 		when(gameRepository.findGameById(gameId)).thenReturn(Optional.of(mockedGame));
 		when(mockedGame.getWinnerId()).thenReturn(winnerId);
-		when(playerRepository.getUserById(winnerId)).thenReturn(Optional.of(winner));
+		when(userService.getUserDetailsById(winnerId)).thenReturn(UserMapper.toUserDetails(winner));
 		
-		User returnedPlayer = gameService.getWinnerOfGame(gameId);
+		UserDetails returnedPlayer = gameService.getWinnerOfGame(gameId);
 		
-		assertThat(returnedPlayer).isEqualTo(winner);
+		assertThat(returnedPlayer.getId()).isEqualTo(winner.getId());
 	}
 	
 	@Test
-	void testGetWinnerOfGameShouldThrowAnExceptioIfPlayerCantBeFound() {
-		Long winnerId = (long) 4;
-		User winner = new User();
-		winner.setId(winnerId);
-		
+	void testWithdrawPlayer() {
+		Game mockedGame = mock(Game.class);
 		when(gameRepository.findGameById(gameId)).thenReturn(Optional.of(mockedGame));
-		when(mockedGame.getWinnerId()).thenReturn(winnerId);
-		when(playerRepository.getUserById(anyLong())).thenReturn(Optional.empty());
 		
-		assertThrows(NotFoundException.class, 
-				() -> gameService.getWinnerOfGame(gameId));
+		gameService.withdrawPlayer(gameId, playerOneId);
+		
+		verify(mockedGame).withdrawPlayer(playerOneId);
+		verify(mockedGame).endGame();
+		
 	}
 }

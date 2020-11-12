@@ -5,9 +5,14 @@ import java.util.List;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Default;
 import javax.inject.Inject;
+import javax.ws.rs.BadRequestException;
 import javax.ws.rs.NotFoundException;
 
+import com.riccardomalavolti.arcano.dto.UserBrief;
+import com.riccardomalavolti.arcano.dto.UserDetails;
+import com.riccardomalavolti.arcano.dto.UserMapper;
 import com.riccardomalavolti.arcano.exceptions.ConflictException;
+import com.riccardomalavolti.arcano.model.Role;
 import com.riccardomalavolti.arcano.model.User;
 import com.riccardomalavolti.arcano.repositories.UserRepository;
 
@@ -21,9 +26,7 @@ public class UserService {
 	@Inject 
 	private AuthorizationService authorization;
 	
-	public UserService() {
-		
-	}
+	public UserService() {}
 	
 	public UserService(UserRepository userRepo, AuthorizationService authService) {
 		this();
@@ -31,43 +34,59 @@ public class UserService {
 		this.authorization = authService;
 	}
 
-	public List<User> getAllUsers() {
-		return userRepo.getAllUsers();
+	public List<UserBrief> getAllUsers() {
+		return UserMapper.toUserBriefList(userRepo.getAllUsers());
 	}
-
-	public User getUserById(Long userId) {
+	
+	User getUserById(Long userId) {
 		return userRepo
 				.getUserById(userId)
 				.orElseThrow(() -> new NotFoundException("No player exists with id" + userId));
 	}
 	
-	public User getUserByUsername(String username) {
+	User getUserByUsername(String username) {
 		return userRepo.getUserByUsername(username)
 				.orElseThrow(() -> new NotFoundException("No player exists with username " + username));
 	}
 
-	public User addNewUser(User user) {
+	public UserDetails getUserDetailsById(Long userId) {
+		return UserMapper.toUserDetails(getUserById(userId));
+	}
+	
+	public UserDetails getUserDetailsByUsername(String username) {
+		return UserMapper.toUserDetails(getUserByUsername(username));
+	}
+
+	public UserDetails addNewUser(User user) {
+		if(user == null)
+			throw new BadRequestException();
 		try {
 			getUserByUsername(user.getUsername());
 		}catch(NotFoundException ex) {
-			return userRepo.addNewUser(user);
+			return UserMapper.toUserDetails(userRepo.addNewUser(user));
 		}
 		
 		throw new ConflictException();
 	}
 
-	public User updateUser(Long userId, User user, final String requesterUsername) {
+	public UserDetails updateUser(Long userId, User user, final String requesterUsername) {
 		User requestedUser = getUserById(userId);		
 		authorization.verifyOwnershipOf(requestedUser, requesterUsername);
 		user.setId(requestedUser.getId());
-		return userRepo.mergeUser(user);
+		return UserMapper.toUserDetails(userRepo.mergeUser(user));
 	}
 
-	public User deleteUser(Long userId, final String requesterUsername) {
+	public UserDetails deleteUser(Long userId, final String requesterUsername) {
 		User requestedUser = getUserById(userId);
 		authorization.verifyOwnershipOf(requestedUser, requesterUsername);
-		return userRepo.removeUser(requestedUser);
+		return UserMapper.toUserDetails(userRepo.removeUser(requestedUser));
 	}
 	
+	public User getUserWithRoleById(Long userId, Role role) {
+		User user = getUserById(userId);
+		if(role != null && user.getRole() != role)
+			throw new IllegalArgumentException(String.format("Role %s does not match or is invalid.", role));
+		return user;
+	}
 
 }

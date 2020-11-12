@@ -120,33 +120,6 @@ class MatchRepositoryTest {
 	}
 	
 	@Test
-	void testGetListOfInProgressMatchesOfEvent() {
-		Long eventId = (long) 1;
-		Event event = new Event();
-		event.setId(eventId);
-		Match m1 = new Match();
-		m1.setId((long)(2));
-		m1.setMatchEnded(true);
-		m1.setParentEvent(event);
-		Match m2 = new Match();
-		m2.setId((long)(3));
-		m2.setParentEvent(event);
-		m2.setMatchEnded(true);
-		List<Match> matchList = new ArrayList<Match>(Arrays.asList(m1, m2));
-		
-		when(matchDAO.findMatchOfEvent(eventId)).thenReturn(matchList);	
-		
-		List<Match> returnedList = matchRepo.getMatchForEvent(eventId, true);
-		
-		assertThat(returnedList).containsExactlyElementsOf(matchList);
-		for(Match m : returnedList) {
-			assertThat(m.isMatchEnded()).isTrue();
-			assertThat(m.getParentEvent()).isEqualTo(event);
-		}
-		
-	}
-	
-	@Test
 	void testGetListOfMatchesOfEvent() {
 		Long eventId = (long) 1;
 		Event event = new Event();
@@ -163,7 +136,7 @@ class MatchRepositoryTest {
 		
 		when(matchDAO.findMatchOfEvent(eventId)).thenReturn(matchList);	
 		
-		List<Match> returnedList = matchRepo.getMatchForEvent(eventId, false);
+		List<Match> returnedList = matchRepo.getMatchForEvent(eventId);
 		
 		assertThat(returnedList).containsExactlyElementsOf(matchList);
 		for(Match m : returnedList) {

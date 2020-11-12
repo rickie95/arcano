@@ -12,6 +12,8 @@ import org.eclipse.microprofile.graphql.Name;
 import org.eclipse.microprofile.graphql.Query;
 import org.eclipse.microprofile.graphql.Source;
 
+import com.riccardomalavolti.arcano.dto.UserBrief;
+import com.riccardomalavolti.arcano.dto.UserDetails;
 import com.riccardomalavolti.arcano.model.User;
 import com.riccardomalavolti.arcano.service.AuthenticationService;
 import com.riccardomalavolti.arcano.service.UserService;
@@ -26,14 +28,14 @@ public class UserGraphQLProvider {
 
 	@Query("userList")
 	@Description("Returns a list of all available users.")
-	public List<User> getUsers(){
+	public List<UserBrief> getUsers(){
 		return userService.getAllUsers();
 	}
 	
 	@Query("userById")
 	@Description("Retrive an user given its id, if exists.")
-	public User getUserById(@Name("id") String userId) {
-		return userService.getUserById(Long.parseLong(userId));
+	public UserDetails getUserById(@Name("id") String userId) {
+		return userService.getUserDetailsById(Long.parseLong(userId));
 	}
 	
 	@Query("")
@@ -43,19 +45,19 @@ public class UserGraphQLProvider {
 	
 	@Mutation("addUser")
 	@Description("Adds to the service the new user provided.")
-	public User addUser(User user) {
+	public UserDetails addUser(User user) {
 		return userService.addNewUser(user);
 	}
 	
 	@Mutation("updateUser")
 	@Description("Updates the user with the one provided.")
-	public User updateUser(User user, @Name("jwt") String token) {
+	public UserDetails updateUser(User user, @Name("jwt") String token) {
 		return userService.updateUser(user.getId(), user, authService.parseToken(token));
 	}
 	
 	@Mutation("removeUser")
 	@Description("Removes a user given his id.")
-	public User removeUser(@Name("userId") Long userId, @Name("jwt") String token) {
+	public UserDetails removeUser(@Name("userId") Long userId, @Name("jwt") String token) {
 		return userService.deleteUser(userId, authService.parseToken(token));
 	}
 

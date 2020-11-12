@@ -3,7 +3,6 @@ package com.riccardomalavolti.arcano.endpoints.rest;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
@@ -23,7 +22,7 @@ import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
 import com.riccardomalavolti.arcano.dto.MatchBrief;
-import com.riccardomalavolti.arcano.dto.MatchMapper;
+import com.riccardomalavolti.arcano.dto.MatchDetails;
 import com.riccardomalavolti.arcano.model.Match;
 import com.riccardomalavolti.arcano.model.Role;
 import com.riccardomalavolti.arcano.service.MatchService;
@@ -41,30 +40,30 @@ public class MatchEndpoint {
 	@Produces(MediaType.APPLICATION_JSON)
 	@PermitAll
 	public List<MatchBrief> getMatches(){
-		return matchService.getAllMatches().stream().map(MatchMapper::toMatchBrief).collect(Collectors.toList());
+		return matchService.getAllMatches();
 	}
 	
 	@GET
 	@Path("{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	@PermitAll
-	public Match getMatchById(@PathParam("id") String matchId) {
-		return matchService.getMatchById(Long.parseLong(matchId));
+	public MatchDetails getMatchById(@PathParam("id") Long matchId) {
+		return matchService.getMatchDetailsById(matchId);
 	}
 	
 	@GET
 	@Path("ofEvent/{eventId}")
 	@Produces(MediaType.APPLICATION_JSON)
 	@PermitAll
-	public List<Match> getMatchListForEvent(@PathParam("eventId") Long eventId, boolean fetchOnlyInProgress) {
-		return  matchService.getMatchListForEvent(eventId, fetchOnlyInProgress);
+	public List<MatchDetails> getMatchListForEvent(@PathParam("eventId") Long eventId) {
+		return  matchService.getMatchListForEvent(eventId);
 	}
 	
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	@RolesAllowed(Role.Values.ADMIN_VALUE)
 	public Response insertNewMatch(Match match, @Context UriInfo uriInfo) throws URISyntaxException{
-		Match saved = matchService.createMatch(match);
+		MatchDetails saved = matchService.createMatch(match);
 		return Response.created(new URI(uriInfo.getAbsolutePath() + "/" + saved.getId()))
 				.entity(saved)
 				.build();
@@ -74,9 +73,9 @@ public class MatchEndpoint {
 	@Path("{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	@RolesAllowed(Role.Values.ADMIN_VALUE)
-	public Response deleteMatch(@PathParam("id") String matchId) {
+	public Response deleteMatch(@PathParam("id") Long matchId) {
 		return Response
-				.accepted(matchService.deleteMatch(Long.parseLong(matchId), getRequester()))
+				.accepted(matchService.deleteMatch(matchId, getRequester()))
 				.build();
 	}
 
@@ -85,9 +84,9 @@ public class MatchEndpoint {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@RolesAllowed(Role.Values.ADMIN_VALUE)
-	public Response updateMatch(@PathParam("id") String matchId, Match updatedMatch) {
+	public Response updateMatch(@PathParam("id") Long matchId, Match updatedMatch) {
 		return Response
-				.ok(matchService.updateMatch(Long.parseLong(matchId), updatedMatch, getRequester()))
+				.ok(matchService.updateMatch(matchId, updatedMatch, getRequester()))
 				.build();
 	}
 	

@@ -3,6 +3,7 @@ package com.riccardomalavolti.arcano.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -23,8 +24,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.riccardomalavolti.arcano.dto.EventBrief;
 import com.riccardomalavolti.arcano.dto.EventDetails;
 import com.riccardomalavolti.arcano.dto.EventMapper;
+import com.riccardomalavolti.arcano.dto.UserBrief;
+import com.riccardomalavolti.arcano.dto.UserDetails;
 import com.riccardomalavolti.arcano.dto.UserMapper;
 import com.riccardomalavolti.arcano.model.Event;
+import com.riccardomalavolti.arcano.model.Role;
 import com.riccardomalavolti.arcano.model.User;
 import com.riccardomalavolti.arcano.repositories.EventRepository;
 
@@ -93,9 +97,9 @@ class EventServiceTest {
 		user.setId((long)1);
 		
 		Event event = new Event((long)2);
+		event.enrollPlayer(user);
 		
 		when(eventRepo.getEventById(event.getId())).thenReturn(Optional.of(event));
-		when(userService.getUserById(user.getId())).thenReturn(user);
 		
 		EventDetails result = eventService.enrollPlayerInEvent(user.getId(), event.getId());
 		
@@ -109,6 +113,9 @@ class EventServiceTest {
 		User user = new User();
 		user.setId(userId);
 		
+		Event event = new Event((long)2);
+		
+		when(eventRepo.getEventById(event.getId())).thenReturn(Optional.of(event));
 		when(userService.getUserById(user.getId())).thenThrow(NotFoundException.class);
 		
 		assertThatThrownBy(
@@ -122,13 +129,72 @@ class EventServiceTest {
 		User user = new User();
 		user.setId(userId);
 		
-		when(userService.getUserById(user.getId())).thenReturn(user);
 		when(eventRepo.getEventById((long)2)).thenThrow(NotFoundException.class);
 		
 		assertThatThrownBy(
 				() -> eventService.enrollPlayerInEvent(userId, (long)2)
 			).isInstanceOf(NotFoundException.class);
+	}
+	
+	@Test
+	void testGetJudgeListShouldReturnJudgeBriefList() {
+		Long eventId = (long) 1;
+		Event event = new Event(eventId);
+		User judgeOne = new User((long) 2);
+		judgeOne.setRole(Role.JUDGE);
+		User judgeTwo = new User((long) 3);
+		judgeTwo.setRole(Role.JUDGE);
+		event.addJudge(judgeOne);
+		event.addJudge(judgeTwo);
 		
+		when(eventRepo.getEventById(eventId)).thenReturn(Optional.of(event));
+		
+		List<UserBrief> judgeList = eventService.getJudgeList(eventId); 
+		assertThat(judgeList).contains(
+				UserMapper.toUserBrief(judgeOne), 
+				UserMapper.toUserBrief(judgeTwo));
+	}
+	
+	@Test
+	void testGetJudgeListShouldReturnAnEmptyListIfNoJudgesArePresent() {
+		Long eventId = (long) 1;
+		Event event = new Event(eventId);
+		
+		when(eventRepo.getEventById(eventId)).thenReturn(Optional.of(event));
+		
+		List<UserBrief> judgeList = eventService.getJudgeList(eventId); 
+		assertThat(judgeList).isEmpty();
+	}
+	
+	@Test
+	void testEnrollJudgeInEventShouldReturnJudgeBrief() {
+		Long judgeId = (long) 1;
+		Long eventId = (long) 2;
+		Event event = new Event(eventId);
+		User judge = new User(judgeId);
+		judge.setRole(Role.JUDGE);
+		when(eventRepo.getEventById(eventId)).thenReturn(Optional.of(event));
+		when(userService.getUserWithRoleById(judgeId, Role.JUDGE)).thenReturn(judge);
+		
+		UserDetails returnedJudge = eventService.enrollJudgeInEvent(judgeId, eventId, "ADMIN");
+		
+		assertThat(returnedJudge).isEqualTo(UserMapper.toUserDetails(judge));
+		assertThat(returnedJudge.getId()).isEqualTo(judgeId);
+		assertThat(event.getJudgeList()).contains(judge);
+	}
+	
+	@Test
+	void testEnrollJudgeShouldThrowAnExceptionIfUserIsNotJudge() {
+		Long judgeId = (long) 1;
+		Long eventId = (long) 2;
+		Event event = new Event(eventId);
+		
+		when(eventRepo.getEventById(eventId)).thenReturn(Optional.of(event));
+		when(userService.getUserWithRoleById(judgeId, Role.JUDGE)).thenThrow(IllegalArgumentException.class);
+		
+		assertThatThrownBy(() -> eventService.enrollJudgeInEvent(judgeId, eventId, "ALLOWED"))
+			.isInstanceOf(IllegalArgumentException.class);
+		verify(authService).verifyOwnershipOf(event, "ALLOWED");
 	}
 
 }

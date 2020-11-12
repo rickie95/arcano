@@ -25,7 +25,9 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import com.riccardomalavolti.arcano.dto.MatchMapper;
 import com.riccardomalavolti.arcano.endpoints.rest.MatchEndpoint;
+import com.riccardomalavolti.arcano.model.Event;
 import com.riccardomalavolti.arcano.model.Match;
 import com.riccardomalavolti.arcano.model.User;
 import com.riccardomalavolti.arcano.service.MatchService;
@@ -69,7 +71,7 @@ public class MatchEnpointTest extends JerseyTest {
 
         List<Match> matchList = new ArrayList<>(Arrays.asList(match1, match2));
         
-        when(matchService.getAllMatches()).thenReturn(matchList);
+        when(matchService.getAllMatches()).thenReturn(MatchMapper.toMatchBrief(matchList));
 
         given()
             .accept(MediaType.APPLICATION_JSON).
@@ -89,7 +91,7 @@ public class MatchEnpointTest extends JerseyTest {
     	Match match1 = new Match();
         match1.setId(matchId);
         
-        when(matchService.getMatchById(matchId)).thenReturn(match1);
+        when(matchService.getMatchDetailsById(matchId)).thenReturn(MatchMapper.toMatchDetails(match1));
         
         given()
         	.accept(MediaType.APPLICATION_JSON).
@@ -101,6 +103,35 @@ public class MatchEnpointTest extends JerseyTest {
         	.body(
         			"id", equalTo(matchId.intValue())
         			);
+    }
+    
+    @Test
+    public void testGetMatchListForEventShouldReturnMatchBriefList() {
+    	 Event parentEvent = new Event((long) 3);
+    	
+    	 Match match1 = new Match((long)(1));
+         match1.setParentEvent(parentEvent);
+
+         Match match2 = new Match((long)(2));
+         match2.setParentEvent(parentEvent);
+
+         List<Match> matchList = new ArrayList<>(Arrays.asList(match1, match2));
+         
+         when(matchService.getMatchListForEvent(parentEvent.getId())).thenReturn(MatchMapper.toMatchDetails(matchList));
+
+         given()
+             .accept(MediaType.APPLICATION_JSON).
+         when()
+             .get(MatchEndpoint.BASE_PATH + String.format("/ofEvent/%s", parentEvent.getId())).
+         then()
+             .statusCode(200)
+             .assertThat()
+             .body(
+                 "[0].id", equalTo(match1.getId().intValue()),
+                 "[0].parentEvent.id", equalTo(parentEvent.getId().intValue()),
+                 "[1].id", equalTo(match2.getId().intValue()),
+                 "[1].parentEvent.id", equalTo(parentEvent.getId().intValue())
+             );
     }
    
     
@@ -118,7 +149,7 @@ public class MatchEnpointTest extends JerseyTest {
     	createdMatch.setPlayerOne(p1);
     	createdMatch.setPlayerTwo(p2);
     	
-    	when(matchService.createMatch(any(Match.class))).thenReturn(createdMatch);
+    	when(matchService.createMatch(any(Match.class))).thenReturn(MatchMapper.toMatchDetails(createdMatch));
     	
     	 JsonObject newMatchJSON = Json.createObjectBuilder()
  				.add("playerOneScore", 1)

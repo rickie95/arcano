@@ -21,6 +21,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.riccardomalavolti.arcano.dto.MatchBrief;
+import com.riccardomalavolti.arcano.dto.MatchDetails;
+import com.riccardomalavolti.arcano.dto.MatchMapper;
 import com.riccardomalavolti.arcano.model.Event;
 import com.riccardomalavolti.arcano.model.Match;
 import com.riccardomalavolti.arcano.model.User;
@@ -65,15 +68,15 @@ class MatchServiceTest {
 		when(userService.getUserById(playerTwoId))
 			.thenReturn(playerTwo);
 		
-		Match createdMatch = matchService.createMatch(match);
+		MatchDetails createdMatch = matchService.createMatch(match);
 
 		verify(matchRepo).addMatch(match);
 		verify(userService).getUserById(playerOneId);
 		verify(userService).getUserById(playerTwoId);
 		
-		assertThat(createdMatch).isEqualTo(match);
-		assertThat(createdMatch.getPlayerOne()).isEqualTo(playerOne);
-		assertThat(createdMatch.getPlayerTwo()).isEqualTo(playerTwo);
+		assertThat(createdMatch.getId()).isEqualTo(matchId);
+		assertThat(createdMatch.getPlayerOne().getId()).isEqualTo(playerOneId);
+		assertThat(createdMatch.getPlayerTwo().getId()).isEqualTo(playerTwoId);
 
 	}
 	
@@ -86,10 +89,10 @@ class MatchServiceTest {
 		
 		when(matchRepo.getAllMatches()).thenReturn(matchList);
 		
-		List<Match> returnedList = matchService.getAllMatches();
+		List<MatchBrief> returnedList = matchService.getAllMatches();
 		
 		verify(matchRepo).getAllMatches();
-		assertThat(returnedList).contains(match, match2);
+		assertThat(returnedList).contains(MatchMapper.toMatchBrief(match), MatchMapper.toMatchBrief(match2));
 	}
 	
 	@Test
@@ -115,7 +118,7 @@ class MatchServiceTest {
 	void testAddMatch() {
 		when(matchRepo.addMatch(match)).thenReturn(match);
 		
-		Match returnedMatch = matchService.addMatch(match);
+		MatchDetails returnedMatch = matchService.addMatch(match);
 		
 		assertThat(returnedMatch).isNotNull();
 		assertThat(returnedMatch.getId()).isEqualTo(matchId);
@@ -127,7 +130,7 @@ class MatchServiceTest {
 		when(matchRepo.getMatchById(matchId)).thenReturn(Optional.of(match));
 		when(matchRepo.removeMatch(match)).thenReturn(match);
 		
-		Match returnedMatch = matchService.deleteMatch(matchId, owner);
+		MatchDetails returnedMatch = matchService.deleteMatch(matchId, owner);
 		
 		verify(authService).verifyOwnershipOf(match, owner);
 		assertThat(returnedMatch).isNotNull();
@@ -143,7 +146,7 @@ class MatchServiceTest {
 		when(matchRepo.updateMatch(newMatch)).thenReturn(newMatch);
 		
 		
-		Match returnedMatch = matchService.updateMatch(matchId, newMatch, owner);
+		MatchDetails returnedMatch = matchService.updateMatch(matchId, newMatch, owner);
 		
 		verify(authService).verifyOwnershipOf(match, owner);
 		assertThat(returnedMatch).isNotNull();
@@ -164,12 +167,12 @@ class MatchServiceTest {
 		
 		List<Match> matchList = new ArrayList<>(Arrays.asList(match, match2));
 		
-		when(matchRepo.getMatchForEvent(event.getId(), true)).thenReturn(matchList);
+		when(matchRepo.getMatchForEvent(event.getId())).thenReturn(matchList);
 		
-		List<Match> returnedList = matchService.getMatchListForEvent(event.getId(), true);
+		List<MatchDetails> returnedList = matchService.getMatchListForEvent(event.getId());
 		
-		verify(matchRepo).getMatchForEvent(event.getId(), true);
-		assertThat(returnedList).contains(match, match2);
+		verify(matchRepo).getMatchForEvent(event.getId());
+		assertThat(returnedList).contains(MatchMapper.toMatchDetails(match), MatchMapper.toMatchDetails(match2));
 	}
 
 }

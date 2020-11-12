@@ -10,6 +10,7 @@ import com.riccardomalavolti.arcano.dto.EventBrief;
 import com.riccardomalavolti.arcano.dto.EventDetails;
 import com.riccardomalavolti.arcano.dto.EventMapper;
 import com.riccardomalavolti.arcano.dto.UserBrief;
+import com.riccardomalavolti.arcano.dto.UserDetails;
 import com.riccardomalavolti.arcano.dto.UserMapper;
 import com.riccardomalavolti.arcano.model.Event;
 import com.riccardomalavolti.arcano.model.Role;
@@ -28,6 +29,7 @@ public class EventService {
 	public EventService() {};
 	
 	public EventService(EventRepository eventRepository, UserService userService, AuthorizationService authService) {
+		this();
 		this.eventRepo = eventRepository;
 		this.userService = userService;
 		this.authService = authService;
@@ -47,13 +49,6 @@ public class EventService {
 		return EventMapper.toEventDetails(retriveEventById(eventId));
 	}
 
-	public EventDetails enrollPlayerInEvent(Long playerId, Long eventId) {
-		User user = userService.getUserById(playerId);
-		Event event = retriveEventById(eventId);
-		event.enrollPlayer(user);
-		return EventMapper.toEventDetails(event);
-	}
-
 	public EventDetails createEvent(Event event) {
 		return EventMapper.toEventDetails(eventRepo.addEvent(event));
 	}
@@ -71,28 +66,30 @@ public class EventService {
 		
 		return EventMapper.toEventDetails(eventRepo.updateEvent(event));
 	}
+	
+	public EventDetails enrollPlayerInEvent(Long playerId, Long eventId) {
+		Event requestedEvent = retriveEventById(eventId);
+		User player = userService.getUserById(playerId);
+		requestedEvent.enrollPlayer(player);
+		return EventMapper.toEventDetails(requestedEvent);
+	}
 
-	public UserBrief enrollJudgeInEvent(Long judgeId, Long eventId, String requesterUsername) {
-		User judge = userService.getUserById(judgeId);
-		if(judge.getRole() != Role.JUDGE)
-			throw new IllegalArgumentException("Not a valid judge");
-		
+	public UserDetails enrollJudgeInEvent(Long judgeId, Long eventId, String requesterUsername) {
 		Event requestedEvent = retriveEventById(eventId);
 		authService.verifyOwnershipOf(requestedEvent, requesterUsername);
-		
-		return UserMapper.toUserBrief(requestedEvent.addJudge(judge));
+		User judge = userService.getUserWithRoleById(judgeId, Role.JUDGE);
+		requestedEvent.addJudge(judge);
+		return UserMapper.toUserDetails(judge);
 	}
 
 	public List<UserBrief> getJudgeList(Long eventId) {
 		return retriveEventById(eventId).getJudgeList()
 				.stream().map(UserMapper::toUserBrief).collect(Collectors.toList());
-				
 	}
 
 	public List<UserBrief> getPlayersForEvent(Long eventId) {
 		return retriveEventById(eventId).getPlayerList()
 				.stream().map(UserMapper::toUserBrief).collect(Collectors.toList());
-				
 	}
 
 }

@@ -13,7 +13,7 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.ext.Provider;
 
-import com.riccardomalavolti.arcano.model.User;
+import com.riccardomalavolti.arcano.dto.UserDetails;
 import com.riccardomalavolti.arcano.service.AuthenticationService;
 import com.riccardomalavolti.arcano.service.UserService;
 
@@ -42,10 +42,8 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 	private void handleTokenBasedAuthentication(String authenticationToken, ContainerRequestContext requestContext) {
 
 		String username = authService.parseToken(authenticationToken);
-		User user = userService.getUserByUsername(username);
+		UserDetails user = userService.getUserDetailsByUsername(username);
 		
-		System.out.println(username + " is in the house");
-
 		boolean isSecure = requestContext.getSecurityContext().isSecure();
 		SecurityContext securityContext = new TokenBasedSecurityContext(user, authenticationToken, isSecure);
 		requestContext.setSecurityContext(securityContext);

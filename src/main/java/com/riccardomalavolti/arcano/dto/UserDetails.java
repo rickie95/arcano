@@ -1,10 +1,16 @@
 package com.riccardomalavolti.arcano.dto;
 
-public class UserBrief {
+import com.riccardomalavolti.arcano.model.Role;
+
+public class UserDetails {
 	
 	Long id;
 	String username;
-		
+	
+	String name;
+	String surname;
+	Role role;
+	
 	public Long getId() {
 		return id;
 	}
@@ -16,6 +22,24 @@ public class UserBrief {
 	}
 	public void setUsername(String username) {
 		this.username = username;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public String getSurname() {
+		return surname;
+	}
+	public void setSurname(String surname) {
+		this.surname = surname;
+	}
+	public Role getRole() {
+		return role;
+	}
+	public void setRole(Role role) {
+		this.role = role;
 	}
 	@Override
 	public int hashCode() {
@@ -32,7 +56,7 @@ public class UserBrief {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		UserBrief other = (UserBrief) obj;
+		UserDetails other = (UserDetails) obj;
 		if (id == null) {
 			if (other.id != null)
 				return false;
@@ -40,5 +64,5 @@ public class UserBrief {
 			return false;
 		return true;
 	}
-	
+
 }

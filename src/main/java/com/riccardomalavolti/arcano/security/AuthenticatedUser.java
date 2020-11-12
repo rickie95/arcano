@@ -4,13 +4,13 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.riccardomalavolti.arcano.model.User;
+import com.riccardomalavolti.arcano.dto.UserDetails;
 
 public class AuthenticatedUser implements Principal {
     	
-    	private User user;
+    	private UserDetails user;
     	
-        public AuthenticatedUser(User user) {
+        public AuthenticatedUser(UserDetails user) {
             this.user = user;
         }
 

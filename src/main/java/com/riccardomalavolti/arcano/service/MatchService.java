@@ -5,6 +5,9 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.ws.rs.NotFoundException;
 
+import com.riccardomalavolti.arcano.dto.MatchBrief;
+import com.riccardomalavolti.arcano.dto.MatchDetails;
+import com.riccardomalavolti.arcano.dto.MatchMapper;
 import com.riccardomalavolti.arcano.model.Match;
 import com.riccardomalavolti.arcano.model.User;
 import com.riccardomalavolti.arcano.repositories.MatchRepository;
@@ -33,45 +36,49 @@ public class MatchService {
 		this.authorization = authService;
 	}
 	
-	public List<Match> getAllMatches() {
-		return matchRepo.getAllMatches();
+	public List<MatchBrief> getAllMatches() {
+		return MatchMapper.toMatchBrief(matchRepo.getAllMatches());
 	}
 	
-	public Match getMatchById(Long matchId) {
+	Match getMatchById(Long matchId) {
 		return matchRepo.getMatchById(matchId)
 				.orElseThrow(() -> new NotFoundException(String.format(NO_MATCH_FOUND_WITH_ID, matchId)));
 	}	
+	
+	public MatchDetails getMatchDetailsById(Long matchId) {
+		return MatchMapper.toMatchDetails(getMatchById(matchId));
+	}
 
-	public Match createMatch(Match match) {
+	public MatchDetails createMatch(Match match) {
 		User p1 = userService.getUserById(match.getPlayerOne().getId());
 		match.setPlayerOne(p1);
 				
 		User p2 = userService.getUserById(match.getPlayerTwo().getId());
 		match.setPlayerTwo(p2);
 		
-		return matchRepo.addMatch(match);
+		return addMatch(match);
 	}
 	
-	public Match addMatch(Match match) {
-		return matchRepo.addMatch(match);
+	public MatchDetails addMatch(Match match) {
+		return MatchMapper.toMatchDetails(matchRepo.addMatch(match));
 	}
 	
-	public Match deleteMatch(Long matchId, String requesterUsername) {
+	public MatchDetails deleteMatch(Long matchId, String requesterUsername) {
 		Match requestedMatch = getMatchById(matchId);
 		authorization.verifyOwnershipOf(requestedMatch, requesterUsername);
 		
-		return matchRepo.removeMatch(requestedMatch);
+		return MatchMapper.toMatchDetails(matchRepo.removeMatch(requestedMatch));
 	}
 
-	public Match updateMatch(Long matchId, Match newMatch, String requesterUsername) {
+	public MatchDetails updateMatch(Long matchId, Match newMatch, String requesterUsername) {
 		Match requestedMatch = getMatchById(matchId);
 		authorization.verifyOwnershipOf(requestedMatch, requesterUsername);
 		
 		newMatch.setId(getMatchById(matchId).getId());
-		return matchRepo.updateMatch(newMatch);
+		return MatchMapper.toMatchDetails(matchRepo.updateMatch(newMatch));
 	}
 
-	public List<Match> getMatchListForEvent(Long eventId, boolean fetchOnlyInProgress) {
-		return matchRepo.getMatchForEvent(eventId, fetchOnlyInProgress);
+	public List<MatchDetails> getMatchListForEvent(Long eventId) {
+		return MatchMapper.toMatchDetails(matchRepo.getMatchForEvent(eventId));
 	}
 }

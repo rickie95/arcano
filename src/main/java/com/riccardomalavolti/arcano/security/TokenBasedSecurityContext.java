@@ -4,7 +4,7 @@ import java.security.Principal;
 
 import javax.ws.rs.core.SecurityContext;
 
-import com.riccardomalavolti.arcano.model.User;
+import com.riccardomalavolti.arcano.dto.UserDetails;
 
 public class TokenBasedSecurityContext implements SecurityContext {
 
@@ -12,7 +12,7 @@ public class TokenBasedSecurityContext implements SecurityContext {
     private String token;
     private final boolean secure;
 
-    public TokenBasedSecurityContext(User user, String token, boolean secure) {
+    public TokenBasedSecurityContext(UserDetails user, String token, boolean secure) {
         this.user = new AuthenticatedUser(user);
         this.token = token;
         this.secure = secure;

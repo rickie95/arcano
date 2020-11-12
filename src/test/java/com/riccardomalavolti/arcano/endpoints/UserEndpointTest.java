@@ -24,6 +24,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import com.riccardomalavolti.arcano.dto.UserMapper;
 import com.riccardomalavolti.arcano.endpoints.rest.UserEndpoint;
 import com.riccardomalavolti.arcano.model.User;
 import com.riccardomalavolti.arcano.service.UserService;
@@ -74,7 +75,7 @@ public class UserEndpointTest extends JerseyTest {
 		List<User> players = new ArrayList<User>(Arrays.asList(p1, p2));
 		
 		when(playerService.getAllUsers())
-		.thenReturn(players);
+		.thenReturn(UserMapper.toUserBriefList(players));
 
         given().
             accept(MediaType.APPLICATION_JSON).
@@ -97,8 +98,8 @@ public class UserEndpointTest extends JerseyTest {
 		p.setId(playerId);
 		p.setUsername(playerUsername);
 		
-		when(playerService.getUserById(anyLong()))
-			.thenReturn(p);
+		when(playerService.getUserDetailsById(anyLong()))
+			.thenReturn(UserMapper.toUserDetails(p));
 
 		given().
 			accept(MediaType.APPLICATION_JSON).
@@ -128,7 +129,7 @@ public class UserEndpointTest extends JerseyTest {
 									.add("username", playerUsername)
 									.build();
 
-		when(playerService.addNewUser(playerSent)).thenReturn(playerRetuned);
+		when(playerService.addNewUser(playerSent)).thenReturn(UserMapper.toUserDetails(playerRetuned));
 
 		given()
 			.contentType(MediaType.APPLICATION_JSON)

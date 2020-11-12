@@ -27,6 +27,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.riccardomalavolti.arcano.dto.UserBrief;
+import com.riccardomalavolti.arcano.dto.UserDetails;
+import com.riccardomalavolti.arcano.dto.UserMapper;
 import com.riccardomalavolti.arcano.exceptions.ConflictException;
 import com.riccardomalavolti.arcano.model.User;
 import com.riccardomalavolti.arcano.repositories.UserRepository;
@@ -71,11 +74,11 @@ class UserServiceTest {
 	@Test
 	void testGetAlluser() {
 		when(userRepo.getAllUsers()).thenReturn(userList);
-		List<User> returnedList = userService.getAllUsers();
+		List<UserBrief> returnedList = userService.getAllUsers();
 
 		verify(userRepo).getAllUsers();
 
-		assertEquals(userList, returnedList);
+		assertThat(returnedList).contains(UserMapper.toUserBrief(p1), UserMapper.toUserBrief(p2));
 	}
 
 	@Test
@@ -118,11 +121,11 @@ class UserServiceTest {
 		when(userRepo.getUserByUsername(p1Username)).thenReturn(Optional.empty());
 		when(userRepo.addNewUser(p1)).thenReturn(p1);
 
-		User returnedPlayer = userService.addNewUser(p1);
+		UserDetails returnedPlayer = userService.addNewUser(p1);
 		verify(userRepo).addNewUser(p1);
 		verify(userRepo).getUserByUsername(p1Username);
 
-		assertEquals(p1, returnedPlayer);
+		assertThat(returnedPlayer).isEqualTo(UserMapper.toUserDetails(p1));
 	}
 
 	@Test
@@ -140,12 +143,12 @@ class UserServiceTest {
 		when(userRepo.getUserById(p1.getId())).thenReturn(Optional.of(p1));
 		when(userRepo.removeUser(p1)).thenReturn(p1);
 
-		User returnedPlayer = userService.deleteUser(userOneID, owner);
+		UserDetails returnedPlayer = userService.deleteUser(userOneID, owner);
 		verify(userRepo).removeUser(userCaptor.capture());
 
 		verify(authService).verifyOwnershipOf(p1, owner);
 		assertEquals(p1, userCaptor.getValue());
-		assertEquals(returnedPlayer, p1);
+		assertThat(returnedPlayer).isEqualTo(UserMapper.toUserDetails(p1));
 	}
 
 	@Test
@@ -156,13 +159,11 @@ class UserServiceTest {
 		when(userRepo.getUserById(userOneID)).thenReturn(Optional.of(p1));
 		when(userRepo.mergeUser(user)).thenReturn(user);
 
-		User returnedPlayer = userService.updateUser(userOneID, user, owner);
+		UserDetails returnedPlayer = userService.updateUser(userOneID, user, owner);
 
 		verify(authService).verifyOwnershipOf(p1, owner);
 		verify(userRepo).mergeUser(userCaptor.capture());
-		assertThat(returnedPlayer).isEqualTo(p1);
-		//assertThat(userCaptor.getValue().getId()).isEqualTo(p1.getId());
-
+		assertThat(returnedPlayer).isEqualTo(UserMapper.toUserDetails(p1));
 	}
 
 }

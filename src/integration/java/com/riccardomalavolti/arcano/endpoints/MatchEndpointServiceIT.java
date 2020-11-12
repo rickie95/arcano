@@ -122,8 +122,6 @@ public class MatchEndpointServiceIT extends JerseyTest {
     	toBeReturnedMatch.setPlayerTwo(p2);
     	
     	when(matchRepo.addMatch(any(Match.class))).thenReturn(toBeReturnedMatch);
-    	when(userService.getUserById(p1.getId())).thenReturn(p1);
-    	when(userService.getUserById(p2.getId())).thenReturn(p2);
     	
     	 JsonObject newMatchJSON = Json.createObjectBuilder()
  				.add("playerOneScore", 1)
