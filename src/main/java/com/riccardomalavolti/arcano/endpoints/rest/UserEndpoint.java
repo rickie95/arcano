@@ -22,7 +22,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
-import com.riccardomalavolti.arcano.exceptions.AccessDeniedException;
+import com.riccardomalavolti.arcano.dto.UserBrief;
+import com.riccardomalavolti.arcano.dto.UserDetails;
 import com.riccardomalavolti.arcano.model.Role;
 import com.riccardomalavolti.arcano.model.User;
 import com.riccardomalavolti.arcano.service.UserService;
@@ -42,7 +43,7 @@ public class UserEndpoint {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@PermitAll
-	public List<User> getUserList() {
+	public List<UserBrief> getUserList() {
 		return userService.getAllUsers();
 	}
 	
@@ -50,8 +51,8 @@ public class UserEndpoint {
 	@Path("{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	@RolesAllowed({Role.Values.JUDGE_VALUE, Role.Values.ADMIN_VALUE})
-	public User getUserById(@PathParam("id") String id) {
-		return userService.getUserById(id);
+	public UserDetails getUserById(@PathParam("id") Long id) {
+		return userService.getUserDetailsById(id);
 	}
 
 	@POST
@@ -59,7 +60,7 @@ public class UserEndpoint {
 	@Produces(MediaType.APPLICATION_JSON)
 	@PermitAll
 	public Response addNewUser(User p, @Context UriInfo uriInfo) throws URISyntaxException {
-		User saved = userService.addNewUser(p);
+		UserDetails saved = userService.addNewUser(p);
 		return Response.created(new URI(uriInfo.getAbsolutePath() + "/" + saved.getId()))
 				.entity(saved)
 				.build();
@@ -70,12 +71,8 @@ public class UserEndpoint {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@PermitAll
-	public Response updateUser(@PathParam("id") String userId, User updatedPlayer) {
-		
-		verifyOwnershipOf(userId);
-		
-		return Response
-				.ok(userService.updateUser(userId, updatedPlayer))
+	public Response updateUser(@PathParam("id") Long userId, User updatedPlayer) {
+		return Response.ok(userService.updateUser(userId, updatedPlayer, getRequester()))
 				.build();
 	}
 	
@@ -83,21 +80,12 @@ public class UserEndpoint {
 	@Path("{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	@PermitAll
-	public Response deleteUser(@PathParam("id") String userId) {
-		
-		verifyOwnershipOf(userId);
-		
-		return Response.accepted(userService.deleteUser(userId)).build();
+	public Response deleteUser(@PathParam("id") Long userId) {		
+		return Response.accepted(userService.deleteUser(userId, getRequester())).build();
 	}
 	
-	private void verifyOwnershipOf(String resourceId) {
-		/*
-		 * Simply checks if requester is the legitimate owner.
-		 */
-		User requestedUser = userService.getUserById(resourceId);
-		if(!context.getUserPrincipal().getName().equals(requestedUser.getUsername()))
-			throw new AccessDeniedException("You are not the owner");
+	private String getRequester() {
+		return context.getUserPrincipal().getName();
 	}
-
 
 }
