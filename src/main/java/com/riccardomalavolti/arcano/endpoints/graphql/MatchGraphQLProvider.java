@@ -9,6 +9,8 @@ import org.eclipse.microprofile.graphql.Mutation;
 import org.eclipse.microprofile.graphql.Name;
 import org.eclipse.microprofile.graphql.Query;
 
+import com.riccardomalavolti.arcano.dto.MatchBrief;
+import com.riccardomalavolti.arcano.dto.MatchDetails;
 import com.riccardomalavolti.arcano.model.Match;
 import com.riccardomalavolti.arcano.service.AuthenticationService;
 import com.riccardomalavolti.arcano.service.MatchService;
@@ -21,27 +23,27 @@ public class MatchGraphQLProvider {
 	@Inject AuthenticationService authService;
 	
 	@Query
-	public List<Match> getMatches(){
+	public List<MatchBrief> getMatches(){
 		return matchService.getAllMatches();
 	}
 	
 	@Query
-	public Match getMatchById(@Name("matchId") Long matchId) {
-		return matchService.getMatchById(matchId);
+	public MatchDetails getMatchById(@Name("matchId") Long matchId) {
+		return matchService.getMatchDetailsById(matchId);
 	}
 	
 	@Mutation
-	public Match insertMatch(Match match) {
+	public MatchDetails insertMatch(Match match) {
 		return matchService.createMatch(match);
 	}
 	
 	@Mutation
-	public Match removeMatch(@Name("matchId") Long matchId, @Name("jwt") String token) {
+	public MatchDetails removeMatch(@Name("matchId") Long matchId, @Name("jwt") String token) {
 		return matchService.deleteMatch(matchId, authService.parseToken(token));
 	}
 	
 	@Mutation
-	public Match updateMatch(@Name("matchId") Long matchId, Match updatedMatch, @Name("jwt") String token) {
+	public MatchDetails updateMatch(@Name("matchId") Long matchId, Match updatedMatch, @Name("jwt") String token) {
 		return matchService.updateMatch(matchId, updatedMatch, authService.parseToken(token));
 	}
 
