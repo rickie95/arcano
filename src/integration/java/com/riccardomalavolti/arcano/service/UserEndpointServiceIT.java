@@ -1,4 +1,4 @@
-package com.riccardomalavolti.arcano.endpoints;
+package com.riccardomalavolti.arcano.service;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.endsWith;
@@ -28,8 +28,6 @@ import org.mockito.MockitoAnnotations;
 import com.riccardomalavolti.arcano.endpoints.rest.UserEndpoint;
 import com.riccardomalavolti.arcano.model.User;
 import com.riccardomalavolti.arcano.repositories.UserRepository;
-import com.riccardomalavolti.arcano.service.AuthorizationService;
-import com.riccardomalavolti.arcano.service.UserService;
 
 import io.restassured.RestAssured;
 

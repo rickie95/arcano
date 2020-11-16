@@ -1,4 +1,4 @@
-package com.riccardomalavolti.arcano.endpoints;
+package com.riccardomalavolti.arcano.service;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.endsWith;
@@ -29,9 +29,6 @@ import com.riccardomalavolti.arcano.endpoints.rest.MatchEndpoint;
 import com.riccardomalavolti.arcano.model.Match;
 import com.riccardomalavolti.arcano.model.User;
 import com.riccardomalavolti.arcano.repositories.MatchRepository;
-import com.riccardomalavolti.arcano.service.AuthorizationService;
-import com.riccardomalavolti.arcano.service.MatchService;
-import com.riccardomalavolti.arcano.service.UserService;
 
 import io.restassured.RestAssured;
 
