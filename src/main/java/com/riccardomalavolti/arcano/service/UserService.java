@@ -15,6 +15,7 @@ import com.riccardomalavolti.arcano.exceptions.ConflictException;
 import com.riccardomalavolti.arcano.model.Role;
 import com.riccardomalavolti.arcano.model.User;
 import com.riccardomalavolti.arcano.repositories.UserRepository;
+import com.riccardomalavolti.arcano.security.PasswordHash;
 
 @RequestScoped
 @Default
@@ -59,14 +60,22 @@ public class UserService {
 
 	public UserDetails addNewUser(User user) {
 		if(user == null)
-			throw new BadRequestException();
+			throw new BadRequestException("No user provided");
+		
+		if(user.getUsername() == null || user.getPassword().isEmpty())
+			throw new BadRequestException("Username can't be empty");
+		
+		if(user.getPassword() == null || user.getPassword().isEmpty())
+			throw new BadRequestException("Password can't be empty.");
+		
 		try {
 			getUserByUsername(user.getUsername());
 		}catch(NotFoundException ex) {
+			user.setPassword(PasswordHash.hash(user.getPassword()));
 			return UserMapper.toUserDetails(userRepo.addNewUser(user));
 		}
 		
-		throw new ConflictException();
+		throw new ConflictException("An user with this username already exists.");
 	}
 
 	public UserDetails updateUser(Long userId, User user, final String requesterUsername) {

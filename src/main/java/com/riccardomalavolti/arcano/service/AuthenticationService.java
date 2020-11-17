@@ -8,13 +8,14 @@ import javax.ws.rs.NotAuthorizedException;
 
 import com.riccardomalavolti.arcano.model.User;
 import com.riccardomalavolti.arcano.repositories.UserRepository;
+import com.riccardomalavolti.arcano.security.PasswordHash;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.SecurityException;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SecurityException;
 
 @ApplicationScoped
 public class AuthenticationService {
@@ -35,6 +36,8 @@ public class AuthenticationService {
 	private void authenticate(User user) {
 		if (user.getUsername() == null || user.getPassword() == null)
 			throw new IllegalArgumentException("Username or passowrd are empty.");
+		
+		user.setPassword(PasswordHash.hash(user.getPassword()));
 		
 		userRepository.authenticate(user);
 	}
