@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import javax.ws.rs.BadRequestException;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.core.SecurityContext;
 
@@ -31,6 +32,7 @@ import com.riccardomalavolti.arcano.dto.UserBrief;
 import com.riccardomalavolti.arcano.dto.UserDetails;
 import com.riccardomalavolti.arcano.dto.UserMapper;
 import com.riccardomalavolti.arcano.exceptions.ConflictException;
+import com.riccardomalavolti.arcano.model.Role;
 import com.riccardomalavolti.arcano.model.User;
 import com.riccardomalavolti.arcano.repositories.UserRepository;
 
@@ -44,7 +46,7 @@ class UserServiceTest {
 	private final static Long userOneID = (long) 1;
 	private final static Long userTwoID = (long) 2;
 
-	private User p1, p2;
+	private User userOne, userTwo;
 	private List<User> userList;
 
 	@Captor
@@ -62,13 +64,15 @@ class UserServiceTest {
 
 	@BeforeEach
 	void setupRepository() {
-		p1 = new User();
-		p1.setId(userOneID);
-		p1.setUsername(p1Username);
-		p2 = new User();
-		p2.setId(userTwoID);
-		p2.setUsername(p2Username);
-		userList = new ArrayList<>(Arrays.asList(p1, p2));
+		userOne = new User();
+		userOne.setId(userOneID);
+		userOne.setUsername(p1Username);
+		userOne.setPassword("Foo");
+		userTwo = new User();
+		userTwo.setId(userTwoID);
+		userTwo.setUsername(p2Username);
+		userTwo.setPassword("Bar");
+		userList = new ArrayList<>(Arrays.asList(userOne, userTwo));
 	}
 
 	@Test
@@ -78,17 +82,17 @@ class UserServiceTest {
 
 		verify(userRepo).getAllUsers();
 
-		assertThat(returnedList).contains(UserMapper.toUserBrief(p1), UserMapper.toUserBrief(p2));
+		assertThat(returnedList).contains(UserMapper.toUserBrief(userOne), UserMapper.toUserBrief(userTwo));
 	}
 
 	@Test
-	void testGetuserById() {
-		when(userRepo.getUserById(userOneID)).thenReturn(Optional.of(p1));
+	void testGetUserById() {
+		when(userRepo.getUserById(userOneID)).thenReturn(Optional.of(userOne));
 
 		User returnedPlayer = userService.getUserById(userOneID);
 
 		verify(userRepo).getUserById(userOneID);
-		assertEquals(p1, returnedPlayer);
+		assertEquals(userOne, returnedPlayer);
 	}
 
 	@Test
@@ -119,36 +123,72 @@ class UserServiceTest {
 	@Test
 	void testAddPlayer() {
 		when(userRepo.getUserByUsername(p1Username)).thenReturn(Optional.empty());
-		when(userRepo.addNewUser(p1)).thenReturn(p1);
+		when(userRepo.addNewUser(userOne)).thenReturn(userOne);
 
-		UserDetails returnedPlayer = userService.addNewUser(p1);
-		verify(userRepo).addNewUser(p1);
+		UserDetails returnedPlayer = userService.addNewUser(userOne);
+		verify(userRepo).addNewUser(userOne);
 		verify(userRepo).getUserByUsername(p1Username);
 
-		assertThat(returnedPlayer).isEqualTo(UserMapper.toUserDetails(p1));
+		assertThat(returnedPlayer).isEqualTo(UserMapper.toUserDetails(userOne));
 	}
 
 	@Test
 	void testAddPlayerWhenWithAnAlreadyExistentPlayer() {
-		when(userRepo.getUserByUsername(p1.getUsername())).thenReturn(Optional.of(p1));
+		when(userRepo.getUserByUsername(userOne.getUsername())).thenReturn(Optional.of(userOne));
 
 		assertThatExceptionOfType(ConflictException.class).isThrownBy(() -> {
-			userService.addNewUser(p1);
+			userService.addNewUser(userOne);
+		});
+	}
+	
+	@Test
+	void testAddPlayerShouldThrowBadRequestExIfUserNameOrPasswordAreNull() {
+		// user == null
+		assertThatExceptionOfType(BadRequestException.class).isThrownBy(() -> {
+			userService.addNewUser(null);
+		});
+		
+		// user.username == null
+		User nullUsername = new User();
+		assertThatExceptionOfType(BadRequestException.class).isThrownBy(() -> {
+			userService.addNewUser(nullUsername);
+		});
+		
+		// user.username == ""
+		User emptyUsername = new User();
+		emptyUsername.setUsername("");
+		assertThatExceptionOfType(BadRequestException.class).isThrownBy(() -> {
+			userService.addNewUser(emptyUsername);
+		});
+		
+		// user.username ok, user.password == null
+		User nullPassword = new User();
+		nullPassword.setUsername("Mike");
+		assertThatExceptionOfType(BadRequestException.class).isThrownBy(() -> {
+			userService.addNewUser(nullPassword);
+		});
+		
+		// user.username ok, user.password == ""
+		User emptyPassword = new User();
+		emptyPassword.setUsername("Mike");
+		emptyPassword.setPassword("");
+		assertThatExceptionOfType(BadRequestException.class).isThrownBy(() -> {
+			userService.addNewUser(emptyPassword);
 		});
 	}
 
 	@Test
 	void testDeletePlayer() {
 		String owner = "FOO";
-		when(userRepo.getUserById(p1.getId())).thenReturn(Optional.of(p1));
-		when(userRepo.removeUser(p1)).thenReturn(p1);
+		when(userRepo.getUserById(userOne.getId())).thenReturn(Optional.of(userOne));
+		when(userRepo.removeUser(userOne)).thenReturn(userOne);
 
 		UserDetails returnedPlayer = userService.deleteUser(userOneID, owner);
 		verify(userRepo).removeUser(userCaptor.capture());
 
-		verify(authService).verifyOwnershipOf(p1, owner);
-		assertEquals(p1, userCaptor.getValue());
-		assertThat(returnedPlayer).isEqualTo(UserMapper.toUserDetails(p1));
+		verify(authService).verifyOwnershipOf(userOne, owner);
+		assertEquals(userOne, userCaptor.getValue());
+		assertThat(returnedPlayer).isEqualTo(UserMapper.toUserDetails(userOne));
 	}
 
 	@Test
@@ -156,14 +196,73 @@ class UserServiceTest {
 		String owner = "FOO";
 		User user = new User();
 		user.setUsername("MIKE");
-		when(userRepo.getUserById(userOneID)).thenReturn(Optional.of(p1));
+		user.setPassword("Bar");
+		when(userRepo.getUserById(userOneID)).thenReturn(Optional.of(userOne));
 		when(userRepo.mergeUser(user)).thenReturn(user);
 
 		UserDetails returnedPlayer = userService.updateUser(userOneID, user, owner);
 
-		verify(authService).verifyOwnershipOf(p1, owner);
+		verify(authService).verifyOwnershipOf(userOne, owner);
 		verify(userRepo).mergeUser(userCaptor.capture());
-		assertThat(returnedPlayer).isEqualTo(UserMapper.toUserDetails(p1));
+		assertThat(returnedPlayer).isEqualTo(UserMapper.toUserDetails(userOne));
+	}
+	
+	@Test
+	void testUpdatePlayerWhenPasswordIsNotSpecified() {
+		String owner = "FOO";
+		User user = new User();
+		user.setUsername("MIKE");
+		when(userRepo.getUserById(userOneID)).thenReturn(Optional.of(userOne));
+		when(userRepo.mergeUser(user)).thenReturn(user);
+
+		UserDetails returnedPlayer = userService.updateUser(userOneID, user, owner);
+
+		verify(authService).verifyOwnershipOf(userOne, owner);
+		verify(userRepo).mergeUser(userCaptor.capture());
+		assertThat(returnedPlayer).isEqualTo(UserMapper.toUserDetails(userOne));
+	}
+	
+	@Test
+	void testGetUserDetailsByUsername() {
+		when(userRepo.getUserByUsername(p1Username)).thenReturn(Optional.of(userOne));
+		
+		UserDetails userFetched = userService.getUserDetailsByUsername(p1Username);
+		
+		assertThat(userFetched.getId()).isEqualTo(userOne.getId());
+		
+	}
+	
+	@Test
+	void testGetUserDetailsById() {
+		when(userRepo.getUserById(userOne.getId())).thenReturn(Optional.of(userOne));
+		
+		UserDetails userFetched = userService.getUserDetailsById(userOne.getId());
+		
+		assertThat(userFetched.getId()).isEqualTo(userOne.getId());	
+	}
+	
+	@Test
+	void testGetUserWithRoleById() {
+		userOne.setRole(Role.ADMINISTRATOR);
+		when(userRepo.getUserById(userOneID)).thenReturn(Optional.of(userOne));
+		User user = userService.getUserWithRoleById(userOneID, Role.ADMINISTRATOR);
+		assertThat(user.getId()).isEqualTo(userOne.getId());
+	}
+	
+	@Test
+	void testGetUserWithRoleByIdShouldThrowIllegalArgumentExIfRoleIsntSet() {
+		when(userRepo.getUserById(userOneID)).thenReturn(Optional.of(userOne));
+		assertThatExceptionOfType(IllegalArgumentException.class)
+		    .isThrownBy( () -> userService.getUserWithRoleById(userOneID, Role.PLAYER));
+	}
+	
+	
+	@Test
+	void testGetUserWithRoleByIdShouldThrowIllegalArgumentExIfRoleDoesntMatch() {
+		when(userRepo.getUserById(userOneID)).thenReturn(Optional.of(userOne));
+		userOne.setRole(Role.ADMINISTRATOR);
+		assertThatExceptionOfType(IllegalArgumentException.class)
+		    .isThrownBy( () -> userService.getUserWithRoleById(userOneID, Role.PLAYER));
 	}
 
 }

@@ -62,7 +62,7 @@ public class UserService {
 		if(user == null)
 			throw new BadRequestException("No user provided");
 		
-		if(user.getUsername() == null || user.getPassword().isEmpty())
+		if(user.getUsername() == null || user.getUsername().isEmpty())
 			throw new BadRequestException("Username can't be empty");
 		
 		if(user.getPassword() == null || user.getPassword().isEmpty())
@@ -82,6 +82,9 @@ public class UserService {
 		User requestedUser = getUserById(userId);		
 		authorization.verifyOwnershipOf(requestedUser, requesterUsername);
 		user.setId(requestedUser.getId());
+		// TODO: sanity check su username e password
+		if(user.getPassword() != null)
+			user.setPassword(PasswordHash.hash(user.getPassword()));
 		return UserMapper.toUserDetails(userRepo.mergeUser(user));
 	}
 

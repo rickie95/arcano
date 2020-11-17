@@ -129,6 +129,7 @@ private static final String USERS = UserEndpoint.ENDPOINT_PATH;
 
 		JsonObject jsonSent = Json.createObjectBuilder()
 									.add("username", playerUsername)
+									.add("password", "verysecret")
 									.build();
 
 		when(userRepo.addNewUser(playerSent)).thenReturn(playerRetuned);
