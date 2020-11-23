@@ -1,11 +1,13 @@
 package com.riccardomalavolti.arcano.service;
 
+import javax.enterprise.inject.Default;
 import javax.inject.Inject;
 
 import com.riccardomalavolti.arcano.exceptions.AccessDeniedException;
 import com.riccardomalavolti.arcano.model.Ownable;
 import com.riccardomalavolti.arcano.model.User;
 
+@Default
 public class AuthorizationService {
 	
 	@Inject

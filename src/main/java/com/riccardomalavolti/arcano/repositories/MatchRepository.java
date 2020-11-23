@@ -3,11 +3,13 @@ package com.riccardomalavolti.arcano.repositories;
 import java.util.List;
 import java.util.Optional;
 
+import javax.enterprise.inject.Default;
 import javax.inject.Inject;
 
 import com.riccardomalavolti.arcano.model.Match;
 import com.riccardomalavolti.arcano.persistence.MatchDAO;
 
+@Default
 public class MatchRepository {
 	
 	final MatchDAO matchDAO;

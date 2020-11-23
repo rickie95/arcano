@@ -2,6 +2,7 @@ package com.riccardomalavolti.arcano.service;
 
 import java.util.List;
 
+import javax.enterprise.inject.Default;
 import javax.inject.Inject;
 import javax.ws.rs.NotFoundException;
 
@@ -12,6 +13,7 @@ import com.riccardomalavolti.arcano.model.Match;
 import com.riccardomalavolti.arcano.model.User;
 import com.riccardomalavolti.arcano.repositories.MatchRepository;
 
+@Default
 public class MatchService {
 
 	public static final String NO_MATCH_FOUND_WITH_ID = "No match found with id %s";

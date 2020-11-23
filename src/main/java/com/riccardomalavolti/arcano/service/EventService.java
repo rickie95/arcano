@@ -3,6 +3,7 @@ package com.riccardomalavolti.arcano.service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.enterprise.inject.Default;
 import javax.inject.Inject;
 import javax.ws.rs.NotFoundException;
 
@@ -17,6 +18,7 @@ import com.riccardomalavolti.arcano.model.Role;
 import com.riccardomalavolti.arcano.model.User;
 import com.riccardomalavolti.arcano.repositories.EventRepository;
 
+@Default
 public class EventService {
 	
 	private static final String NO_EVENT_FOUND_WITH_ID = "No event found with id %s";
