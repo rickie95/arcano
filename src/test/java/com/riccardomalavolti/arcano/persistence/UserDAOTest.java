@@ -78,7 +78,9 @@ class UserDAOTest {
 		when(query.setParameter("username", USER_ONE_USERNAME)).thenReturn(query);
 		when(query.getSingleResult()).thenThrow(new NoResultException());
 		
-		assertThrows(NoResultException.class, () -> userDAO.findUserByUsername(USER_ONE_USERNAME));
+		User returnedUser = userDAO.findUserByUsername(USER_ONE_USERNAME);
+		
+		assertThat(returnedUser).isNull();
 	}
 	
 	@Test

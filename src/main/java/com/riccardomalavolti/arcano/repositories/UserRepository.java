@@ -3,13 +3,13 @@ package com.riccardomalavolti.arcano.repositories;
 import java.util.List;
 import java.util.Optional;
 
-import javax.enterprise.inject.Default;
+import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 import com.riccardomalavolti.arcano.model.User;
 import com.riccardomalavolti.arcano.persistence.UserDAO;
 
-@Default
+@Dependent
 public class UserRepository {
 
 	final UserDAO userDAO;

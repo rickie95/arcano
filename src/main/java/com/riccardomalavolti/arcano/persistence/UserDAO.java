@@ -3,6 +3,7 @@ package com.riccardomalavolti.arcano.persistence;
 import java.util.List;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.persistence.NoResultException;
 import javax.transaction.Transactional;
 
 import com.riccardomalavolti.arcano.model.User;
@@ -34,9 +35,13 @@ public class UserDAO extends MySQLGenericDAO<User> {
 	}
 
 	public User findUserByUsername(String username) {
-		return em.createQuery(USER_BY_USERNAME, User.class)
-				.setParameter("username", username)
-				.getSingleResult();
+		try {
+			return em.createQuery(USER_BY_USERNAME, User.class)
+					.setParameter("username", username)
+					.getSingleResult();
+		}catch(NoResultException ex) {
+			return null;
+		}	
 	}
 
 }

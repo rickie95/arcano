@@ -5,7 +5,6 @@ import java.net.URISyntaxException;
 import java.util.List;
 
 import javax.annotation.security.PermitAll;
-import javax.annotation.security.RolesAllowed;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
@@ -24,7 +23,6 @@ import javax.ws.rs.core.UriInfo;
 
 import com.riccardomalavolti.arcano.dto.UserBrief;
 import com.riccardomalavolti.arcano.dto.UserDetails;
-import com.riccardomalavolti.arcano.model.Role;
 import com.riccardomalavolti.arcano.model.User;
 import com.riccardomalavolti.arcano.service.UserService;
 
@@ -50,7 +48,7 @@ public class UserEndpoint {
 	@GET
 	@Path("{id}")
 	@Produces(MediaType.APPLICATION_JSON)
-	@RolesAllowed({Role.Values.JUDGE_VALUE, Role.Values.ADMIN_VALUE})
+	@PermitAll
 	public UserDetails getUserById(@PathParam("id") Long id) {
 		return userService.getUserDetailsById(id);
 	}
