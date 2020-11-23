@@ -6,12 +6,12 @@
 
 	<groupId>com.riccardomalavolti</groupId>
 	<artifactId>arcano</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.9</version>
 	<packaging>war</packaging>
-
 	<name>arcano</name>
 
 	<properties>
+		<war-final-name>arcano</war-final-name>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java.version>11</java.version>
 		<maven.compiler.source>${java.version}</maven.compiler.source>
@@ -263,6 +263,7 @@
 	</dependencies>
 
 	<build>
+		<finalName>${war-final-name}</finalName>
 		<plugins>
 			<plugin>
 				<artifactId>maven-clean-plugin</artifactId>
@@ -312,6 +313,14 @@
 									<mainClass>com.riccardomalavolti.arcano.App</mainClass>
 								</transformer>
 							</transformers>
+							<filters>
+								<filter>
+									<artifact>io.smallrye:smallrye*</artifact>
+									<excludes>
+										<exclude>META-INF/beans.xml</exclude>
+									</excludes>
+								</filter>
+							</filters>
 						</configuration>
 					</execution>
 				</executions>
