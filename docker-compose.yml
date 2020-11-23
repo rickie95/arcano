@@ -1,0 +1,32 @@
+version: "3.8"
+
+services:
+
+    mysql:
+        image: "mysql:8.0.21"
+        environment:
+            - MYSQL_DATABASE=arcano
+            - MYSQL_ROOT_PASSWORD=arcano
+        ports:
+            - "3306:3306"
+        volumes:
+            - arcano_db_data:/var/lib/mysql
+    wildfly:
+        environment:
+            - DB_URI=mysql
+        build:
+            context: ./
+            dockerfile: wildfly-docker/wildfly20.dockerfile
+        restart: on-failure
+        depends_on:
+            - "mysql"
+        ports:
+            - "8080:8080"
+            - "9990:9990"
+
+volumes:
+    arcano_db_data: {}
+
+networks:
+    default:
+        driver: bridge

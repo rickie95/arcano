@@ -124,6 +124,19 @@
         <subsystem xmlns="urn:jboss:domain:core-management:1.0"/>
         <subsystem xmlns="urn:jboss:domain:datasources:6.0">
             <datasources>
+            	<datasource jta="true" jndi-name="java:/arcano-ds" pool-name="arcano-ds" enabled="true" use-ccm="true">
+				  <connection-url>jdbc:mysql://${env.DB_URI}:3306/arcano?serverTimezone=UTC</connection-url>
+				  <driver>mysql</driver>
+				  <security>
+				    <user-name>root</user-name>
+				    <password>arcano</password>
+				  </security>
+				  <validation>
+				  <valid-connection-checker class-name="org.jboss.jca.adapters.jdbc.extensions.mysql.MySQLValidConnectionChecker"/>
+				  <background-validation>true</background-validation>
+				  <exception-sorter class-name="org.jboss.jca.adapters.jdbc.extensions.mysql.MySQLExceptionSorter"/>
+				  </validation>
+				 </datasource>
                 <drivers>
                     <driver name="mysql" module="com.mysql">
                         <driver-class>com.mysql.cj.jdbc.Driver</driver-class>
@@ -345,8 +358,27 @@
                 <https-listener name="https" socket-binding="https" security-realm="ApplicationRealm" enable-http2="true"/>
                 <host name="default-host" alias="localhost">
                     <http-invoker security-realm="ApplicationRealm"/>
+                    <filter-ref name="Access-Control-Allow-Origin"/>
+					<filter-ref name="Access-Control-Allow-Methods"/>
+					<filter-ref name="Access-Control-Allow-Headers"/>
+					<filter-ref name="Access-Control-Allow-Credentials"/>
                 </host>
             </server>
+            <filters>
+				<response-header name="Access-Control-Allow-Origin"
+                    header-name="Access-Control-Allow-Origin"
+                    header-value="*"/>
+    		<response-header name="Access-Control-Allow-Methods"
+                    header-name="Access-Control-Allow-Methods"
+                    header-value="GET,POST,PUT,DELETE,OPTIONS,HEAD"/>
+    		<response-header name="Access-Control-Allow-Headers"
+                    header-name="Access-Control-Allow-Headers"
+                    header-value="content-type,authorization,origin,accept"/>
+    		<response-header name="Access-Control-Allow-Credentials"
+                    header-name="Access-Control-Allow-Credentials"
+                    header-value="true"/>
+
+			</filters>
             <servlet-container name="default">
                 <jsp-config/>
                 <websockets/>
