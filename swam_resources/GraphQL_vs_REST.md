@@ -107,14 +107,14 @@ Gli step effettuati dal server una volta ricevuta la query sono tre:
 2. **Validazione**: la query viene validata rispetto allo schema definito, verificando che i campi richiesti appartengano alla classe a cui fanno riferimento e che i parametri siano dello stesso tipo definito nello schema. Nel caso un campo non appartenga alla classe gli viene assegnato automaticamente il valore `null`.
 3. **Esecuzione**: Le query GraphQL sono assimilabili ad alberi, ovvero a grafi aciclici, c'è quindi una garanzia di terminazione risolvendo ricorsivamente la query a partire dalla sua radice. Vengono risolti prima i campi "primitivi" presenti alla radice, a seguire vengono eseguiti i riferimenti ad oggetti, chiamando i loro rispettivi risolutori. Una volta disceso tutto l'albero viene assemblata la risposta e inviata al client.
 
-![](graphql_query_execution.png)
+![](GraphQL_vs_REST_graphql_query_execution.png)
 
 ## GraphQL e REST alla prova sullo stesso web service 
 La progettazione e la realizzazione di un servizio web adesso si fa più interessante: se prima la scelta di creare API REST era quasi scontata, oggi è possibile utilizzare un approccio alternativo e funzionalmente equivalente grazie a GraphQL. Esiste anche la possibilità di integrare l'uso della libreria in progetti già esistenti, oltre a realizzare ex-novo sistemi che supportino entrambi i tipi di endpoint.
 
 [Arcano](https://github.com/rickie95/arcano) è un esempio di come quest'ultima possibilità possa essere implementata, facendo coesistere endpoint REST e GraphQL sullo stesso backend: è sufficiente una buona astrazione sul service layer, in modo tale da renderlo fruibile in maniera trasparente rispetto a quale tecnologia si sta utilizzando. In questo modo si possono addirittura alternare richieste tramite endpoint REST a richieste effettuate tramite GraphQL.
 
-![](arcano_struttura.png)
+![](GraphQL_vs_REST_struttura_arcano.png)
 
 Nell'implementazione proposta - realizzata in Java - è possibile vedere che la maggior parte delle funzionalità esposte negli endpoint REST sono perfettamente replicate e gestibili anche tramite l'endpoint univoco `/graphql`. Solamente il servizio di autenticazione è offerto esclusivamente un endpoint dedicato REST, ed il motivo è da imputare solamente all'implementazione GraphQL utilizzata, fornita da Smallrye, che attualmente non prevede un meccanismo dedicato per questa evenienza.
 L'implementazione è comunque interessante perché genera automaticamente lo schema a partire da quanto scritto nei Provider/Resolver di GraphQL, permettendo un approccio code-first.
