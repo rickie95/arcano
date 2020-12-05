@@ -58,11 +58,15 @@ class GameServiceTest {
 
 	@Test
 	void testCreateNewGame() {
-		when(gameRepository.createGame(playerOne, playerTwo)).thenReturn(game);
+		Game newGame = new Game();
+		newGame.setPointsForPlayer(playerOneId, (short)20);
+		newGame.setPointsForPlayer(playerTwoId, (short)20);
 		
-		Game createdGame = gameService.createGame(playerOne, playerTwo);
+		when(gameRepository.createGame(newGame)).thenReturn(game);
 		
-		verify(gameRepository).createGame(playerOne, playerTwo);
+		Game createdGame = gameService.createGame(newGame);
+		
+		verify(gameRepository).createGame(newGame);
 		assertThat(game).isEqualTo(createdGame);
 	}
 	

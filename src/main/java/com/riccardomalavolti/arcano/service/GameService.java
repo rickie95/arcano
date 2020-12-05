@@ -7,7 +7,6 @@ import javax.ws.rs.NotFoundException;
 
 import com.riccardomalavolti.arcano.dto.UserDetails;
 import com.riccardomalavolti.arcano.model.Game;
-import com.riccardomalavolti.arcano.model.User;
 import com.riccardomalavolti.arcano.repositories.GameRepository;
 
 public class GameService {
@@ -22,15 +21,19 @@ public class GameService {
 	public UserDetails getWinnerOfGame(Long gameId) {
 		return userService
 				.getUserDetailsById(
-				getGameById(gameId)
+				findGameById(gameId)
 				.getWinnerId());
 	}
 
-	public Game createGame(User playerOne, User playerTwo) {
-		return gameRepository.createGame(playerOne, playerTwo);
+	public Game createGame(Game newGame) {
+		return gameRepository.createGame(newGame);
+	}
+	
+	public Game getGameById(Long gameId) {
+		return findGameById(gameId);
 	}
 
-	public Game getGameById(Long gameid) {
+	private Game findGameById(Long gameid) {
 		return gameRepository.findGameById(gameid)
 				.orElseThrow(() -> new NotFoundException(String.format(GAME_NOT_FOUND, gameid)));
 	}
@@ -40,19 +43,19 @@ public class GameService {
 	}
 	
 	public void setPointsForPlayerInGame(Long gameId, Long playerId, Short points) {
-		getGameById(gameId).setPointsForPlayer(playerId, points);
+		findGameById(gameId).setPointsForPlayer(playerId, points);
 	}
 	
 	public Short getPointForPlayerInGame(Long playerId, Long gameId) {
-		return getGameById(gameId).getPointsForPlayer(playerId);
+		return findGameById(gameId).getPointsForPlayer(playerId);
 	}
 
 	public Long getOpponentIdForPlayerInGame(Long playerId, Long gameId) {
-		return getGameById(gameId).opponentOf(playerId);
+		return findGameById(gameId).opponentOf(playerId);
 	}
 
 	public void withdrawPlayer(Long gameId, Long playerId) {
-		Game game = getGameById(gameId);
+		Game game = findGameById(gameId);
 		game.withdrawPlayer(playerId);
 		game.endGame();
 	}

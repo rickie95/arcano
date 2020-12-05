@@ -11,7 +11,6 @@ import javax.inject.Singleton;
 
 import com.riccardomalavolti.arcano.exceptions.ConflictException;
 import com.riccardomalavolti.arcano.model.Game;
-import com.riccardomalavolti.arcano.model.User;
 
 @Default
 @Singleton
@@ -21,13 +20,8 @@ public class GameRepositoryInMemory implements GameRepository {
 	private static Long gameIdCounter = (long) -1;
 
 	@Override
-	public synchronized Game createGame(User playerOne, User playerTwo) {
-		/* TODO: renderlo più generico, permettendo più giocatori 
-		   e diversi punteggi di partenza. */
-		
-		Game game = new Game(gameIdCounter++);
-		game.setPointsForPlayer(playerOne.getId(), (short) 20);
-		game.setPointsForPlayer(playerTwo.getId(), (short) 20);
+	public synchronized Game createGame(Game game) {		
+		game.setId(gameIdCounter++);
 		gameList.put(game.getId(), game);
 		return game;
 	}

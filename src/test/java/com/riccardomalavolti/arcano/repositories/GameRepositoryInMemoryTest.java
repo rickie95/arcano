@@ -39,7 +39,11 @@ class GameRepositoryInMemoryTest {
 		User playerTwo = new User();
 		playerTwo.setId(p2ID);
 		
-		Game g = gameRepo.createGame(playerOne, playerTwo);
+		Game newGame = new Game();
+		newGame.setPointsForPlayer(p1ID, (short)(20));
+		newGame.setPointsForPlayer(p2ID, (short)(20));
+		
+		Game g = gameRepo.createGame(newGame);
 		
 		Optional<Game> returnedGame = gameRepo.findGameById(g.getId());
 		
@@ -79,9 +83,13 @@ class GameRepositoryInMemoryTest {
 		User playerTwo = new User();
 		playerTwo.setId(p2ID);
 		
-		Game gameOne = gameRepo.createGame(playerOne, playerTwo);
-		Game gameTwo = gameRepo.createGame(playerOne, playerTwo);
-		Game gameThree = gameRepo.createGame(playerOne, playerTwo);
+		Game newGame = new Game();
+		newGame.setPointsForPlayer(p1ID, (short)20);
+		newGame.setPointsForPlayer(p2ID, (short)20);
+		
+		Game gameOne = gameRepo.createGame(newGame);
+		Game gameTwo = gameRepo.createGame(newGame);
+		Game gameThree = gameRepo.createGame(newGame);
 		
 		assertThat(gameRepo.findAllGames())
 			.contains(gameOne, gameTwo, gameThree);
