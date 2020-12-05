@@ -17,7 +17,7 @@ import com.riccardomalavolti.arcano.model.Game;
 public class GameRepositoryInMemory implements GameRepository {
 	
 	private static Map<Long, Game> gameList = new HashMap<>();
-	private static Long gameIdCounter = (long) -1;
+	private static Long gameIdCounter = (long) 0;
 
 	@Override
 	public synchronized Game createGame(Game game) {		

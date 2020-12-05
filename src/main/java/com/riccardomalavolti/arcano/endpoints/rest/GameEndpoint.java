@@ -19,7 +19,7 @@ import javax.ws.rs.core.UriInfo;
 import com.riccardomalavolti.arcano.model.Game;
 import com.riccardomalavolti.arcano.service.GameService;
 
-@Path(MatchEndpoint.BASE_PATH)
+@Path(GameEndpoint.BASE_PATH)
 public class GameEndpoint {
 	
 	

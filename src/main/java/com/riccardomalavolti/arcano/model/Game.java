@@ -23,6 +23,31 @@ public class Game {
 		this.id = id;
 	}
 	
+	public void withdrawPlayer(Long playerId) {
+		setPointsForPlayer(playerId, (short)0);
+		setWinner(opponentOf(playerId));
+	}
+	
+	public void endGame() {
+		this.isEnded = true;
+	}
+
+	public Long opponentOf(Long playerId) {
+		return gamePoints.keySet().stream().filter( key -> !key.equals(playerId)).findFirst().get();
+	}
+	
+	public Map<Long, Short> getGamePoints() {
+		return gamePoints;
+	}
+
+	public void setGamePoints(Map<Long, Short> gamePoints) {
+		this.gamePoints = gamePoints;
+	}
+
+	public void setEnded(boolean isEnded) {
+		this.isEnded = isEnded;
+	}
+	
 	public synchronized void setPointsForPlayer(Long playerId, Short points) {
 		gamePoints.put(playerId, points);
 	}
@@ -40,19 +65,18 @@ public class Game {
 	}
 	
 	public Long getWinnerId() {
-		return Collections.max(gamePoints.entrySet(), Map.Entry.comparingByValue()).getKey();
+		if(isEnded)
+			return Collections.max(gamePoints.entrySet(), Map.Entry.comparingByValue()).getKey();
+		
+		return null;
 	}
 	
 	public boolean isEnded() {
 		return this.isEnded;
 	}
 	
-	public void endGame() {
-		this.isEnded = true;
-	}
-
-	public Long opponentOf(Long playerId) {
-		return gamePoints.keySet().stream().filter( key -> !key.equals(playerId)).findFirst().get();
+	private void setWinner(Long playerId) {
+		this.setWinner(playerId);
 	}
 	
 	@Override
@@ -85,12 +109,4 @@ public class Game {
 		return true;
 	}
 	
-	private void setWinner(Long playerId) {
-		setPointsForPlayer(playerId, (short)20);
-	}
-
-	public void withdrawPlayer(Long playerId) {
-		setPointsForPlayer(playerId, (short)0);
-		setWinner(opponentOf(playerId));
-	}
 }
