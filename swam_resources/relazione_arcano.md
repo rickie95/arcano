@@ -22,11 +22,13 @@ I requisiti funzionali del servizio provengono da più attori:
 
 Lo schema in figura [1.1] riassume i casi d'uso derivati dai requisiti sopraelencati.
 
+##### Figura [1.1]: Casi d'uso
 ![](UseCaseDiagram.svg)
 
 ### 1.2  Modello di dominio
 Con la definizione dei rouli si è passati alla progettazione del modello di dominio, la figura [1.2] schematizza le relazioni tra le entità coinvolte.
 
+##### Figura [1.2]: Schema del domain model. 
 ![](domain_model.svg)
 
 - **User**: riassume e generalizza Giocatori, Giudici e Amministratori. I ruoli vengono identificati tramite il campo `ROLE`, che fa riferimento al rispettivo enumerable.
@@ -42,14 +44,63 @@ Con la definizione dei rouli si è passati alla progettazione del modello di dom
 - **Match**: rappresenta un incontro tra due giocatori, è composto da:
     - Un set di `Game`, ovvero gli scontri. Tipicamente sono tre.
     - Due riferimenti a `User`, ovvero i due giocatori coinvolti.
-    - 
+    - Un riferimento a `Event`, che identifica l'evento a cui afferisce il match.
+- **Game**: ovvero la suddivisione dell'incontro. Oltre ad un identificativo e un booleano per lo status è composto anche da:
+    - Una mappa <Long, Short> che lega l'identificativo del giocatore e il suo punteggio.
 
 
 ### 1.3  Design delle API
+Stabilito il modello e le interazioni con il sistema da parte degli attori è possibile stabilire l'interfaccia da esporre. Si è deciso quindi per rendere disponibili i seguenti endpoint:
+
+- `/users` 
+- `/events`
+- `/matches`
+- `/games`
+
+Sono stati inclusi anche un endpoint per l'autenticazione, uno dedicato all'uso della libreria GraphQL e una websocket per la comunicazione in tempo reale dei risultati di gioco. I dati vengono scambiati esclusivamente in formato JSON; si veda la tabella seguente [1.3] per una panoramica delle API esposte.
+
+##### Tabella [1.3]: API disponibili
+| URL           | Verbo  | Funzionalità |
+|---------------|--------|--------------|
+| **Utenti**    | | |
+| `/users`      | GET    | Restituisce una lista con tutti gli utenti iscritti |
+| `/users`      | POST   | Aggiunge un nuovo utente al sistema |
+| `/users/{id}` | GET    | Restituisce una visione dettagliata dell'utente selezionato |
+| `/users/{id}` | PUT    | Aggiorna le informazioni dell'utente selezionato |
+| `/users/{id}` | DELETE | Rimuove l'utente selezionato|
+| **Eventi**    | | |
+| `/events`     | GET    | Restituisce una lista con la descrizione sommaria di tutti gli eventi |
+| `/events`     | POST   | Crea un nuovo evento |
+| `/events/{id}`| GET    | Restituisce una versione dettagliata dell'evento |
+| `/events/{id}`| PUT    | Aggiorna l'evento selezionato |
+| `/events/{id}`| DELETE | Cancella l'evento selezionato |
+| `/events/{id}/players`| GET  | Restituisce una lista con i giocatori partecipanti all'evento |
+| `/events/{id}/players`| POST | Iscrive un giocatore all'evento |
+| `/events/{id}/players`| DELETE  | Rimuove un giocatore dall'evento |
+| `/events/{id}/judges`| GET  | Restituisce una lista con i giudici partecipanti all'evento |
+| `/events/{id}/judges`| POST  | Iscrive un utente all'evento come giudice |
+| **Match**     | | |
+| `/matches`| GET  | Restituisce una lista sommaria degli incontri |
+| `/matches`| POST  | Crea un nuovo incontro |
+| `/matches/{id}`| PUT  | Aggiorna l'incontro selezionato |
+| `/matches/{id}`| DELETE  | Rimuove l'incontro selezionato |
+| `/matches/ofEvent/{id}`| GET  | Restituisce una lista sommaria degli incontri afferenti all'evento con id={id}|
+| **Game**      | | | 
+| `/games`      | POST | Crea un nuovo gioco |
+| `/games/{id}` | GET | Restituisce informazioni dettagliate per il gioco selezionato | 
+
+#### WebSocket
+La websocket è disponibile all'URL `/ws-arcano/{gameId}/{playerId}`.
 
 ## Implementazione del backend
+Il servizio è stato realizzato utilizzando lo stack JEE:
+
+- **JAX-RS** per gli endpoint REST
+- **CDI** per automatizzare la dependency injection nelle varie risorse.
+- **JPA** per la connessione e la persistenza degli oggetti in un database.
 
 ### 2.1 Implementazione degli endpoint
+
 #### Architettura REST vs GraphQL
 
 ### 2.2 Architettura N-layered
@@ -59,6 +110,43 @@ Con la definizione dei rouli si è passati alla progettazione del modello di dom
 #### Persistence Layer
 
 #### Autenticazione e Autorizzazione
+Alcune operazioni messe a disposizione dal servizio possono esporre dati personali o intaccare componenti fondamentali di un evento/torneo. Ovviamente devono essere messe in campo restrizioni e meccanismi per regolare l'accesso e identificare i client.
+
+Vista la natura **stateless** del servizio l'utilizzo di **JWT** è apparso sensato: l'utente - autenticandosi - riceve un token univoco sotto forma di stringa firmato e riconosciuto dal sistema. Nel momento in cui richiede una certa operazione è sufficiente che si identifichi includendo il token all'interno di un header, in modo tale che il servizio estrapoli l'username associato e verifichi l'autorizzazione all'operazione richiesta.
+
+JAX-RS mette a disposizione una varietà di strumenti per ovviare al problema *authorizazion/authenication* che supportano pienamente JWT. **ContainerRequestFilter** è un'interfaccia che permette di implementare filtri da eseguirsi dopo il matching della risorsa, in questo modo per esempio è possibile verificare che sia presente un header e che il contenuto sia un token JWT valido:
+
+    class AuthenticationFilter implements ContainerRequestFilter {
+
+        @Inject
+        AuthenticationService authService;
+
+        @Inject
+        UserService userService;
+
+        @Override
+        public void filter(ContainerRequestContext requestContext) throws IOException {
+
+            String authorizationHeader = requestContext.getHeaderString(HttpHeaders.AUTHORIZATION);
+
+            if(authorizationHeader == null)
+                requestContext.abortWith(Response.status(Response.Status.FORBIDDEN)
+                .entity("You need to be authenticated.")
+                .build());
+
+            if (authorizationHeader.startsWith("Bearer ")) {
+                String authenticationToken = authorizationHeader.substring(7);
+                handleTokenBasedAuthentication(authenticationToken, requestContext);
+            }
+
+        }
+
+    }
+
+Il metodo `filter()` viene chiamato per ogni richiesta dove è richiesta l'autenticazione, abortendo nei casi in cui il token non sia valido (utente non riconosciuto, token scaduto o revocato...).
+
+Per quanto concerne l'**autorizzazione** ad una certa risorsa si è deciso di basarla sul ruolo e sul concetto di possesso della stessa. User, Match, Event implementano il metodo `isOwnedBy(User user)` dell'interfaccia `Ownable`, che restituisce `true` qualora l'utente passato come argomento abbia diritto a modificare quella risorsa.
+JAX-RS fornisce delle annotazioni in cui è possibile specificare quali ruoli abbiano accesso alla risorsa, utilizzando un ContainerRequestFilter, ma non sono sufficienti per implementare le politiche di autorizzazione senza effettuare un controllo nel Service di riferimento.
 
 ## Deployment
 ### 3.1 WildFly 20
