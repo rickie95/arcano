@@ -93,21 +93,85 @@ Sono stati inclusi anche un endpoint per l'autenticazione, uno dedicato all'uso 
 La websocket è disponibile all'URL `/ws-arcano/{gameId}/{playerId}`.
 
 ## Implementazione del backend
-Il servizio è stato realizzato utilizzando lo stack JEE:
+Il servizio è stato realizzato sfruttando lo stack JEE:
 
 - **JAX-RS** per gli endpoint REST
 - **CDI** per automatizzare la dependency injection nelle varie risorse.
 - **JPA** per la connessione e la persistenza degli oggetti in un database.
 
 ### 2.1 Implementazione degli endpoint
+Per la realizzazione degli endpoint descritti nelle sezioni precedenti si è evitato l'uso di annotazioni specifiche di un'implementazione di JAX-RS, in modo da assicurare una piena compatibilità con qualsiasi application server.
+
+Creare ed esporre una risorsa è piuttosto immediato, è sufficiente indicare l'URL relativo con l'annotazione `@Path` e aggiungere qualche metodo associato ad un verbo HTTP tramite le annotazioni dedicate. L'esempio seguente mostra una possibile implementazione:
+
+    @Path("events")
+    public class EventEndpoint {
+
+        @GET
+	    @Produces(MediaType.APPLICATION_JSON)
+	    public List<Event> getAllEvents(){
+		    return eventService.getAllEvents();
+	    }
+
+    }
+
+Queste poche righe contengono molte informazioni riguardo a come l'endpoint risponde:
+- L'annotazione `@GET` implica che il metodo `getAllEvents` viene invocato se si effettua una richiesta GET all'URL `/events`
+- L'annotazione `@Produces(MediaType.APPLICATION_JSON)` specifica il formato del body della risposta. In questo caso viene prodotto un JSON, ovviamente l'header `application-content` verrà settato di conseguenza.
+- Se la richiesta va a buon fine, viene generata una risposta con codice `200: OK` e la lista di `Event` viene automaticamente serializzata.
+
+JAX-RS ha quindi molti automatismi già pronti per supportare lo sviluppo, in modo da ridurre la produzione di codice ripetitivo all'interno degli endpoint. Sono supportati anche path dedicati ai singoli metodi, oltre a poter specificare parametri all'interno di essi:
+
+    @PUT
+	@Path("{eventId}/players/{playerId}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response enrollPlayerInEvent(@PathParam("eventId") Long eventId, @PathParam("playerId") Long playerId) {
+		return Response
+				.accepted(eventService.enrollPlayerInEvent(playerId, eventId))
+				.build();
+	}
+
+L'uso di `@PathParam` nella signature del metodo permette di recuperare il parametro specificato dentro l'annotazione `@Path`. Si noti in questo caso che JAX-RS permette anche di creare manualmente la risposta, specificando il codice di stato e l'eventuale body.
 
 #### Architettura REST vs GraphQL
+Un endpoint GraphQL affianca le API REST, in modo da far sfruttare i vantaggi di questa libreria ai client che lo supportano. La creazione qualsiasi Provider è immediata tramite l'uso dell'annotazione `GraphQLApi`, ed ha come ulteriore effetto l'esposizione dello stesso sull'URL `/graphql`.
 
-### 2.2 Architettura N-layered
+![](graphql_resolvers.png)
+##### Figura 2.1: I provider GraphQL rispondono tutti sullo stesso endpoint.
 
-#### Service Layer
-#### Repository Layer
-#### Persistence Layer
+La creazione di query e di mutazioni è resa possibile dalle rispettive annotazioni `@Query` e `@Mutation`, che permettono di specificare anche il nome associato, in modo da disaccoppiare lo schema esposto dalle signature dei metodi.
+
+    @GraphQLApi
+    public class EventGraphQLProvider {
+                
+        @Query("eventById")
+        public EventDetails getEventById(@Name("id") Long eventId) {
+            return eventService.getEventById(eventId);
+        }
+        
+        @Mutation("addEvent")
+        public EventDetails addEvent(Event event) {
+            return eventService.createEvent(event);
+        }
+    }
+
+Le richieste GraphQL devono essere effettuate tutte tramite POST, mentre le risposte hanno sempre codice `200`, anche in presenza di errori.
+
+### 2.2 Architettura
+L'architettura del backend fa riferimento alle classiche implementazioni 3-tier. 
+Sono stati previsti infatti tre livelli, contenuti tra gli endpoint e il database:
+
+- **Service Layer**: offre una serie di servizi derivati dagli use cases, manipolando gli oggetti di dominio secondo le logiche di business. Sono presenti diversi servizi, ognuno con le sue responsabilità:
+    - **UserService**: per l'interrogazione e la manipolazione dei profili utente.
+    - **{Match,Event,Game}Service**: per l'organizzazione e l'aggiornamento delle varie fasi e componenti di un evento.
+    - **{Authentication,Authorization}Service**: offrono servizi e meccanismi per identificare univocamente un utente - rilasciando e validando token JWT - oltre a determinare se possiede i diritti su una certa risorsa.    
+
+- **Repository Layer**: media tra Service e Persistence, comportandosi come una collezione di oggetti in memoria nascondendo la complessità delle operazioni di persistenza necessarie al database. Permette inoltre di utilizzare collezioni presenti naturalmente in memoria come `GameRepositoryInMemory` mantenendo la stessa interfaccia.
+
+- **Persistence Layer**: comprende i Data Access Object per ognuna delle entità del domain model. Offre un'interfaccia uniforme per Repository, in modo da astrarre da quale database si sta utilizzando.
+    - `GenericDAO<T>` è un'interfaccia che descrive i principali metodi che un DAO dovrebbe possedere, identificati dalle normali operazioni CRUD.
+    - `MySQLGenericDAO<T>` implementa l'interfaccia precedente utilizzando un Entity Manager e specializzando i suoi metodi rispetto all'uso di MySQL come database.
+    - `UserDAO`, `EventDAO`, `MatchDAO` estendono `MySQLGenericDAO<T>` specificando il tipo a cui fanno riferimento. Possono aggiungere nuovi metodi oppure eseguire l'override di quelli già presenti.
 
 #### Autenticazione e Autorizzazione
 Alcune operazioni messe a disposizione dal servizio possono esporre dati personali o intaccare componenti fondamentali di un evento/torneo. Ovviamente devono essere messe in campo restrizioni e meccanismi per regolare l'accesso e identificare i client.
@@ -149,6 +213,30 @@ Per quanto concerne l'**autorizzazione** ad una certa risorsa si è deciso di ba
 JAX-RS fornisce delle annotazioni in cui è possibile specificare quali ruoli abbiano accesso alla risorsa, utilizzando un ContainerRequestFilter, ma non sono sufficienti per implementare le politiche di autorizzazione senza effettuare un controllo nel Service di riferimento.
 
 ## Deployment
-### 3.1 WildFly 20
-### 3.2 Docker-Compose: orchestrazione dei servizi
+La messa in opera del servizio è stata pensata per essere il meno possibile dipendente dal sistema ospitante. L'uso di un application server semplifica di molto il deployment di un servizio, mentre Docker Compose aiuta a creare una rete di container già pronta da esporre, senza bisogno di configurazioni.
 
+### 3.1 WildFly 20
+WildFly è un application server modulare e leggero, nella versione base offre funzionalità essenziali e include implementazioni compliant con gli standard JAX-RS, CDI e JPA. Funzionalità aggiuntive possono essere abilitate tramite il file di configurazione o tramite l'installazione di moduli.
+
+Per Arcano si è reso necessario fare alcune modifiche al file di configurazione.
+- abilitare il supporto a GraphQL e JWT, aggiungendo le opportune estensioni nella sezione `<extensions>`.
+- aggiungere il driver JDBC per MySQL nei moduli di WildFly.
+- configurare un datasource diretto al database nella sezione `<datasources>`.
+
+Di seguito viene mostrato un estratto del file di confiurazione che mostra come viene effettuata la connessione al database: la variabile `DB_URI` viene settata da Docker e corrisponde all'hostname del container che ospita il database.
+
+````
+    <datasource jta="true" jndi-name="java:/arcano-ds" pool-name="arcano-ds" enabled="true" use-ccm="true">
+				  <connection-url>jdbc:mysql://${env.DB_URI}:3306/arcano?serverTimezone=UTC</connection-url>
+				  <driver>mysql</driver>			
+	</datasource>
+````
+
+Per l'occasione è stata realizzata un'immagine Docker, ottenuta estendendo l'immagine ufficiale di WildFly 20. Vengono aggiunti il file di configurazione, il driver e l'applicazione in formato `.war`. Viene inoltre specificato un utente per la console di amministrazione di WildFLy, oltre a inserire uno script che ritarda la partenza dell'application server finché il database non è pronto ad accettare connessioni.
+
+### 3.2 Docker-Compose: orchestrazione dei servizi
+La combinazione applicazione + database non rende facile la configurazione su un server, perciò la scelta di Compose è stata naturale: in questo modo è possibile replicare le stesse condizioni e settaggi su qualunque macchina lo si voglia eseguire.
+
+![](container_docker.png)
+
+I due elementi sono ospitati in container dedicati, possono comunicare liberamente all'interno della rete virtuale creata da Docker ma solamente le porte 8080 e 9990 sono esposte al di fuori della rete virtuale.
