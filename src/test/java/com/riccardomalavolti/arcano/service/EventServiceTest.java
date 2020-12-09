@@ -5,12 +5,14 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.doThrow;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import javax.ws.rs.BadRequestException;
 import javax.ws.rs.NotFoundException;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -28,6 +30,7 @@ import com.riccardomalavolti.arcano.dto.EventMapper;
 import com.riccardomalavolti.arcano.dto.UserBrief;
 import com.riccardomalavolti.arcano.dto.UserDetails;
 import com.riccardomalavolti.arcano.dto.UserMapper;
+import com.riccardomalavolti.arcano.exceptions.AccessDeniedException;
 import com.riccardomalavolti.arcano.model.Event;
 import com.riccardomalavolti.arcano.model.Role;
 import com.riccardomalavolti.arcano.model.User;
@@ -147,7 +150,7 @@ class EventServiceTest {
 		
 		assertThatThrownBy(
 				() -> eventService.enrollPlayerInEvent(userId, eventId)
-			).isInstanceOf(NotFoundException.class);
+			).isInstanceOf(BadRequestException.class);
 	}
 	
 	@Test
@@ -161,6 +164,96 @@ class EventServiceTest {
 		assertThatThrownBy(
 				() -> eventService.enrollPlayerInEvent(userId, (long)2)
 			).isInstanceOf(NotFoundException.class);
+	}
+	
+	@Test
+	void removePlayerFromEvent() {
+		Long userId = (long)1;
+		User user = new User();
+		user.setId(userId);
+		
+		eventOne.enrollPlayer(user);
+		
+		when(eventRepo.getEventById(eventOne.getId())).thenReturn(Optional.of(eventOne));
+		when(userService.getUserById(userId)).thenReturn(user);
+		
+		EventDetails result = eventService.removePlayerFromEvent(user.getId(), eventOne.getId(), "FOO");
+		
+		assertThat(result.getId()).isEqualTo(eventOne.getId());
+		assertThat(result.getPlayerList()).doesNotContain(UserMapper.toUserBrief(user));
+	}
+	
+	@Test
+	void removePlayerFromEventSholdThrowNotFoundExceptionIfEventCantBeFound() {
+		Long eventOneId = eventOne.getId();
+		Long userId = (long)1;
+		User user = new User();
+		user.setId(userId);
+		
+		eventOne.enrollPlayer(user);
+		
+		when(eventRepo.getEventById(eventOne.getId())).thenThrow(NotFoundException.class);
+		
+		assertThatThrownBy(
+				() -> eventService.removePlayerFromEvent(userId, eventOneId, "FOO")
+			).isInstanceOf(NotFoundException.class);
+	}
+	
+	@Test
+	void removePlayerFromEventSholdThrowBadRequestExceptionIfPlayerCantBeFound() {
+		Long eventOneId = eventOne.getId();
+		Long userId = (long)1;
+		User user = new User();
+		user.setId(userId);
+		
+		eventOne.enrollPlayer(user);
+				
+		when(eventRepo.getEventById(eventOne.getId())).thenReturn(Optional.of(eventOne));
+		when(userService.getUserById(userId)).thenThrow(NotFoundException.class);
+		
+
+		assertThatThrownBy(
+				() -> eventService.removePlayerFromEvent(userId, eventOneId, "FOO")
+			).isInstanceOf(BadRequestException.class);
+	}
+	
+	@Test
+	void removePlayerShouldBeForbiddenIfRequesterIsNotTheAccountOwnerNorOneOfTheAdmins() {
+		Long eventOneId = eventOne.getId();
+		Long userId = (long)1;
+		User user = new User();
+		user.setId(userId);
+		
+		eventOne.enrollPlayer(user);
+				
+		when(eventRepo.getEventById(eventOne.getId())).thenReturn(Optional.of(eventOne));
+		when(userService.getUserById(userId)).thenReturn(user);
+		
+		doThrow(AccessDeniedException.class).when(authService).verifyOwnershipOf(user, "NotAuthUser");
+		doThrow(AccessDeniedException.class).when(authService).verifyOwnershipOf(eventOne, "NotAuthUser");
+
+		assertThatThrownBy(
+				() -> eventService.removePlayerFromEvent(userId, eventOneId, "NotAuthUser")
+			).isInstanceOf(AccessDeniedException.class);
+	}
+	
+	@Test
+	void removePlayerShouldBeAllowedIfRequesterIsNotTheAccountOwnerButIsOneOfTheAdmins() {
+		Long userId = (long)1;
+		User user = new User();
+		user.setId(userId);
+		
+		eventOne.enrollPlayer(user);
+				
+		when(eventRepo.getEventById(eventOne.getId())).thenReturn(Optional.of(eventOne));
+		when(userService.getUserById(userId)).thenReturn(user);
+		
+		doThrow(AccessDeniedException.class).when(authService).verifyOwnershipOf(user, "NotTheOwnerButAnAdmin");
+
+		EventDetails result = eventService.removePlayerFromEvent(user.getId(), eventOne.getId(), "NotTheOwnerButAnAdmin");
+		
+		assertThat(result.getId()).isEqualTo(eventOne.getId());
+		assertThat(result.getPlayerList()).doesNotContain(UserMapper.toUserBrief(user));
 	}
 	
 	@Test

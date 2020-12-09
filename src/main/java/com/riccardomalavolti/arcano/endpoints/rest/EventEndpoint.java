@@ -88,6 +88,15 @@ public class EventEndpoint {
 				.build();
 	}
 	
+	@DELETE
+	@Path("{eventId}/players/{playerId}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response removePlayerInEvent(@PathParam("eventId") Long eventId, @PathParam("playerId") Long playerId) {
+		return Response
+				.accepted(eventService.removePlayerFromEvent(playerId, eventId, context.getUserPrincipal().getName()))
+				.build();
+	}
+	
 	@GET
 	@Path("{eventId}/judges")
 	@Produces(MediaType.APPLICATION_JSON)

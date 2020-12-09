@@ -61,6 +61,10 @@ public class Event implements Ownable {
 
 		throw new ConflictException("Player is already enrolled");
 	}
+	
+	public void removePlayer(User player) {
+		playerList.remove(player);
+	}
 
 	public User addJudge(User judge) {
 		if (judge.getRole() != Role.JUDGE)

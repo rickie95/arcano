@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 
 import javax.enterprise.inject.Default;
 import javax.inject.Inject;
+import javax.ws.rs.BadRequestException;
 import javax.ws.rs.NotFoundException;
 
 import com.riccardomalavolti.arcano.dto.EventBrief;
@@ -13,6 +14,7 @@ import com.riccardomalavolti.arcano.dto.EventMapper;
 import com.riccardomalavolti.arcano.dto.UserBrief;
 import com.riccardomalavolti.arcano.dto.UserDetails;
 import com.riccardomalavolti.arcano.dto.UserMapper;
+import com.riccardomalavolti.arcano.exceptions.AccessDeniedException;
 import com.riccardomalavolti.arcano.model.Event;
 import com.riccardomalavolti.arcano.model.Role;
 import com.riccardomalavolti.arcano.model.User;
@@ -71,8 +73,35 @@ public class EventService {
 	
 	public EventDetails enrollPlayerInEvent(Long playerId, Long eventId) {
 		Event requestedEvent = retriveEventById(eventId);
-		User player = userService.getUserById(playerId);
-		requestedEvent.enrollPlayer(player);
+		try {
+			User player = userService.getUserById(playerId);
+			requestedEvent.enrollPlayer(player);
+		}catch (NotFoundException ex) {
+			throw new BadRequestException("Player doesn't exists");
+		}
+		
+		return EventMapper.toEventDetails(requestedEvent);
+	}
+	
+	public EventDetails removePlayerFromEvent(Long playerId, Long eventId, String requesterUsername) {
+		// Requester must be:
+		// -> The user himself OR An user with admin rights for the event
+		User playerToBeRemoved;
+		Event requestedEvent = retriveEventById(eventId);
+		
+		try {
+			playerToBeRemoved = userService.getUserById(playerId);
+		}catch (NotFoundException ex) {
+			throw new BadRequestException("Player doesn't exists");
+		}
+		
+		try {
+			authService.verifyOwnershipOf(playerToBeRemoved, requesterUsername);
+		}catch (AccessDeniedException exeption) {
+			authService.verifyOwnershipOf(requestedEvent, requesterUsername);
+		}
+		
+		requestedEvent.removePlayer(playerToBeRemoved);
 		return EventMapper.toEventDetails(requestedEvent);
 	}
 
@@ -93,5 +122,7 @@ public class EventService {
 		return retriveEventById(eventId).getPlayerList()
 				.stream().map(UserMapper::toUserBrief).collect(Collectors.toList());
 	}
+
+
 
 }
