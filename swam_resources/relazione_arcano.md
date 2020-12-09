@@ -22,15 +22,14 @@ I requisiti funzionali del servizio provengono da più attori:
 
 Lo schema in figura [1.1] riassume i casi d'uso derivati dai requisiti sopraelencati.
 
+![](assets/UseCaseDiagram.svg)
 ##### Figura [1.1]: Casi d'uso
-![](UseCaseDiagram.svg)
 
 ### 1.2  Modello di dominio
 Con la definizione dei rouli si è passati alla progettazione del modello di dominio, la figura [1.2] schematizza le relazioni tra le entità coinvolte.
 
-
+![](assets/class_diagram.png)
 ##### Figura [1.2]: Schema del domain model. 
-![](domain_model.svg)
 
 - **User**: riassume e generalizza Giocatori, Giudici e Amministratori. I ruoli vengono identificati tramite il campo `ROLE`, che fa riferimento al rispettivo enumerable.
 
@@ -137,7 +136,7 @@ L'uso di `@PathParam` nella signature del metodo permette di recuperare il param
 #### Architettura REST vs GraphQL
 Un endpoint GraphQL affianca le API REST, in modo da far sfruttare i vantaggi di questa libreria ai client che lo supportano. La creazione qualsiasi Provider è immediata tramite l'uso dell'annotazione `GraphQLApi`, ed ha come ulteriore effetto l'esposizione dello stesso sull'URL `/graphql`.
 
-![](graphql_resolvers.png)
+![](assets/graphql_resolvers.png)
 ##### Figura 2.1: I provider GraphQL rispondono tutti sullo stesso endpoint.
 
 La creazione di query e di mutazioni è resa possibile dalle rispettive annotazioni `@Query` e `@Mutation`, che permettono di specificare anche il nome associato, in modo da disaccoppiare lo schema esposto dalle signature dei metodi.
@@ -238,6 +237,6 @@ Per l'occasione è stata realizzata un'immagine Docker, ottenuta estendendo l'im
 ### 3.2 Docker-Compose: orchestrazione dei servizi
 La combinazione applicazione + database non rende facile la configurazione su un server, perciò la scelta di Compose è stata naturale: in questo modo è possibile replicare le stesse condizioni e settaggi su qualunque macchina lo si voglia eseguire.
 
-![](container_docker.png)
+![](assets/container_docker.png)
 
 I due elementi sono ospitati in container dedicati, possono comunicare liberamente all'interno della rete virtuale creata da Docker ma solamente le porte 8080 e 9990 sono esposte al di fuori della rete virtuale.
