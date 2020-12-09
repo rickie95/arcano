@@ -1,0 +1,34 @@
+/\ - Arcano
+
+Backend per eventi
+di ispirazione "sportiva"
+
+Giochi di carte collezionabili
+• Magic the Gathering
+• Pokémon
+• [...]
+
+▸ Community ben radicate e organizzate
+▸ Si ritrovano in circoli, palazzetti
+▸ Dai 20 ai 1000 partecipanti per torneo/evento 
+
+Software gestionali datati,
+    poco user-friendly,
+        non consultabili dai giocatori
+
+Arcano (server) + Congrega (applicazione)
+ = Servizio trasparente, anche self hosted
+
+Use cases, tre attori:
+1) Giocatore
+2) Giudice
+3) Amministratore
+
+@use_cases.png
+
+@domain_model.png
+
+
+
+         Grazie
+made with suckless.org/sent
