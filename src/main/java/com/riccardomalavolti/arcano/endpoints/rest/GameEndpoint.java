@@ -4,6 +4,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import javax.annotation.security.PermitAll;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -19,6 +20,7 @@ import javax.ws.rs.core.UriInfo;
 import com.riccardomalavolti.arcano.model.Game;
 import com.riccardomalavolti.arcano.service.GameService;
 
+@RequestScoped
 @Path(GameEndpoint.BASE_PATH)
 public class GameEndpoint {
 	

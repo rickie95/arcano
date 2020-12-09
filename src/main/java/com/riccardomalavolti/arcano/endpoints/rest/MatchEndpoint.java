@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -27,6 +28,7 @@ import com.riccardomalavolti.arcano.model.Match;
 import com.riccardomalavolti.arcano.model.Role;
 import com.riccardomalavolti.arcano.service.MatchService;
 
+@RequestScoped
 @Path(MatchEndpoint.BASE_PATH)
 public class MatchEndpoint {
 	
