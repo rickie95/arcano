@@ -27,7 +27,10 @@ Lo schema in figura [1.1] riassume i casi d'uso derivati dai requisiti sopraelen
 ### 1.2  Modello di dominio
 Con la definizione dei rouli si è passati alla progettazione del modello di dominio, la figura [1.2] schematizza le relazioni tra le entità coinvolte.
 
-![](domain_model.svg)
+![](class_diagram.png)
+
+[Figura 1.2]
+
 
 - **User**: riassume e generalizza Giocatori, Giudici e Amministratori. I ruoli vengono identificati tramite il campo `ROLE`, che fa riferimento al rispettivo enumerable.
 
