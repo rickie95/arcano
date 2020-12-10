@@ -1,8 +1,12 @@
 package com.riccardomalavolti.arcano.dto;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
-public class EventDetails {
+import javax.ws.rs.core.Link;
+
+public class EventDetails implements RESTResource {
 	
 	Long id;
 	String name;
@@ -40,6 +44,30 @@ public class EventDetails {
 	}
 	public void setAdminList(Set<UserBrief> adminList) {
 		this.adminList = adminList;
+	}
+
+	@Override
+	public List<Link> getLinks(String absoluteBasePath) {
+		List<Link> links = new ArrayList<Link>();
+		// SELF
+		links.add(Link.fromUri("{base_uri}/events/{id}")
+			.rel("self").type("text/plain")
+			.build(absoluteBasePath, this.id));
+
+		// Matches
+		links.add(Link.fromUri("{base_uri}/matches/ofEvent/{id}")
+			.rel("matches").type("text/plain")
+			.build(absoluteBasePath, this.id));
+
+		// Players
+		links.add(Link.fromUri("{base_uri}/events/{id}/players")
+			.rel("players").type("text/plain")
+			.build(absoluteBasePath, this.id));
+
+		links.add(Link.fromUri("{base_uri}/events/{id}/judges")
+			.rel("self").type("text/plain")
+			.build(absoluteBasePath, this.id));
+		return links;
 	}
 	
 	@Override

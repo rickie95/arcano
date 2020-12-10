@@ -16,6 +16,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Link;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
@@ -49,8 +50,11 @@ public class UserEndpoint {
 	@Path("{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	@PermitAll
-	public UserDetails getUserById(@PathParam("id") Long id) {
-		return userService.getUserDetailsById(id);
+	public Response getUserById(@PathParam("id") Long id, @Context UriInfo uriInfo) {
+		UserDetails user = userService.getUserDetailsById(id);
+		return Response.ok(user)
+			.links(user.getLinks(uriInfo.getBaseUri().toString()).toArray(Link[]::new))
+			.build();
 	}
 
 	@POST
