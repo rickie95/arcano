@@ -28,6 +28,7 @@ import org.mockito.MockitoAnnotations;
 import com.riccardomalavolti.arcano.dto.MatchMapper;
 import com.riccardomalavolti.arcano.endpoints.rest.MatchEndpoint;
 import com.riccardomalavolti.arcano.model.Event;
+import com.riccardomalavolti.arcano.model.Game;
 import com.riccardomalavolti.arcano.model.Match;
 import com.riccardomalavolti.arcano.model.User;
 import com.riccardomalavolti.arcano.service.MatchService;
@@ -90,6 +91,15 @@ public class MatchEnpointTest extends JerseyTest {
     public void testGetMatchShouldReturnTheDesiredMatch() {
     	Match match1 = new Match();
         match1.setId(matchId);
+        match1.setPlayerOne(new User((long)20));
+        match1.setPlayerTwo(new User((long)21));
+        match1.setParentEvent(new Event((long)30));
+        
+        match1.setGameList(new ArrayList<Game>(Arrays.asList(
+        			new Game((long)40),
+        			new Game((long)41),
+        			new Game((long)42)
+        		)));
         
         when(matchService.getMatchDetailsById(matchId)).thenReturn(MatchMapper.toMatchDetails(match1));
         
