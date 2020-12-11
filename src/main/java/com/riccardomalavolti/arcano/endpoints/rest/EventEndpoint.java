@@ -16,6 +16,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Link;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
@@ -24,6 +25,7 @@ import javax.ws.rs.core.UriInfo;
 import com.riccardomalavolti.arcano.dto.EventBrief;
 import com.riccardomalavolti.arcano.dto.EventDetails;
 import com.riccardomalavolti.arcano.dto.UserBrief;
+import com.riccardomalavolti.arcano.dto.UserDetails;
 import com.riccardomalavolti.arcano.model.Event;
 import com.riccardomalavolti.arcano.model.Role;
 import com.riccardomalavolti.arcano.service.EventService;
@@ -65,8 +67,11 @@ public class EventEndpoint {
 	@GET
 	@Path("{eventId}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public EventDetails getEventById(@PathParam("eventId") Long eventId) {
-		return eventService.getEventById(eventId);
+	public Response getEventById(@PathParam("eventId") Long eventId, @Context UriInfo uriInfo) {
+		EventDetails event = eventService.getEventById(eventId);
+		return Response.ok(event)
+			.links(event.getLinks(uriInfo.getBaseUri().toString()).toArray(Link[]::new))
+			.build();
 	}
 	
 	@GET
@@ -110,9 +115,13 @@ public class EventEndpoint {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@RolesAllowed(Role.Values.ADMIN_VALUE)
-	public Response enrollJudgeInEvent(@PathParam("eventId") Long eventId, @PathParam("judgeId") Long judgeId) {
-		return Response.accepted(eventService.enrollJudgeInEvent(judgeId, eventId, 
-				context.getUserPrincipal().getName())).build();
+	public Response enrollJudgeInEvent(@PathParam("eventId") Long eventId, @PathParam("judgeId") Long judgeId,
+			@Context UriInfo uriInfo) {
+		UserDetails judge = eventService.enrollJudgeInEvent(judgeId, eventId, 
+		context.getUserPrincipal().getName());
+		return Response.accepted(judge)
+			.link("event", uriInfo.getBaseUri() + String.format("/events/{}", eventId))
+			.build();
 	}
 
 }

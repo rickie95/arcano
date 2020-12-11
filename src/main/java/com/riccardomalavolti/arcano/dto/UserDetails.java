@@ -1,8 +1,13 @@
 package com.riccardomalavolti.arcano.dto;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.ws.rs.core.Link;
+
 import com.riccardomalavolti.arcano.model.Role;
 
-public class UserDetails {
+public class UserDetails implements RESTResource {
 	
 	Long id;
 	String username;
@@ -41,6 +46,16 @@ public class UserDetails {
 	public void setRole(Role role) {
 		this.role = role;
 	}
+
+	@Override
+	public List<Link> getLinks(String absoluteBasePath) {
+		List<Link> links = new ArrayList<Link>();
+		links.add(Link.fromUri("{base_uri}/users/{id}")
+                .rel("self").type("text/plain")
+                .build(absoluteBasePath, this.id));
+		return links;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;

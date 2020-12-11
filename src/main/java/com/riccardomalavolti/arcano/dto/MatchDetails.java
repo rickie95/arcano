@@ -1,10 +1,13 @@
 package com.riccardomalavolti.arcano.dto;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import javax.ws.rs.core.Link;
 
 import com.riccardomalavolti.arcano.model.Game;
 
-public class MatchDetails {
+public class MatchDetails implements RESTResource {
 	
 	private Long id;
 	private EventDetails parentEvent;
@@ -71,6 +74,39 @@ public class MatchDetails {
 	public void setMatchEnded(boolean matchEnded) {
 		this.matchEnded = matchEnded;
 	}
+
+	@Override
+	public List<Link> getLinks(String absoluteBasePath) {
+		List<Link> links = new ArrayList<Link>();
+		// SELF
+		links.add(Link.fromUri("{base_uri}/matches/{id}")
+			.rel("self").type("text/plain")
+			.build(absoluteBasePath, this.id));
+
+		// PlayerOne
+		links.add(Link.fromUri("{base_uri}/users/{id}")
+			.rel("playerOne").type("text/plain")
+			.build(absoluteBasePath, playerOne.getId()));
+		
+		// PlayerTwo
+		links.add(Link.fromUri("{base_uri}/users/{id}")
+			.rel("playerTwo").type("text/plain")
+			.build(absoluteBasePath, playerTwo.getId()));
+		
+		// ParentEvent
+		links.add(Link.fromUri("{base_uri}/events/{id}")
+			.rel("event").type("text/plain")
+			.build(absoluteBasePath, parentEvent.getId()));
+
+		// Games
+		for(Game g: gameList){
+			links.add(Link.fromUri("{base_uri}/games/{id}")
+			.rel(String.format("game_{}", g.getId())).type("text/plain")
+			.build(absoluteBasePath, g.getId()));
+		}
+		return links;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
