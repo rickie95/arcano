@@ -5,6 +5,8 @@ public class EventBrief {
 	Long id;
 	String name;
 	
+	String eventURI;
+	
 	public Long getId() {
 		return id;
 	}
@@ -13,6 +15,17 @@ public class EventBrief {
 	}
 	public String getName() {
 		return name;
+	}
+	public void setEventURI(String uri) {
+		this.eventURI = uri;
+	}
+	public String getEvenURI() {
+		return this.eventURI;
+	}
+	
+	public EventBrief addUri(String uri) {
+		this.setEventURI(uri);
+		return this;
 	}
 	
 	@Override

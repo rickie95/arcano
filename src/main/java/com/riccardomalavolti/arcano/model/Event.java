@@ -67,9 +67,6 @@ public class Event implements Ownable {
 	}
 
 	public User addJudge(User judge) {
-		if (judge.getRole() != Role.JUDGE)
-			throw new IllegalArgumentException("User is not a judge");
-
 		if (judgeList.add(judge))
 			return judge;
 
@@ -77,9 +74,6 @@ public class Event implements Ownable {
 	}
 
 	public User addAdmin(User admin) {
-		if (admin.getRole() != Role.ADMINISTRATOR)
-			throw new IllegalArgumentException("User is not a administrator");
-
 		if (adminList.add(admin))
 			return admin;
 
@@ -97,6 +91,18 @@ public class Event implements Ownable {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+	
+	public Long getId() {
+		return id;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getName() {
+		return this.name;
 	}
 
 	public void setPlayerList(Set<User> playerList) {
@@ -146,18 +152,6 @@ public class Event implements Ownable {
 		} else if (!id.equals(other.id))
 			return false;
 		return true;
-	}
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getName() {
-		return this.name;
 	}
 
 	@Override

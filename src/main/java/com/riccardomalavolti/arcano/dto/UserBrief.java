@@ -4,6 +4,8 @@ public class UserBrief {
 	
 	Long id;
 	String username;
+	
+	String uri;
 		
 	public Long getId() {
 		return id;
@@ -17,6 +19,17 @@ public class UserBrief {
 	public void setUsername(String username) {
 		this.username = username;
 	}
+	public void setUri(String uri) {
+		this.uri = uri;
+	}
+	public String getUri() {
+		return uri;
+	}
+	public UserBrief addUri(String uri) {
+		setUri(uri);
+		return this;
+	}
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
