@@ -155,11 +155,33 @@ La creazione di query e di mutazioni è resa possibile dalle rispettive annotazi
         }
     }
 
-Le richieste GraphQL devono essere effettuate tutte tramite POST, mentre le risposte hanno sempre codice `200`, anche in presenza di errori.
+Le richieste GraphQL devono essere effettuate tutte tramite POST, mentre le risposte hanno sempre codice `200`, anche in presenza di errori. 
+Se si intende inviare una query è possibile anche utilizzare una richiesta GET, includendo nell'url i campi necessari all'interno del parametro `query`.
+
+Di seguito viene illustrato come inviare la stessa query (recuperare le informazioni relative ad un evento fornendo l'identificativo associato) nei tre modi possibili messi a disposizione: GET via REST, GET+POST via GraphQL. 
+
+    // GET via endpoint REST: https://hostname/arcano/users/4
+
+    // GET via endpoint GraphQL: https://hostname/arcano/graphql?query={userById(id:4){username,name,surname,role}}
+
+    // POST via endpoint GraphQL: https://hostname/arcano/graphql
+    // con body => { userById(id:4) { username,name,surname,role } }
+
+    // Il risultato sarà simile a questo per tutte e tre le richieste
+        {
+            "id": 4,
+            "username": "brad",
+            "name": "John Paul",
+            "surname": "Jones",
+            "role": "ADMINISTRATOR"
+        }
+
 
 ### 2.2 Architettura
 L'architettura del backend fa riferimento alle classiche implementazioni 3-tier. 
 Sono stati previsti infatti tre livelli, contenuti tra gli endpoint e il database:
+
+![](assets/ArchitecturalDiagram.png)
 
 - **Service Layer**: offre una serie di servizi derivati dagli use cases, manipolando gli oggetti di dominio secondo le logiche di business. Sono presenti diversi servizi, ognuno con le sue responsabilità:
     - **UserService**: per l'interrogazione e la manipolazione dei profili utente.

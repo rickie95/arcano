@@ -277,17 +277,16 @@ Entrambi gli approcci sono assolutamente validi e offrono aspetti interessanti e
 
 | REST | GraphQL|
 |------|--------|
-| Scaling indefinito | Scala con difficoltà
 | Alte performance | Risente dell'overhead intrinseco |
 | Payload fisso, over/under fetching | Il payload contiene esattamente quanto richiesto dal client |
 | JSON, XML, ecc.. | Supporta solo JSON |
 | Forte disaccoppiamento client-server, le API sono utilizzabili da qualunque client | Query e mutazioni vanno integrate nel client, tende a favorire la creazione di API pensate per un client proprietario.|
 | Curva di apprendimento ripida, difficoltà a sfruttare ed a implementare tutti i vincoli REST (HATEOAS) | Prototipazione rapida, facilità di evoluzione delle API|
 | Approccio *design-first*, è necessario avere i casi d'uso fin dall'inizio | Permette di definire prima lo schema, con la possibilità di ottimizzare le query più sfruttate dai client in un secondo momento |
-| Load balancing immediato (con un server in testa), pieno compatibilità con microservizi | Non contempla la possibilità di un sistema distribuito, il routing deve essere fatto internamente con i Resolver/Provider |
+| Load balancing immediato (con un qualsiasi server in testa), piena compatibilità con microservizi | Bilanciamento non immediato (unico endpoint) ma risolvibile tramite un reverse proxy / API Gateway realizzato tramite Providers/Resolvers|
 | Rischio rompere la compatibilità con gli aggiornamenti -> versioning | Versioning non richiesto, possibilità di deprecare query e campi |
-| Richieste cacheabili | Richieste non cacheabili |
-| Uso dei verbi HTTP, codici di risposta | Tutto viene fatto tramite POST, ogni richiesta risponde con codice 200, anche quelle in errore |
+| Sfrutta in modo trasparente la cache HTTP grazie a gli URL contententi gli UUID delle risorse. | La cache HTTP non è disponibile per le richieste POST, quindi si deve sopperire con un caching a livello del gateway per le query non inviate tramite GET. |
+| Uso dei verbi HTTP, codici di risposta | Permette di utilizzare GET (solo per query, potenziali limiti introdotti dai browser) e POST, risponde sempre con codice 200 includendo eventuali messaggi di errore dentro il corpo della risposta. |
 
 La scelta di uno rispetto all'altro non può quindi essere assoluta, né prescindere il contesto in cui deve essere collocata. Una decisione priva di bias può essere presa  prendendo in considerazione e analizzando i **vincoli** a cui è soggetto il prodotto che si vuole realizzare:
 
@@ -334,3 +333,6 @@ GraphQL invece può aiutare nei casi in cui si voglia sviluppare un servizio in 
 - https://github.com/graphql/graphql-js (implementazione di riferimento in JS)
 - https://www.redhat.com/it/topics/api/what-is-graphql
 - https://goodapi.co/blog/rest-vs-graphql
+- [GraphQL e sistemi distribuiti/microf](https://stackoverflow.com/questions/38071714/when-and-how-to-use-graphql-with-microservice-architecture)
+- [Caching in GraphQL](https://graphql.org/learn/caching/)
+- [Approfondimento sul caching in GraphQL: Highly customizable APIs benefit less from HTTP caching.](https://www.apollographql.com/blog/graphql-caching-the-elephant-in-the-room-11a3df0c23ad/)
