@@ -5,7 +5,7 @@ I servizi web sono ormai una parte fondamentale di Internet, la quasi totalità 
 Le architetture basate sui servizi (SOA) si sono evolute in direzioni diverse, ma mantenendo comunque alcuni punti in comune, come l'uso di HTTP come protocollo di trasporto. SOAP, REST e le architetture a microservizi sono alcuni esempi. 
 
 ## Le criticità dei modelli a risorse
-Nel corso degli anni, sia SOAP che REST sono stati "accusati" di aggiungere overhead o comunque di non saper sfruttare al massimo il medium. SOAP viene additato principalmente per la complessità del protocollo e le performance del parsing di XML; REST invece si appoggia totalmente su HTTP, senza bisogno di definire un ulteriore livello. L'utilizzo dei verbi di HTTP e degli header integrati nelle richieste, oltre a definire una certa semantica nella costruzione degli URL ed ad usare meno banda lo hanno reso l'architettura preponderante nella costruzione di servizi web negli ultimi anni.
+Nel corso degli anni, sia SOAP che REST sono stati "accusati" di aggiungere overhead o comunque di non saper sfruttare al massimo il medium. SOAP viene additato principalmente per la complessità del protocollo e le performance del parsing di XML; REST invece si appoggia totalmente su HTTP, senza bisogno di definire un ulteriore livello. L'utilizzo dei verbi di HTTP e degli header integrati nelle richieste, oltre a definire una certa semantica nella costruzione degli URL ed ad usare meno banda, lo hanno reso l'architettura preponderante nella costruzione di servizi web negli ultimi anni.
 
 Le critiche a REST vertono principalmente sulla tendenza all'*under/over-fetching*: la rigidità della rappresentazione degli oggetti porta a dover fare richieste aggiuntive o a ricevere troppi dati rispetto a quelli effettivamente richiesti. Questo aspetto può essere mitigato progettando bene le rappresentazioni restituite, ma è innegabile che per la stessa natura dell'architettura è impensabile pretendere di ricevere dati su misura in base al caso d'uso.
 
@@ -112,12 +112,12 @@ Gli step effettuati dal server una volta ricevuta la query sono tre:
 ## GraphQL e REST alla prova sullo stesso web service 
 La progettazione e la realizzazione di un servizio web adesso si fa più interessante: se prima la scelta di creare API REST era quasi scontata, oggi è possibile utilizzare un approccio alternativo e funzionalmente equivalente grazie a GraphQL. Esiste anche la possibilità di integrare l'uso della libreria in progetti già esistenti, oltre a realizzare ex-novo sistemi che supportino entrambi i tipi di endpoint.
 
-[Arcano](https://github.com/rickie95/arcano) è un esempio di come quest'ultima possibilità possa essere implementata, facendo coesistere endpoint REST e GraphQL sullo stesso backend: è sufficiente una buona astrazione sul service layer, in modo tale da renderlo fruibile in maniera trasparente rispetto a quale tecnologia si sta utilizzando. In questo modo si possono addirittura alternare richieste tramite endpoint REST a richieste effettuate tramite GraphQL.
+[Arcano](https://github.com/rickie95/arcano) è un esempio di come quest'ultima possibilità possa essere implementata, facendo coesistere endpoint REST e GraphQL sullo stesso backend: è sufficiente una buona astrazione sul service layer, in modo tale da renderlo fruibile in maniera trasparente rispetto alla tecnologia utilizzata. In questo modo si possono addirittura alternare richieste tramite endpoint REST a richieste effettuate tramite GraphQL.
 
-![](assets/GraphQL_vs_REST_struttura_arcano.png)
+![](assets/ArchitecturalDiagram.png)
 
-Nell'implementazione proposta - realizzata in Java - è possibile vedere che la maggior parte delle funzionalità esposte negli endpoint REST sono perfettamente replicate e gestibili anche tramite l'endpoint univoco `/graphql`. Solamente il servizio di autenticazione è offerto esclusivamente un endpoint dedicato REST, ed il motivo è da imputare solamente all'implementazione GraphQL utilizzata, fornita da Smallrye, che attualmente non prevede un meccanismo dedicato per questa evenienza.
-L'implementazione è comunque interessante perché genera automaticamente lo schema a partire da quanto scritto nei Provider/Resolver di GraphQL, permettendo un approccio code-first.
+Nell'implementazione proposta - realizzata in Java - è possibile vedere che la maggior parte delle funzionalità esposte negli endpoint REST sono perfettamente replicate e gestibili anche tramite l'endpoint univoco `/graphql`. Solamente il servizio di autenticazione è offerto esclusivamente tramite un endpoint dedicato REST, e il motivo è da imputare solamente all'implementazione GraphQL utilizzata, fornita da Smallrye, che attualmente non prevede un meccanismo dedicato per questa evenienza.
+L'implementazione è comunque interessante perché genera automaticamente lo schema a partire da quanto scritto nei Provider/Resolver di GraphQL, permettendo un approccio *code-first*.
 
 Analogalmente alla controparte REST, utilizzando questa libreria si è in grado di scrivere un Provider dedicato per ogni tipo di risorsa:
 
@@ -288,7 +288,7 @@ Entrambi gli approcci sono assolutamente validi e offrono aspetti interessanti e
 | Sfrutta in modo trasparente la cache HTTP grazie a gli URL contententi gli UUID delle risorse. | La cache HTTP non è disponibile per le richieste POST, quindi si deve sopperire con un caching a livello del gateway per le query non inviate tramite GET. |
 | Uso dei verbi HTTP, codici di risposta | Permette di utilizzare GET (solo per query, potenziali limiti introdotti dai browser) e POST, risponde sempre con codice 200 includendo eventuali messaggi di errore dentro il corpo della risposta. |
 
-La scelta di uno rispetto all'altro non può quindi essere assoluta, né prescindere il contesto in cui deve essere collocata. Una decisione priva di bias può essere presa  prendendo in considerazione e analizzando i **vincoli** a cui è soggetto il prodotto che si vuole realizzare:
+La scelta di uno rispetto all'altro non può quindi essere assoluta, né può prescindere il contesto in cui deve essere collocata. Una decisione priva di bias può essere presa prendendo in considerazione e analizzando i **vincoli** a cui è soggetto il prodotto che si vuole realizzare:
 
 - **Vincoli di businness**
 	- dettati dal cliente
@@ -316,7 +316,7 @@ Ovviamente è necessario sapere anche quali **proprietà o caratteristiche** dev
 - **Facilità di sviluppo**
 - **Efficienza di costo**: time to market, costi di sviluppo/mantenimento/refactoring
 
-Alcune di queste proprietà (le prime sette sicuramente) sono automaticamente indotte dalla scelta di implementare API REST; GraphQL porta con sè nuovi vantaggi, come un'esperienza di sviluppo più immediata e dinamica.
+Alcune di queste proprietà (le prime sette sicuramente) sono automaticamente indotte dalla scelta di implementare API REST; GraphQL porta con sé nuovi vantaggi, come un'esperienza di sviluppo più immediata e dinamica.
 
 ## Conclusioni
 
@@ -333,6 +333,6 @@ GraphQL invece può aiutare nei casi in cui si voglia sviluppare un servizio in 
 - https://github.com/graphql/graphql-js (implementazione di riferimento in JS)
 - https://www.redhat.com/it/topics/api/what-is-graphql
 - https://goodapi.co/blog/rest-vs-graphql
-- [GraphQL e sistemi distribuiti/microf](https://stackoverflow.com/questions/38071714/when-and-how-to-use-graphql-with-microservice-architecture)
+- [GraphQL e sistemi distribuiti/microservizi](https://stackoverflow.com/questions/38071714/when-and-how-to-use-graphql-with-microservice-architecture)
 - [Caching in GraphQL](https://graphql.org/learn/caching/)
 - [Approfondimento sul caching in GraphQL: Highly customizable APIs benefit less from HTTP caching.](https://www.apollographql.com/blog/graphql-caching-the-elephant-in-the-room-11a3df0c23ad/)
