@@ -1,0 +1,63 @@
+<html>
+	<head>
+		<title>Arcano</title>
+
+		<!-- jQuery -->
+		 <script type = "text/javascript" src = "https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"> </script>
+		 <script type = "text/javascript" src = "scripts/scripts.js"> </script>
+
+	</head>
+	<body>
+		<h1> Arcano - Dashboard </h1>
+
+		<div id="container">
+			
+			<div id="user-list-container">
+				<h2> Users </h2> - <a href="new_user.html"> Add new user </a>
+				<ul id="user-list"> </ul>
+			</div>
+
+			<div id="event-list-container">
+				<h2> Events </h2> - <a href="new_event.html"> Add new event </a>
+				<ul id="event-list"></ul>
+			</div>
+
+			<div id="match-list-container">
+				<h2> Matches </h2> - <a href="new_match.html"> Add new match </a>
+				<ul id="match-list"></ul>
+			</div>
+				
+
+		</div>
+
+	<script type = "text/javascript">
+
+
+
+		function appendUserToUserList(user){
+			var row = "<li> <a href='" 
+					+ "user.html?user_id=" + user.id + "'>" 
+					+ user.username + "</a> </li>";
+			$("#user-list").append(row);
+		}
+
+		function fetchEntityList(resource_path, success_callback){
+			$.ajax({
+				url: ENDPOINT_URL + resource_path,
+				contentType: "application/json",
+				dataType: 'json',
+				success: function(result){
+					success_callback(result);
+					
+				}
+			});
+		}
+		
+		$( document ).ready(function() {
+			fetchEntityList("/users", function(result){ result.forEach(user => appendUserToUserList(user)); });
+		});
+		
+	</script>
+
+	</body>
+</html>
