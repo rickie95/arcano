@@ -19,16 +19,97 @@ Software gestionali datati,
 Arcano (server) + Congrega (applicazione)
  = Servizio trasparente, anche self hosted
 
+
+# ======== ATTORI COINVOLTI =======
 Use cases, tre attori:
 1) Giocatore
 2) Giudice
 3) Amministratore
 
-@use_cases.png
 
-@domain_model.png
+# ======== USE CASE DIAGRAM =========
+# Operazioni CRUD
+# Iscrizione eventi + chiamata giudice
+@assets/UseCaseDiagram.svg
 
 
+# ========== DOMAIN MODEL ===========
+# Evento -> Match -> Game -> User
+# Menzionare come EMERGE ownable, isOwnedBy(User)
+# Generalizzazione di Player/Judge/Admin in User,
+# il ruolo può variare fra diversi eventi.
+@assets/class_diagram.png
 
-         Grazie
-made with suckless.org/sent
+
+# ====== ARCHITECTURAL DIAGRAM =======
+# Presentation tier esterno all'elaborato
+# Logica di business semplice, viene gestita dal service layer. 
+# {Chi implementa gli UC implementa la BL}
+# Forse overengineering per Repository, ma ci sta.
+# DAO ha una interfaccia generic con le CRUD 
+# Implementata da MySQLGenericDAO<T>
+# Specializzata dalle classi che gestiscono le entities
+# Non visibili: Model + DTOs
+@assets/ArchitecturalDiagram.svg
+
+
+# ======= GRAPHQL VS REST ========
+# Alcuni sono vincoli che portano vantaggi
+REST
+▸ Disaccoppiamento client/server
+▸ Interfaccia uniforme, modellata sul Domain Model
+▸ Varie rappresentazioni supportate (json, XML, ..)
+▸ Sfrutta HTTP: cache, verbi
+
+
+GraphQL
+▸ Client può richiedere dati specificando gli attributi 
+▸ API facili da far evolvere, no versioning
+▸ Query rispetto allo schema, non agli endpoint
+▸ Introspection
+▸ Prototipazione rapida, esperienza di sviluppo gradevole
+
+# Elaborazione query:
+# parsing: albero sintattico, check errori sintassi
+# validation: rispetta lo schema? i campi richiesti appartengono al tipo?
+# execution: elaborazione ricorsiva, prima i primitivi poi i riferimenti a oggetti
+# Richieste: o POST o GET
+{ Car(filter: { ports_lt: 3}) {
+    ports    /* int */
+    model    /* string */
+    brand    /* Manifacturer */
+}}
+
+{ "Car" {
+    {
+        "brand": "Toyota",
+        "model": "Aygo",
+        "ports": 3
+    }
+    {
+        "brand": "Ford",
+        "model": "Ka",
+        "ports": 3
+    }
+    {
+        "brand": "Ferrari",
+        "model": "458 Italia",
+        "ports": 3
+    }
+}}
+
+# ====== IL MEGLIO DEI DUE MONDI ======
+# evoluzione quantitativa e qualitativa:
+# facile e veloce adattarsi, eventualmente 
+# cambio endpoint REST. 
+#
+# Nel mio caso: AUTH su REST, 
+# GRAPHQL per roba strana con filtri ecc
+REST + GraphQL 
+▸ Alte prestazioni per query "standard"
+▸ Flessibilità, gestione query "anomale"
+▸ Lascia spazio e margine per evolvere nel tempo.
+
+# ======= FINE PRESENTAZIONE ========
+Fine presentazione -> demo time.
+~ made with suckless.org/sent ~
