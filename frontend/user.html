@@ -1,0 +1,52 @@
+<html>
+	<head>
+		<title>Arcano</title>
+
+		<!-- jQuery -->
+		 <script type = "text/javascript" src = "https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"> </script>
+		 <script type = "text/javascript" src = "scripts/scripts.js"> </script>
+
+	</head>
+	<body>
+		<h1> Arcano - <span id="title-message">View user </span><span id="username"></span> </h1>
+
+		<div id="container">
+			
+			<div id="user-details-container">
+
+			</div>
+
+		</div>
+
+	<script type = "text/javascript">
+
+		function error_callback(result){
+			if(result.status == 404){
+				$("#title-message").text("ERROR: User not found");
+				return;
+			}
+
+			$("#title-message").text("ERROR: Cannot connect to the server.");
+		}
+
+		function populatePage(entity){
+			$("#username").text(entity["username"]);
+			for(var key in entity){
+				var value = entity[key];
+				if(value == null)
+					value = "Not specified";
+				var innerHTML = "<b>" + key + "</b>: &nbsp" + value + "<br>"; 
+            	$("#user-details-container").append(innerHTML);
+            }
+		}
+
+		$( document ).ready(function() {
+			var entity_id = getEntityIdFromURL("user_id");
+			fetchEntity("users", entity_id, populatePage, error_callback);
+			
+		});
+		
+	</script>
+
+	</body>
+</html>
