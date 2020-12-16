@@ -34,8 +34,8 @@ public class UserGraphQLProvider {
 	
 	@Query("userById")
 	@Description("Retrive an user given its id, if exists.")
-	public UserDetails getUserById(@Name("id") String userId) {
-		return userService.getUserDetailsById(Long.parseLong(userId));
+	public UserDetails getUserById(@Name("id") Long userId) {
+		return userService.getUserDetailsById(userId);
 	}
 	
 	@Query("")
