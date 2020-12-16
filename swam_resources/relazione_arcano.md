@@ -178,22 +178,23 @@ Di seguito viene illustrato come inviare la stessa query (recuperare le informaz
 
 
 ### 2.2 Architettura
-L'architettura del backend fa riferimento alle classiche implementazioni 3-tier. 
-Sono stati previsti infatti tre livelli, contenuti tra gli endpoint e il database:
+L'architettura del backend fa riferimento alle classiche implementazioni 3-tier: il *Presentation* tier è esterno a questo elaborato, mentre l'*Application* tier coincide con il Service Layer. Il *Data* tier comprende invece MySQL.
 
 ![](assets/ArchitecturalDiagram.png)
 
-- **Service Layer**: offre una serie di servizi derivati dagli use cases, manipolando gli oggetti di dominio secondo le logiche di business. Sono presenti diversi servizi, ognuno con le sue responsabilità:
+- **Service Layer**: offre gli endpoint REST e GraphQL assieme ad una serie di servizi derivati dagli use cases, manipolando gli oggetti di dominio secondo le logiche di business. Sono presenti diversi servizi, ognuno con le sue responsabilità:
     - **UserService**: per l'interrogazione e la manipolazione dei profili utente.
     - **{Match,Event,Game}Service**: per l'organizzazione e l'aggiornamento delle varie fasi e componenti di un evento.
     - **{Authentication,Authorization}Service**: offrono servizi e meccanismi per identificare univocamente un utente - rilasciando e validando token JWT - oltre a determinare se possiede i diritti su una certa risorsa.    
 
-- **Repository Layer**: media tra Service e Persistence, comportandosi come una collezione di oggetti in memoria nascondendo la complessità delle operazioni di persistenza necessarie al database. Permette inoltre di utilizzare collezioni presenti naturalmente in memoria come `GameRepositoryInMemory` mantenendo la stessa interfaccia.
+- **Data Access Layer**: offre un'interfaccia semplice per il recupero e l'inserimento degli oggetti verso un database. All'interno sono presenti due sub-layer che utilizzano diversi tipi di astrazione e un diverso paradigma per la gestione degli oggetti persistiti.
 
-- **Persistence Layer**: comprende i Data Access Object per ognuna delle entità del domain model. Offre un'interfaccia uniforme per Repository, in modo da astrarre da quale database si sta utilizzando.
-    - `GenericDAO<T>` è un'interfaccia che descrive i principali metodi che un DAO dovrebbe possedere, identificati dalle normali operazioni CRUD.
-    - `MySQLGenericDAO<T>` implementa l'interfaccia precedente utilizzando un Entity Manager e specializzando i suoi metodi rispetto all'uso di MySQL come database.
-    - `UserDAO`, `EventDAO`, `MatchDAO` estendono `MySQLGenericDAO<T>` specificando il tipo a cui fanno riferimento. Possono aggiungere nuovi metodi oppure eseguire l'override di quelli già presenti.
+    - **Repository**: media tra Service e Persistence, comportandosi come una collezione di oggetti in memoria nascondendo la complessità delle operazioni di persistenza necessarie al database. Permette inoltre di utilizzare collezioni presenti naturalmente in memoria come `GameRepositoryInMemory` mantenendo la stessa interfaccia.
+
+    - **Persistence**: comprende i Data Access Object per ognuna delle entità del domain model. Offre un'interfaccia uniforme per Repository, in modo da astrarre da quale database si sta utilizzando. Le classi di questo sub-layer manipolano direttamente il database attravero l'entity manager fornito dall'ORM.
+        - `GenericDAO<T>` è un'interfaccia che descrive i principali metodi che un DAO dovrebbe possedere, identificati dalle normali operazioni CRUD.
+        - `MySQLGenericDAO<T>` implementa l'interfaccia precedente utilizzando un Entity Manager e specializzando i suoi metodi rispetto all'uso di MySQL come database.
+        - `UserDAO`, `EventDAO`, `MatchDAO` estendono `MySQLGenericDAO<T>` specificando il tipo a cui fanno riferimento. Possono aggiungere nuovi metodi oppure eseguire l'override di quelli già presenti.
 
 #### Autenticazione e Autorizzazione
 Alcune operazioni messe a disposizione dal servizio possono esporre dati personali o intaccare componenti fondamentali di un evento/torneo. Ovviamente devono essere messe in campo restrizioni e meccanismi per regolare l'accesso e identificare i client.
