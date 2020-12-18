@@ -1,0 +1,63 @@
+<html>
+	<head>
+		<title>Arcano</title>
+
+		<!-- jQuery -->
+		 <script type = "text/javascript" src = "https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"> </script>
+		 <script type = "text/javascript" src = "scripts/scripts.js"> </script>
+
+	</head>
+	<body>
+		<h1> Arcano - <span id="event_name"></span> </h1>
+
+		<div id="container">
+			
+			<div id="user-details-container">
+
+			</div>
+
+		</div>
+
+	<script type = "text/javascript">
+
+		function error_callback(result){
+			if(result.status == 404){
+				$("#title-message").text("ERROR: Event not found");
+				return;
+			}
+
+			$("#title-message").text("ERROR: Cannot connect to the server.");
+		}
+
+		function populatePage(entity){
+			$("#event_name").text(entity["name"]);
+			for(var key in entity){
+				var innerHTML = "<b>" + key + "</b>: &nbsp <span id='"+key+"_value'></span><br>"; 
+            	$("#user-details-container").append(innerHTML);
+
+				var value = entity[key];
+				if(value == null){
+					document.getElementById("value").innerText = "Not specified";
+				} else if(Array.isArray(value) && value.length == 0){
+					document.getElementById("value").innerText = "Empty"
+				} else if(Array.isArray(value)){
+					var name = key+"_value"
+					for( var user of value){
+						
+						document.getElementById(name).innerText = user.username + ",&nbsp";
+					}
+				}			
+				
+            }
+		}
+
+		$( document ).ready(function() {
+			var entity_id = getEntityIdFromURL("event_id");
+			fetchEntity("events", entity_id, populatePage, error_callback);
+			
+		});
+		
+	</script>
+
+	</body>
+</html>

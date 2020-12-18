@@ -1,0 +1,106 @@
+<html>
+
+<head>
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <link rel="stylesheet" href="style.css">
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+
+
+</head>
+
+    <body>        
+       
+
+        <div class="wrapper">
+            <div id="formContent">
+              <!-- Tabs Titles -->
+          
+              <!-- Icon -->
+              <div>
+                <h1> Arcano - Login </h1>
+                <h3><a href="index.html"> Back to dashboard </a></h3>
+              </div>
+          
+              <!-- Login Form -->
+              <form>
+                <input type="text" id="username" class="fadeIn second" name="login" placeholder="Username">
+                <input type="password" id="password" class="fadeIn third" name="login" placeholder="Password">
+                <input type="submit" id="submit" class="fadeIn fourth" value="Log In">
+              </form>
+          
+              <!-- Remind Passowrd -->
+              <div id="formFooter">
+                <span class="errorMessage" href="#">Username or password are wrong</span>
+              </div>
+          
+            </div>
+          </div>
+
+    <script>
+       $('#submit').click(submitData);
+
+       function checkUsername(){
+          var username = getValueFromElementById("username");
+          
+          if(valueIsEmptyOrNull(username)) {
+              document.getElementById("errorMessage").innerText = "Insert your username";
+              return false;
+          }
+
+          return true;
+       }
+
+       function checkPassword(){
+        var username = getValueFromElementById("password");
+        
+        if(valueIsEmptyOrNull(username)) {
+            document.getElementById("errorMessage").innerText = "Insert your password";
+            return false;
+        }
+
+        return true;
+       }
+
+       function notifyError(errorMessage){
+                document.getElementById("errorMessage").innerText = errorMessage;
+            }
+
+       function submitData(){
+          if(checkUsername() && checkPassword())
+            console.log("Values are ok, sending");
+
+          var request_body = {
+                          username : getValueFromElementById("username"),
+                          password: getValueFromElementById("password")
+                      };
+
+          $.ajax({
+                      url: ENDPOINT_URL + "/authentication",
+                      contentType: "application/json",
+                      dataType: 'json',
+                      type: 'POST',
+                      data: JSON.stringify(request_body),
+                      success: function (result) {
+                          alert("Successful login.");
+                          console.log(result);
+                      },
+                      error: function (result) {
+                          console.log(result);
+                          if(result.status == 403){
+                            notifyError("Incorrect username or password.")
+                          } else if (result.status == 500){
+                            notifyError("Server has encountered a problem, contact an admin.");
+                          } else {
+                            notifyError("Cannot estabilish a connection with the server.");
+                          }
+                      }
+                  });
+
+       }
+
+    </script>
+        
+    </body>
+</html>

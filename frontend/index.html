@@ -8,8 +8,7 @@
 
 	</head>
 	<body>
-		<h1> Arcano - Dashboard </h1>
-
+		<h1> Arcano - Dashboard </h1> <a id="loginLink" href="login.html"> <span id="loginSpan">Login</span> </a>
 		<div id="container">
 			
 			<div id="user-list-container">
@@ -41,6 +40,20 @@
 			$("#user-list").append(row);
 		}
 
+		function appendUserToEventList(event){
+			var row = "<li> <a href='" 
+					+ "event.html?event_id=" + event.id + "'>" 
+					+ event.name + "</a> </li>";
+			$("#event-list").append(row);
+		}
+
+		function appendUserToMatchList(match){
+			var row = "<li> <a href='" 
+					+ "match.html?match_id=" + match.id + "'>" 
+					+ match.playerOne.username + " vs " + match.playerTwo.username + "</a> </li>";
+			$("#match-list").append(row);
+		}
+
 		function fetchEntityList(resource_path, success_callback){
 			$.ajax({
 				url: ENDPOINT_URL + resource_path,
@@ -55,6 +68,8 @@
 		
 		$( document ).ready(function() {
 			fetchEntityList("/users", function(result){ result.forEach(user => appendUserToUserList(user)); });
+			fetchEntityList("/events", function(result){ result.forEach(event => appendUserToEventList(event)); });
+			fetchEntityList("/matches", function(result){ result.forEach(match => appendUserToMatchList(match)); });
 		});
 		
 	</script>

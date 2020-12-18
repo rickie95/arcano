@@ -1,5 +1,5 @@
 
-let ENDPOINT_URL = "http://localhost:8080/arcano";
+let ENDPOINT_URL = "https://127.0.0.1:8443/arcano";
 
 function appendUserToUserList(user){
     var row = "<li> <a href='" 
