@@ -12,6 +12,7 @@ A simple backend for Congrega App.
 - Docker + Docker Compose to start the server and the DB.
 
 ## Usage
-- Clone the repository: `git clone https://github.com/rickie95/arcano`
-- Move in root directory and build the `.war`: `cd arcano && mvn clean package`
-- Build the image and fire up the containers: `docker-compose build && docker-compose up`
+1) Clone the repository: `git clone https://github.com/rickie95/arcano`
+2) Move in root directory and build the `.war`: `cd arcano && mvn clean package`
+3) Download the MySQL connector (`mysql-connector-java-8.0.21.jar`) from MySQL website, and place in `../wildfly-docker` folder.
+4) Build the image and fire up the containers: `docker-compose build && docker-compose up`
