@@ -14,4 +14,5 @@ A simple backend for Congrega App.
 ## Usage
 - Clone the repository: `git clone https://github.com/rickie95/arcano`
 - Move in root directory and build the `.war`: `cd arcano && mvn clean package`
+- Generate a self-signed certificate with `keytool -genkeypair -alias localhost -keyalg RSA -keysize 2048 -validity 365 -keystore server.keystore -dname "cn=Arcano,o=Arcano,c=IT" -keypass secret -storepass secret`
 - Build the image and fire up the containers: `docker-compose build && docker-compose up`
