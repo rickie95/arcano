@@ -56,6 +56,17 @@ public class UserEndpoint {
 			.links(user.getLinks(uriInfo.getBaseUri().toString()).toArray(Link[]::new))
 			.build();
 	}
+	
+	@GET
+	@Path("/byUsername/{username}")
+	@Produces(MediaType.APPLICATION_JSON)
+	@PermitAll
+	public Response getUserByUsername(@PathParam("username") String username, @Context UriInfo uriInfo) {
+		UserDetails user = userService.getUserDetailsByUsername(username);
+		return Response.ok(user)
+			.links(user.getLinks(uriInfo.getBaseUri().toString()).toArray(Link[]::new))
+			.build();
+	}
 
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)

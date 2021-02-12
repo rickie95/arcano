@@ -1,7 +1,10 @@
- - [ ] Aggiungere DELETE events/{id}/players 
- - [ ] Check HATEOAS
- - [ ] Riordinare gli endpoint gerarchicarmente
- - [ ] Controllare che i nomi delle risorse siano in plurale
- - [ ] Check RequestScoped in tutti gli endpoint
- - [ ] Controllare i DAO, posso utilizzare solo MySQLGeneric?
- - [ ] graphql_resolvers.png ; container_docker.png ; domain_model.png
+[X] Aggiungere DELETE events/{id}/players 
+[-] Check HATEOAS
+[ ] Riordinare gli endpoint gerarchicarmente
+[X] Controllare che i nomi delle risorse siano in plurale
+[X] Check RequestScoped in tutti gli endpoint
+[-] Controllare i DAO, posso utilizzare solo MySQLGeneric?
+[X] graphql_resolvers.png ; container_docker.png ; domain_model.png
+[ ] Chacheability
+[ ] Frontend
+[ ] Presentazione 20/25 min

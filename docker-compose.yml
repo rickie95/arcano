@@ -10,6 +10,7 @@ services:
             - "3306:3306"
         volumes:
             - arcano_db_data:/var/lib/mysql
+            - ./mysql_dump.sql:/docker-entrypoint-initdb.d/dump.sql
     wildfly:
         env_file:
             - environment.env
@@ -22,7 +23,7 @@ services:
         ports:
             - "8080:8080"
             - "9990:9990"
-
+            - "8443:8443"
 volumes:
     arcano_db_data: {}
 

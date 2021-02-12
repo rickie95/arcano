@@ -15,4 +15,5 @@ A simple backend for Congrega App.
 1) Clone the repository: `git clone https://github.com/rickie95/arcano`
 2) Move in root directory and build the `.war`: `cd arcano && mvn clean package`
 3) Download the MySQL connector (`mysql-connector-java-8.0.21.jar`) from MySQL website, and place in `../wildfly-docker` folder.
-4) Build the image and fire up the containers: `docker-compose build && docker-compose up`
+4) Generate a self-signed certificate with `keytool -genkeypair -alias localhost -keyalg RSA -keysize 2048 -validity 365 -keystore server.keystore -dname "cn=Arcano,o=Arcano,c=IT" -keypass secret -storepass secret`
+5) Build the image and fire up the containers: `docker-compose build && docker-compose up`
