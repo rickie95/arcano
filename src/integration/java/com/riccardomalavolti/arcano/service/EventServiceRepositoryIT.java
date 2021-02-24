@@ -23,7 +23,6 @@ import com.riccardomalavolti.arcano.dto.UserBrief;
 import com.riccardomalavolti.arcano.dto.UserDetails;
 import com.riccardomalavolti.arcano.dto.UserMapper;
 import com.riccardomalavolti.arcano.model.Event;
-import com.riccardomalavolti.arcano.model.Role;
 import com.riccardomalavolti.arcano.model.User;
 import com.riccardomalavolti.arcano.persistence.EventDAO;
 import com.riccardomalavolti.arcano.repositories.EventRepository;
@@ -89,9 +88,8 @@ class EventServiceRepositoryIT {
 	@Test
 	void testEnrollJudgeInEvent() {
 		User user = new User((long)(1));
-		user.setRole(Role.JUDGE);
 		when(eventDAO.findById(eventOne.getId())).thenReturn(eventOne);
-		when(userService.getUserWithRoleById(user.getId(), Role.JUDGE)).thenReturn(user);
+		when(userService.getUserById(user.getId())).thenReturn(user);
 		
 		UserDetails returnedUser = eventService.enrollJudgeInEvent(user.getId(), eventOne.getId(), "ADMIN");
 		
@@ -101,9 +99,7 @@ class EventServiceRepositoryIT {
 	@Test
 	void testGetJudgeList() {
 		User judgeOne = new User((long) 2);
-		judgeOne.setRole(Role.JUDGE);
 		User judgeTwo = new User((long) 3);
-		judgeTwo.setRole(Role.JUDGE);
 		eventOne.addJudge(judgeOne);
 		eventOne.addJudge(judgeTwo);
 		
@@ -119,9 +115,7 @@ class EventServiceRepositoryIT {
 	@Test
 	void testPlayerList() {
 		User playerOne = new User((long) 2);
-		playerOne.setRole(Role.PLAYER);
 		User playerTwo = new User((long) 3);
-		playerTwo.setRole(Role.PLAYER);
 		eventOne.enrollPlayer(playerOne);
 		eventOne.enrollPlayer(playerTwo);
 		

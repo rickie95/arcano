@@ -5,8 +5,6 @@ import java.util.List;
 
 import javax.ws.rs.core.Link;
 
-import com.riccardomalavolti.arcano.model.Role;
-
 public class UserDetails implements RESTResource {
 	
 	Long id;
@@ -14,7 +12,6 @@ public class UserDetails implements RESTResource {
 	
 	String name;
 	String surname;
-	Role role;
 	
 	public Long getId() {
 		return id;
@@ -39,12 +36,6 @@ public class UserDetails implements RESTResource {
 	}
 	public void setSurname(String surname) {
 		this.surname = surname;
-	}
-	public Role getRole() {
-		return role;
-	}
-	public void setRole(Role role) {
-		this.role = role;
 	}
 
 	@Override

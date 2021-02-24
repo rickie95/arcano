@@ -5,7 +5,6 @@ import java.net.URISyntaxException;
 import java.util.List;
 
 import javax.annotation.security.PermitAll;
-import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -27,7 +26,6 @@ import com.riccardomalavolti.arcano.dto.EventDetails;
 import com.riccardomalavolti.arcano.dto.UserBrief;
 import com.riccardomalavolti.arcano.dto.UserDetails;
 import com.riccardomalavolti.arcano.model.Event;
-import com.riccardomalavolti.arcano.model.Role;
 import com.riccardomalavolti.arcano.service.EventService;
 
 @PermitAll
@@ -47,7 +45,6 @@ public class EventEndpoint {
 	
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
-	@PermitAll
 	public Response createNewEvent(Event event, @Context UriInfo uriInfo) throws URISyntaxException {
 		EventDetails saved = eventService.createEvent(event);
 		return Response.created(new URI(uriInfo.getAbsolutePath() + "/" + saved.getId()))
@@ -59,7 +56,6 @@ public class EventEndpoint {
 	@Path("{eventId}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	@RolesAllowed(Role.Values.ADMIN_VALUE)
 	public Response removeEvent(@PathParam("eventId") Long eventId) {		
 		return Response.accepted(eventService.removeEvent(eventId, context.getUserPrincipal().getName())).build();
 	}
@@ -77,7 +73,6 @@ public class EventEndpoint {
 	@GET
 	@Path("{eventId}/players")
 	@Produces(MediaType.APPLICATION_JSON)
-	@PermitAll
 	public List<UserBrief> getPlayersForEvent(@PathParam("eventId") Long eventId) {
 		return eventService.getPlayersForEvent(eventId);
 	}
@@ -105,7 +100,6 @@ public class EventEndpoint {
 	@GET
 	@Path("{eventId}/judges")
 	@Produces(MediaType.APPLICATION_JSON)
-	@PermitAll
 	public List<UserBrief> getJudgeList(@PathParam("eventId") Long eventId) {
 		return eventService.getJudgeList(eventId);
 	}
@@ -114,7 +108,6 @@ public class EventEndpoint {
 	@Path("{eventId}/judges/{judgeId}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	@RolesAllowed(Role.Values.ADMIN_VALUE)
 	public Response enrollJudgeInEvent(@PathParam("eventId") Long eventId, @PathParam("judgeId") Long judgeId,
 			@Context UriInfo uriInfo) {
 		UserDetails judge = eventService.enrollJudgeInEvent(judgeId, eventId, 

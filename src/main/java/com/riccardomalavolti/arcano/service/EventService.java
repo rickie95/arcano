@@ -16,7 +16,6 @@ import com.riccardomalavolti.arcano.dto.UserDetails;
 import com.riccardomalavolti.arcano.dto.UserMapper;
 import com.riccardomalavolti.arcano.exceptions.AccessDeniedException;
 import com.riccardomalavolti.arcano.model.Event;
-import com.riccardomalavolti.arcano.model.Role;
 import com.riccardomalavolti.arcano.model.User;
 import com.riccardomalavolti.arcano.repositories.EventRepository;
 
@@ -108,7 +107,7 @@ public class EventService {
 	public UserDetails enrollJudgeInEvent(Long judgeId, Long eventId, String requesterUsername) {
 		Event requestedEvent = retriveEventById(eventId);
 		authService.verifyOwnershipOf(requestedEvent, requesterUsername);
-		User judge = userService.getUserWithRoleById(judgeId, Role.JUDGE);
+		User judge = userService.getUserById(judgeId);
 		requestedEvent.addJudge(judge);
 		return UserMapper.toUserDetails(judge);
 	}

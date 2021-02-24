@@ -1,6 +1,5 @@
 package com.riccardomalavolti.arcano.security;
 import java.security.Principal;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -15,9 +14,7 @@ public class AuthenticatedUser implements Principal {
         }
 
         public Set<String> getAuthorities() {
-        	Set<String> roles = new HashSet<>();
-        	roles.add(user.getRole().toString());
-            return Collections.unmodifiableSet(roles);
+        	return new HashSet<>();
         }
 
 		@Override

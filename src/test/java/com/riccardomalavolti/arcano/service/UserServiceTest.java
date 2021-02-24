@@ -32,7 +32,6 @@ import com.riccardomalavolti.arcano.dto.UserBrief;
 import com.riccardomalavolti.arcano.dto.UserDetails;
 import com.riccardomalavolti.arcano.dto.UserMapper;
 import com.riccardomalavolti.arcano.exceptions.ConflictException;
-import com.riccardomalavolti.arcano.model.Role;
 import com.riccardomalavolti.arcano.model.User;
 import com.riccardomalavolti.arcano.repositories.UserRepository;
 
@@ -241,28 +240,4 @@ class UserServiceTest {
 		assertThat(userFetched.getId()).isEqualTo(userOne.getId());	
 	}
 	
-	@Test
-	void testGetUserWithRoleById() {
-		userOne.setRole(Role.ADMINISTRATOR);
-		when(userRepo.getUserById(userOneID)).thenReturn(Optional.of(userOne));
-		User user = userService.getUserWithRoleById(userOneID, Role.ADMINISTRATOR);
-		assertThat(user.getId()).isEqualTo(userOne.getId());
-	}
-	
-	@Test
-	void testGetUserWithRoleByIdShouldThrowIllegalArgumentExIfRoleIsntSet() {
-		when(userRepo.getUserById(userOneID)).thenReturn(Optional.of(userOne));
-		assertThatExceptionOfType(IllegalArgumentException.class)
-		    .isThrownBy( () -> userService.getUserWithRoleById(userOneID, Role.PLAYER));
-	}
-	
-	
-	@Test
-	void testGetUserWithRoleByIdShouldThrowIllegalArgumentExIfRoleDoesntMatch() {
-		when(userRepo.getUserById(userOneID)).thenReturn(Optional.of(userOne));
-		userOne.setRole(Role.ADMINISTRATOR);
-		assertThatExceptionOfType(IllegalArgumentException.class)
-		    .isThrownBy( () -> userService.getUserWithRoleById(userOneID, Role.PLAYER));
-	}
-
 }

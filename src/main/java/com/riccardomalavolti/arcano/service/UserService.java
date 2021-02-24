@@ -12,7 +12,6 @@ import com.riccardomalavolti.arcano.dto.UserBrief;
 import com.riccardomalavolti.arcano.dto.UserDetails;
 import com.riccardomalavolti.arcano.dto.UserMapper;
 import com.riccardomalavolti.arcano.exceptions.ConflictException;
-import com.riccardomalavolti.arcano.model.Role;
 import com.riccardomalavolti.arcano.model.User;
 import com.riccardomalavolti.arcano.repositories.UserRepository;
 import com.riccardomalavolti.arcano.security.PasswordHash;
@@ -92,13 +91,6 @@ public class UserService {
 		User requestedUser = getUserById(userId);
 		authorization.verifyOwnershipOf(requestedUser, requesterUsername);
 		return UserMapper.toUserDetails(userRepo.removeUser(requestedUser));
-	}
-	
-	public User getUserWithRoleById(Long userId, Role role) {
-		User user = getUserById(userId);
-		if(role != null && user.getRole() != role)
-			throw new IllegalArgumentException(String.format("Role %s does not match or is invalid.", role));
-		return user;
 	}
 
 }

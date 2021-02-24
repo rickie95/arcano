@@ -33,7 +33,6 @@ import com.riccardomalavolti.arcano.dto.UserBrief;
 import com.riccardomalavolti.arcano.dto.UserMapper;
 import com.riccardomalavolti.arcano.endpoints.rest.EventEndpoint;
 import com.riccardomalavolti.arcano.model.Event;
-import com.riccardomalavolti.arcano.model.Role;
 import com.riccardomalavolti.arcano.model.User;
 import com.riccardomalavolti.arcano.service.EventService;
 
@@ -265,18 +264,16 @@ public class EventEndpointTest extends JerseyTest {
 		Long eventId = (long) 1;
 		Event event = new Event(eventId);
 		
-		User playerOne = new User((long) 2);
-		playerOne.setRole(Role.JUDGE);
-		User playerTwo = new User((long) 3);
-		playerTwo.setRole(Role.JUDGE);
+		User judgeOne = new User((long) 2);
+		User judgeTwo = new User((long) 3);
 
 		
-		event.enrollPlayer(playerOne);
-		event.enrollPlayer(playerTwo);
+		event.addJudge(judgeOne);
+		event.addJudge(judgeTwo);
 		
 		List<UserBrief> playerList = new ArrayList<UserBrief>(Arrays.asList(
-				UserMapper.toUserBrief(playerOne), 
-				UserMapper.toUserBrief(playerTwo)));
+				UserMapper.toUserBrief(judgeOne), 
+				UserMapper.toUserBrief(judgeTwo)));
 		
 		when(eventService.getJudgeList(eventId)).thenReturn(playerList);
 		
@@ -289,8 +286,8 @@ public class EventEndpointTest extends JerseyTest {
 			.statusCode(200)
 			.assertThat()
 				.body(
-						"[0].id", equalTo(playerOne.getId().intValue()),
-						"[1].id", equalTo(playerTwo.getId().intValue())
+						"[0].id", equalTo(judgeOne.getId().intValue()),
+						"[1].id", equalTo(judgeTwo.getId().intValue())
 					);
 	}
 	
