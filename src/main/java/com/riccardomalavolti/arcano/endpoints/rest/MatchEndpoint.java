@@ -5,7 +5,6 @@ import java.net.URISyntaxException;
 import java.util.List;
 
 import javax.annotation.security.PermitAll;
-import javax.annotation.security.RolesAllowed;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
@@ -26,7 +25,6 @@ import javax.ws.rs.core.UriInfo;
 import com.riccardomalavolti.arcano.dto.MatchBrief;
 import com.riccardomalavolti.arcano.dto.MatchDetails;
 import com.riccardomalavolti.arcano.model.Match;
-import com.riccardomalavolti.arcano.model.Role;
 import com.riccardomalavolti.arcano.service.MatchService;
 
 @RequestScoped
@@ -67,7 +65,7 @@ public class MatchEndpoint {
 	
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
-	@RolesAllowed(Role.Values.ADMIN_VALUE)
+	@PermitAll
 	public Response insertNewMatch(Match match, @Context UriInfo uriInfo) throws URISyntaxException{
 		MatchDetails saved = matchService.createMatch(match);
 		return Response.created(new URI(uriInfo.getAbsolutePath() + "/" + saved.getId()))
@@ -78,7 +76,7 @@ public class MatchEndpoint {
 	@DELETE
 	@Path("{id}")
 	@Produces(MediaType.APPLICATION_JSON)
-	@RolesAllowed(Role.Values.ADMIN_VALUE)
+	@PermitAll
 	public Response deleteMatch(@PathParam("id") Long matchId) {
 		return Response
 				.accepted(matchService.deleteMatch(matchId, getRequester()))
@@ -89,7 +87,7 @@ public class MatchEndpoint {
 	@Path("{id}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	@RolesAllowed(Role.Values.ADMIN_VALUE)
+	@PermitAll
 	public Response updateMatch(@PathParam("id") Long matchId, Match updatedMatch) {
 		return Response
 				.ok(matchService.updateMatch(matchId, updatedMatch, getRequester()))

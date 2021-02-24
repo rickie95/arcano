@@ -13,9 +13,7 @@ public class User implements Ownable {
 	private Long id;
 	
 	@NotNull private String username;
-	private String password;
-	private Role role;
-	
+	private String password;	
 	private String name;
 	private String surname;
 	
@@ -31,14 +29,6 @@ public class User implements Ownable {
 
 	public void setPassword(String password) {
 		this.password = password;
-	}
-
-	public Role getRole() {
-		return role;
-	}
-
-	public void setRole(Role role) {
-		this.role = role;
 	}
 
 	public String getName() {

@@ -32,7 +32,6 @@ import com.riccardomalavolti.arcano.dto.UserDetails;
 import com.riccardomalavolti.arcano.dto.UserMapper;
 import com.riccardomalavolti.arcano.exceptions.AccessDeniedException;
 import com.riccardomalavolti.arcano.model.Event;
-import com.riccardomalavolti.arcano.model.Role;
 import com.riccardomalavolti.arcano.model.User;
 import com.riccardomalavolti.arcano.repositories.EventRepository;
 
@@ -259,9 +258,7 @@ class EventServiceTest {
 	@Test
 	void testGetJudgeListShouldReturnJudgeBriefList() {
 		User judgeOne = new User((long) 2);
-		judgeOne.setRole(Role.JUDGE);
 		User judgeTwo = new User((long) 3);
-		judgeTwo.setRole(Role.JUDGE);
 		eventOne.addJudge(judgeOne);
 		eventOne.addJudge(judgeTwo);
 		
@@ -285,9 +282,8 @@ class EventServiceTest {
 	void testEnrollJudgeInEventShouldReturnJudgeBrief() {
 		Long judgeId = (long) 1;
 		User judge = new User(judgeId);
-		judge.setRole(Role.JUDGE);
 		when(eventRepo.getEventById(eventOne.getId())).thenReturn(Optional.of(eventOne));
-		when(userService.getUserWithRoleById(judgeId, Role.JUDGE)).thenReturn(judge);
+		when(userService.getUserById(judgeId)).thenReturn(judge);
 		
 		UserDetails returnedJudge = eventService.enrollJudgeInEvent(judgeId, eventOne.getId(), "ADMIN");
 		
@@ -302,7 +298,7 @@ class EventServiceTest {
 		Long eventId = eventOne.getId();
 		
 		when(eventRepo.getEventById(eventOne.getId())).thenReturn(Optional.of(eventOne));
-		when(userService.getUserWithRoleById(judgeId, Role.JUDGE)).thenThrow(IllegalArgumentException.class);
+		when(userService.getUserById(judgeId)).thenThrow(IllegalArgumentException.class);
 		
 		assertThatThrownBy(() -> eventService.enrollJudgeInEvent(judgeId, eventId, "ALLOWED"))
 			.isInstanceOf(IllegalArgumentException.class);
@@ -312,9 +308,7 @@ class EventServiceTest {
 	@Test
 	void testGetPlayerList() {
 		User playerOne = new User((long) 2);
-		playerOne.setRole(Role.PLAYER);
 		User playerTwo = new User((long) 3);
-		playerTwo.setRole(Role.PLAYER);
 		eventOne.enrollPlayer(playerOne);
 		eventOne.enrollPlayer(playerTwo);
 		
