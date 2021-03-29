@@ -357,10 +357,6 @@
                 <http-listener name="default" socket-binding="http" redirect-socket="https" enable-http2="true"/>
                 <https-listener name="https" socket-binding="https" security-realm="ApplicationRealm" enable-http2="true"/>
                 <host name="default-host" alias="localhost">
-                    <filter-ref name="Access-Control-Allow-Origin"/>
-                    <filter-ref name="Access-Control-Allow-Methods"/>
-                    <filter-ref name="Access-Control-Allow-Headers"/>
-                    <filter-ref name="Access-Control-Allow-Credentials"/>
                     <http-invoker security-realm="ApplicationRealm"/>
                 </host>
             </server>
@@ -368,12 +364,6 @@
                 <jsp-config/>
                 <websockets/>
             </servlet-container>
-            <filters>
-                <response-header name="Access-Control-Allow-Origin" header-name="Access-Control-Allow-Origin" header-value="*"/>
-                <response-header name="Access-Control-Allow-Methods" header-name="Access-Control-Allow-Methods" header-value="GET,POST,PUT,DELETE,OPTIONS,HEAD"/>
-                <response-header name="Access-Control-Allow-Headers" header-name="Access-Control-Allow-Headers" header-value="content-type,authorization,origin,accept"/>
-                <response-header name="Access-Control-Allow-Credentials" header-name="Access-Control-Allow-Credentials" header-value="true"/>
-            </filters>
             <application-security-domains>
                 <application-security-domain name="other" security-domain="ApplicationDomain"/>
             </application-security-domains>
