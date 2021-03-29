@@ -196,6 +196,14 @@ L'architettura del backend fa riferimento alle classiche implementazioni 3-tier:
         - `MySQLGenericDAO<T>` implementa l'interfaccia precedente utilizzando un Entity Manager e specializzando i suoi metodi rispetto all'uso di MySQL come database.
         - `UserDAO`, `EventDAO`, `MatchDAO` estendono `MySQLGenericDAO<T>` specificando il tipo a cui fanno riferimento. Possono aggiungere nuovi metodi oppure eseguire l'override di quelli già presenti.
 
+Dal diagramma e dal codice si può facilmente notare che la logica di businness viene interamente gestita dal Service Layer, e che non è presente quindi una sezione separata in cui vengono applicate le strategie per la gestione dei casi d'uso. Questa scelta è stata motivata dalla semplicità iniziale dei casi d'uso e del modello che è emerso dall'analisi, oltre alla necessità di mantenere un design quanto più leggero e immediato, che permettesse di sviluppare il backend senza complicazioni. E' ragionevole pensare che l'applicazione sicuramente evolverà, e si prevede che vi possa essere anche una leggera mutazione dei casi d'uso, il che porterà ad una ristrutturazione dell'applicativo in un futuro prossimo che potrebbe coinvolgere anche il layer dei servizi. In questo caso si può già delineare una roadmap con alcuni punti salienti:
+
+- Nei singoli servizi verranno rimosse le dipendenze funzionali che li accoppiano ad altri servizi, rendendoli più indipendenti.
+- Si delegherà la logica di businness ad un nuovo BL che manipolerà direttamente gli oggetti del dominio.
+- Il domain model potrebbe essere reso più "anemico", trasferendo ulteriormente ongi traccia di logica nel neonato BL.
+
+Tutte queste modifiche potranno e dovranno essere messe in opera non appena si verificherà un cambiamento dei requisiti, e dovrebbero richiedere un contributo modesto in termini di tempo e risorse impiegate considerando che il tutto consiste in un refactoring iniziale, seguito dallo sviluppo di nuove funzionalità.
+
 #### Autenticazione e Autorizzazione
 Alcune operazioni messe a disposizione dal servizio possono esporre dati personali o intaccare componenti fondamentali di un evento/torneo. Ovviamente devono essere messe in campo restrizioni e meccanismi per regolare l'accesso e identificare i client.
 
