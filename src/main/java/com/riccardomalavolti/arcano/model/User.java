@@ -22,6 +22,17 @@ public class User implements Ownable {
 	public User(long id) {
 		this.id = id;
 	}
+	
+	public User(String username, String password) {
+		this.username = username;
+		this.password = password;
+	}
+	
+	public User(long id, String username, String password) {
+		this.id = id;
+		this.username = username;
+		this.password = password;
+	}
 
 	public String getPassword() {
 		return password;

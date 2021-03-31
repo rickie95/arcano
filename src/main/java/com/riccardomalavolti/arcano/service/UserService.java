@@ -81,7 +81,6 @@ public class UserService {
 		User requestedUser = getUserById(userId);		
 		authorization.verifyOwnershipOf(requestedUser, requesterUsername);
 		user.setId(requestedUser.getId());
-		// TODO: sanity check su username e password
 		if(user.getPassword() != null)
 			user.setPassword(PasswordHash.hash(user.getPassword()));
 		return UserMapper.toUserDetails(userRepo.mergeUser(user));

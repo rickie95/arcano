@@ -1,7 +1,6 @@
 package com.riccardomalavolti.arcano.persistence;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -29,7 +28,6 @@ class UserDAOTest {
 	private static final Long USER_ONE_ID = (long) 1;
 	private static final Long USER_TWO_ID = (long) 2;
 	private static final String USER_ONE_USERNAME = "FOO";
-	private static final String USER_ONE_PASSWORD = "secret";
 	
 	private User userOne = new User();
 	private User userTwo = new User();
@@ -83,35 +81,4 @@ class UserDAOTest {
 		assertThat(returnedUser).isNull();
 	}
 	
-	@Test
-	void testAuthenticateUser() {
-		userOne.setId(USER_ONE_ID);
-		userOne.setUsername(USER_ONE_USERNAME);
-		userOne.setPassword(USER_ONE_PASSWORD);
-		
-		when(em.createQuery(UserDAO.AUTHENTICATE_USER, User.class)).thenReturn(query);
-		when(query.setParameter("username", USER_ONE_USERNAME)).thenReturn(query);
-		when(query.setParameter("password", USER_ONE_PASSWORD)).thenReturn(query);
-		when(query.getSingleResult()).thenReturn(userOne);
-		
-		User returnedUser = userDAO.authenticateUser(userOne);
-		assertThat(returnedUser).isNotNull();
-		assertThat(returnedUser.getUsername()).isEqualTo(USER_ONE_USERNAME);
-		
-	}
-	
-	@Test
-	void testAuthenticateUserShouldThrowsANonExistentExeptionIfUserCannotBeFound() {
-		userOne.setId(USER_ONE_ID);
-		userOne.setUsername(USER_ONE_USERNAME);
-		userOne.setPassword(USER_ONE_PASSWORD);
-		
-		when(em.createQuery(UserDAO.AUTHENTICATE_USER, User.class)).thenReturn(query);
-		when(query.setParameter("username", USER_ONE_USERNAME)).thenReturn(query);
-		when(query.setParameter("password", USER_ONE_PASSWORD)).thenReturn(query);
-		when(query.getSingleResult()).thenThrow(new NoResultException());
-		
-		assertThrows(NoResultException.class, () -> userDAO.authenticateUser(userOne));
-		
-	}
 }

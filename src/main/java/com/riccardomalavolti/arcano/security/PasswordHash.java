@@ -11,5 +11,9 @@ public class PasswordHash {
 	public static String hash(String plainTextPassword) {
 		return BCrypt.hashpw(plainTextPassword, SALT);
 	}
+	
+	public static boolean checkPassword(String toBeVerified, String hashed) {
+		return BCrypt.checkpw(toBeVerified, hashed);
+	}
 
 }

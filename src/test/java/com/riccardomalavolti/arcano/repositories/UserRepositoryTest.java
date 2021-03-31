@@ -130,14 +130,5 @@ class UserRepositoryTest {
 		assertThat(returnedUser).isNotNull();
 		assertThat(user).isEqualTo(userCaptor.getValue());
 	}
-	
-	@Test
-	void testAuthenticateUser() {
-		user = new User();
-		user.setId(USER_ID);
-		userRepo.authenticate(user);
-		verify(userDAO).authenticateUser(userCaptor.capture());
-		assertThat(userCaptor.getValue().getId()).isEqualTo(USER_ID);
-	}
 
 }

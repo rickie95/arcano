@@ -43,10 +43,5 @@ public class UserRepository {
 	public User mergeUser(User user) {
 		return userDAO.merge(user);		
 	}
-
-	public void authenticate(User user) {
-		userDAO.authenticateUser(user);
-	}
-
 	
 }

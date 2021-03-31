@@ -34,12 +34,15 @@ public class AuthenticationService {
 	}
 	
 	private void authenticate(User user) {
-		if (user.getUsername() == null || user.getPassword() == null)
+		if (user.getUsername() == null || user.getPassword() == null ||
+				user.getUsername().isBlank() || user.getPassword().isBlank())
 			throw new IllegalArgumentException("Username or passowrd are empty.");
+				
+		User recoveredUser = userRepository.getUserByUsername(user.getUsername())
+				.orElseThrow(() -> new NotAuthorizedException("Your credentials are wrong"));
 		
-		user.setPassword(PasswordHash.hash(user.getPassword()));
-		
-		userRepository.authenticate(user);
+		if(!PasswordHash.checkPassword(user.getPassword(), recoveredUser.getPassword()))
+			throw new NotAuthorizedException("Your credentials are wrong");
 	}
 	
 	private String issueToken(String username) {
