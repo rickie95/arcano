@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,13 +29,13 @@ import com.riccardomalavolti.arcano.persistence.UserDAO;
 @RunWith(JUnitPlatform.class)
 class UserRepositoryTest {
 	
-	private static final Long USER_ID = (long) 1;
+	private static final UUID USER_ID = UUID.randomUUID();
 
 	@Mock
 	UserDAO userDAO;
 	
 	@Captor ArgumentCaptor<Class<User>> DAOParameter;
-	@Captor ArgumentCaptor<Long> userId;
+	@Captor ArgumentCaptor<UUID> userId;
 	@Captor ArgumentCaptor<User> userCaptor;
 	
 	@InjectMocks

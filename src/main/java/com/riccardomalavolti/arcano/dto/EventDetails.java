@@ -3,22 +3,23 @@ package com.riccardomalavolti.arcano.dto;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import javax.ws.rs.core.Link;
 
 public class EventDetails implements RESTResource {
 	
-	Long id;
+	UUID id;
 	String name;
 	
 	Set<UserBrief> playerList;
 	Set<UserBrief> judgeList;
 	Set<UserBrief> adminList;
 	
-	public Long getId() {
+	public UUID getId() {
 		return id;
 	}
-	public void setId(Long id) {
+	public void setId(UUID id) {
 		this.id = id;
 	}
 	public String getName() {

@@ -1,6 +1,7 @@
 package com.riccardomalavolti.arcano.endpoints.graphql;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -34,7 +35,7 @@ public class UserGraphQLProvider {
 	
 	@Query("userById")
 	@Description("Retrive an user given its id, if exists.")
-	public UserDetails getUserById(@Name("id") Long userId) {
+	public UserDetails getUserById(@Name("id") UUID userId) {
 		return userService.getUserDetailsById(userId);
 	}
 	
@@ -57,7 +58,7 @@ public class UserGraphQLProvider {
 	
 	@Mutation("removeUser")
 	@Description("Removes a user given his id.")
-	public UserDetails removeUser(@Name("userId") Long userId, @Name("jwt") String token) {
+	public UserDetails removeUser(@Name("userId") UUID userId, @Name("jwt") String token) {
 		return userService.deleteUser(userId, authService.parseToken(token));
 	}
 

@@ -6,6 +6,7 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -48,10 +49,10 @@ class EventServiceRepositoryIT {
 		eventService = new EventService(eventRepo, userService, authService);
 		
 		eventOne = new Event();
-		eventOne.setId((long)1);
+		eventOne.setId(UUID.randomUUID());
 		
 		eventTwo = new Event();
-		eventTwo.setId((long) 2);
+		eventTwo.setId(UUID.randomUUID());
 	}
 	
 	@Test
@@ -75,7 +76,7 @@ class EventServiceRepositoryIT {
 	
 	@Test
 	void testEnrollPlayerInEvent() {
-		User user = new User((long)(1));
+		User user = new User(UUID.randomUUID());
 		when(userService.getUserById(user.getId())).thenReturn(user);
 		when(eventDAO.findById(eventOne.getId())).thenReturn(eventOne);
 		
@@ -87,7 +88,7 @@ class EventServiceRepositoryIT {
 	
 	@Test
 	void testEnrollJudgeInEvent() {
-		User user = new User((long)(1));
+		User user = new User(UUID.randomUUID());
 		when(eventDAO.findById(eventOne.getId())).thenReturn(eventOne);
 		when(userService.getUserById(user.getId())).thenReturn(user);
 		
@@ -98,8 +99,8 @@ class EventServiceRepositoryIT {
 	
 	@Test
 	void testGetJudgeList() {
-		User judgeOne = new User((long) 2);
-		User judgeTwo = new User((long) 3);
+		User judgeOne = new User(UUID.randomUUID());
+		User judgeTwo = new User(UUID.randomUUID());
 		eventOne.addJudge(judgeOne);
 		eventOne.addJudge(judgeTwo);
 		
@@ -114,8 +115,8 @@ class EventServiceRepositoryIT {
 	
 	@Test
 	void testPlayerList() {
-		User playerOne = new User((long) 2);
-		User playerTwo = new User((long) 3);
+		User playerOne = new User(UUID.randomUUID());
+		User playerTwo = new User(UUID.randomUUID());
 		eventOne.enrollPlayer(playerOne);
 		eventOne.enrollPlayer(playerTwo);
 		

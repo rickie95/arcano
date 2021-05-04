@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,13 +16,15 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.riccardomalavolti.arcano.exceptions.ConflictException;
 import com.riccardomalavolti.arcano.model.Game;
-import com.riccardomalavolti.arcano.model.User;
 
 @ExtendWith(MockitoExtension.class)
 @RunWith(JUnitPlatform.class)
 class GameRepositoryInMemoryTest {
 	
 	GameRepositoryInMemory gameRepo;
+	
+	private static UUID playerOneId = UUID.randomUUID();
+	private static UUID playerTwoId = UUID.randomUUID();
 	
 	@BeforeEach
 	void setUp() {
@@ -30,18 +33,10 @@ class GameRepositoryInMemoryTest {
 	}
 	
 	@Test
-	void testCreateAGameShouldReturnTheGameItself() {
-		Long p1ID = (long) 1;
-		User playerOne = new User();
-		playerOne.setId(p1ID);
-		
-		Long p2ID = (long) 2;
-		User playerTwo = new User();
-		playerTwo.setId(p2ID);
-		
+	void testCreateAGameShouldReturnTheGameItself() {		
 		Game newGame = new Game();
-		newGame.setPointsForPlayer(p1ID, (short)(20));
-		newGame.setPointsForPlayer(p2ID, (short)(20));
+		newGame.setPointsForPlayer(playerOneId, (short)(20));
+		newGame.setPointsForPlayer(playerTwoId, (short)(20));
 		
 		Game g = gameRepo.createGame(newGame);
 		
@@ -49,20 +44,12 @@ class GameRepositoryInMemoryTest {
 		
 		assertThat(returnedGame).isNotEmpty().contains(g);
 		assertThat(returnedGame.get().getId()).isEqualTo(GameRepositoryInMemory.getIdCounter()-1);
-		assertThat(returnedGame.get().getPointsForPlayer(p1ID)).isEqualTo((short)(20));
-		assertThat(returnedGame.get().getPointsForPlayer(p2ID)).isEqualTo((short)(20));
+		assertThat(returnedGame.get().getPointsForPlayer(playerOneId)).isEqualTo((short)(20));
+		assertThat(returnedGame.get().getPointsForPlayer(playerTwoId)).isEqualTo((short)(20));
 	}
 	
 	@Test
-	void testAddGameShouldBeIdempotent() {
-		Long p1ID = (long) 1;
-		User playerOne = new User();
-		playerOne.setId(p1ID);
-		
-		Long p2ID = (long) 2;
-		User playerTwo = new User();
-		playerTwo.setId(p2ID);
-		
+	void testAddGameShouldBeIdempotent() {		
 		Game game = new Game((long)(1));
 		Game returnedGame = gameRepo.addGame(game);
 		
@@ -75,17 +62,9 @@ class GameRepositoryInMemoryTest {
 	
 	@Test
 	void testFindAllGamesShouldReturnsAllGames() {
-		Long p1ID = (long) 1;
-		User playerOne = new User();
-		playerOne.setId(p1ID);
-		
-		Long p2ID = (long) 2;
-		User playerTwo = new User();
-		playerTwo.setId(p2ID);
-		
 		Game newGame = new Game();
-		newGame.setPointsForPlayer(p1ID, (short)20);
-		newGame.setPointsForPlayer(p2ID, (short)20);
+		newGame.setPointsForPlayer(playerOneId, (short)20);
+		newGame.setPointsForPlayer(playerTwoId, (short)20);
 		
 		Game gameOne = gameRepo.createGame(newGame);
 		Game gameTwo = gameRepo.createGame(newGame);
@@ -97,13 +76,9 @@ class GameRepositoryInMemoryTest {
 	
 	@Test
 	void testRemoveGame() {
-		Long p1ID = (long) 1;
-		
-		Long p2ID = (long) 2;
-		
 		Game gameOne = new Game((long)(3));
-		gameOne.setPointsForPlayer(p1ID, (short)(20));
-		gameOne.setPointsForPlayer(p2ID, (short)(20));
+		gameOne.setPointsForPlayer(playerOneId, (short)(20));
+		gameOne.setPointsForPlayer(playerTwoId, (short)(20));
 		
 		gameRepo.addGame(gameOne);
 		

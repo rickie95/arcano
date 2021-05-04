@@ -2,21 +2,22 @@ package com.riccardomalavolti.arcano.dto;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import javax.ws.rs.core.Link;
 
 public class UserDetails implements RESTResource {
 	
-	Long id;
+	UUID id;
 	String username;
 	
 	String name;
 	String surname;
 	
-	public Long getId() {
+	public UUID getId() {
 		return id;
 	}
-	public void setId(Long id) {
+	public void setId(UUID id) {
 		this.id = id;
 	}
 	public String getUsername() {

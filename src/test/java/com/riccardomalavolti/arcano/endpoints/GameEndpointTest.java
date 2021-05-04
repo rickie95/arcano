@@ -7,6 +7,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.UUID;
 
 import javax.json.Json;
 import javax.json.JsonObject;
@@ -33,6 +34,9 @@ public class GameEndpointTest extends JerseyTest {
 	
 	@Mock private GameService gameService;
 	
+	static private final UUID userOneId = UUID.randomUUID();
+	static private final UUID userTwoId = UUID.randomUUID();
+	
 	@SuppressWarnings("deprecation")
 	@Override
 	protected Application configure(){
@@ -58,8 +62,8 @@ public class GameEndpointTest extends JerseyTest {
 		Game gameOne = new Game();
 		gameOne.setId(gameID);
 		gameOne.setEnded(false);
-		gameOne.setPointsForPlayer((long)2, (short)20);
-		gameOne.setPointsForPlayer((long)3, (short)20);
+		gameOne.setPointsForPlayer(userOneId, (short)20);
+		gameOne.setPointsForPlayer(userTwoId, (short)20);
 		
 		when(gameService.getGameById(gameID)).thenReturn(gameOne);
 		
@@ -79,21 +83,21 @@ public class GameEndpointTest extends JerseyTest {
 	public void testCreateNewGame() {		
 		Game newGame = new Game();
 		newGame.setEnded(false);
-		newGame.setPointsForPlayer((long)2, (short)20);
-		newGame.setPointsForPlayer((long)3, (short)20);
+		newGame.setPointsForPlayer(userOneId, (short)20);
+		newGame.setPointsForPlayer(userTwoId, (short)20);
 		
 		Game createdGame = new Game();
 		createdGame.setId((long)1);
 		createdGame.setEnded(false);
-		createdGame.setPointsForPlayer((long)2, (short)20);
-		createdGame.setPointsForPlayer((long)3, (short)20);
+		createdGame.setPointsForPlayer(userOneId, (short)20);
+		createdGame.setPointsForPlayer(userTwoId, (short)20);
 		
 		when(gameService.createGame(newGame)).thenReturn(createdGame);
 		
-		Map<Long, Short> gameP = newGame.getGamePoints();
+		Map<UUID, Short> gameP = newGame.getGamePoints();
 		
 		JsonObjectBuilder builder = Json.createObjectBuilder();
-		for (Entry<Long, Short> entry : gameP.entrySet()) {
+		for (Entry<UUID, Short> entry : gameP.entrySet()) {
 			builder.add(entry.getKey().toString(), entry.getValue().toString());
 		}
 		JsonObject gamePoints = builder.build();

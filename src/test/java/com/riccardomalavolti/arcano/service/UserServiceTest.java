@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -12,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.NotFoundException;
@@ -42,8 +42,8 @@ class UserServiceTest {
 	private final static String p1Username = "Mike";
 	private final static String p2Username = "Joe";
 
-	private final static Long userOneID = (long) 1;
-	private final static Long userTwoID = (long) 2;
+	private final static UUID userOneID = UUID.randomUUID();
+	private final static UUID userTwoID = UUID.randomUUID();
 
 	private User userOne, userTwo;
 	private List<User> userList;
@@ -96,15 +96,17 @@ class UserServiceTest {
 
 	@Test
 	void testGetANonExistentPlayerById() {
-		when(userRepo.getUserById(anyLong())).thenReturn(Optional.empty());
+		UUID userID = UUID.randomUUID();
+		
+		when(userRepo.getUserById(userID)).thenReturn(Optional.empty());
 
-		assertThrows(NotFoundException.class, () -> userService.getUserById((long) (0)));
+		assertThrows(NotFoundException.class, () -> userService.getUserById(userID));
 	}
 	
 	@Test
 	void testGetUserByUsername() {
 		User user = new User();
-		user.setId((long) (1));
+		user.setId(UUID.randomUUID());
 		user.setUsername("FOO");
 		when(userRepo.getUserByUsername("FOO")).thenReturn(Optional.of(user));
 		

@@ -2,6 +2,7 @@ package com.riccardomalavolti.arcano.model;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 
@@ -11,7 +12,7 @@ public class Game {
 
 	private boolean isEnded;
 	
-	private Map<Long, Short> gamePoints;
+	private Map<UUID, Short> gamePoints;
 	
 	public Game() {
 		this.isEnded = false;
@@ -23,7 +24,7 @@ public class Game {
 		this.id = id;
 	}
 	
-	public void withdrawPlayer(Long playerId) {
+	public void withdrawPlayer(UUID playerId) {
 		setPointsForPlayer(playerId, (short)0);
 		setWinner(opponentOf(playerId));
 	}
@@ -32,15 +33,15 @@ public class Game {
 		this.isEnded = true;
 	}
 
-	public Long opponentOf(Long playerId) {
+	public UUID opponentOf(UUID playerId) {
 		return gamePoints.keySet().stream().filter( key -> !key.equals(playerId)).findFirst().get();
 	}
 	
-	public Map<Long, Short> getGamePoints() {
+	public Map<UUID, Short> getGamePoints() {
 		return gamePoints;
 	}
 
-	public void setGamePoints(Map<Long, Short> gamePoints) {
+	public void setGamePoints(Map<UUID, Short> gamePoints) {
 		this.gamePoints = gamePoints;
 	}
 
@@ -48,11 +49,11 @@ public class Game {
 		this.isEnded = isEnded;
 	}
 	
-	public synchronized void setPointsForPlayer(Long playerId, Short points) {
+	public synchronized void setPointsForPlayer(UUID playerId, Short points) {
 		gamePoints.put(playerId, points);
 	}
 	
-	public synchronized Short getPointsForPlayer(Long playerId) {
+	public synchronized Short getPointsForPlayer(UUID playerId) {
 		return gamePoints.get(playerId);
 	}
 	
@@ -64,7 +65,7 @@ public class Game {
 		return this.id;
 	}
 	
-	public Long getWinnerId() {
+	public UUID getWinnerId() {
 		if(isEnded)
 			return Collections.max(gamePoints.entrySet(), Map.Entry.comparingByValue()).getKey();
 		
@@ -75,7 +76,7 @@ public class Game {
 		return this.isEnded;
 	}
 	
-	private void setWinner(Long playerId) {
+	private void setWinner(UUID playerId) {
 		this.setWinner(playerId);
 	}
 	

@@ -1,6 +1,7 @@
 package com.riccardomalavolti.arcano.service;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import javax.enterprise.inject.Default;
@@ -43,12 +44,12 @@ public class EventService {
 				.map(EventMapper::toEventBrief).collect(Collectors.toList());
 	}
 	
-	private Event retriveEventById(Long eventId) {
+	private Event retriveEventById(UUID eventId) {
 		return eventRepo.getEventById(eventId)
 		.orElseThrow(() -> new NotFoundException(String.format(NO_EVENT_FOUND_WITH_ID, eventId)));
 	}
 
-	public EventDetails getEventById(Long eventId) {
+	public EventDetails getEventById(UUID eventId) {
 		return EventMapper.toEventDetails(retriveEventById(eventId));
 	}
 
@@ -56,13 +57,13 @@ public class EventService {
 		return EventMapper.toEventDetails(eventRepo.addEvent(event));
 	}
 
-	public EventDetails removeEvent(Long eventId, String requesterUsername) {
+	public EventDetails removeEvent(UUID eventId, String requesterUsername) {
 		Event requestedEvent = retriveEventById(eventId);
 		authService.verifyOwnershipOf(requestedEvent, requesterUsername);
 		return EventMapper.toEventDetails(eventRepo.removeEvent(requestedEvent));
 	}
 	
-	public EventDetails updateEvent(Long eventId, Event event, String requesterUsername) {
+	public EventDetails updateEvent(UUID eventId, Event event, String requesterUsername) {
 		Event requestedEvent = retriveEventById(eventId);
 		authService.verifyOwnershipOf(requestedEvent, requesterUsername);
 		event.setId(requestedEvent.getId());
@@ -70,7 +71,7 @@ public class EventService {
 		return EventMapper.toEventDetails(eventRepo.updateEvent(event));
 	}
 	
-	public EventDetails enrollPlayerInEvent(Long playerId, Long eventId) {
+	public EventDetails enrollPlayerInEvent(UUID playerId, UUID eventId) {
 		Event requestedEvent = retriveEventById(eventId);
 		try {
 			User player = userService.getUserById(playerId);
@@ -82,7 +83,7 @@ public class EventService {
 		return EventMapper.toEventDetails(requestedEvent);
 	}
 	
-	public EventDetails removePlayerFromEvent(Long playerId, Long eventId, String requesterUsername) {
+	public EventDetails removePlayerFromEvent(UUID playerId, UUID eventId, String requesterUsername) {
 		// Requester must be:
 		// -> The user himself OR An user with admin rights for the event
 		User playerToBeRemoved;
@@ -104,7 +105,7 @@ public class EventService {
 		return EventMapper.toEventDetails(requestedEvent);
 	}
 
-	public UserDetails enrollJudgeInEvent(Long judgeId, Long eventId, String requesterUsername) {
+	public UserDetails enrollJudgeInEvent(UUID judgeId, UUID eventId, String requesterUsername) {
 		Event requestedEvent = retriveEventById(eventId);
 		authService.verifyOwnershipOf(requestedEvent, requesterUsername);
 		User judge = userService.getUserById(judgeId);
@@ -112,12 +113,12 @@ public class EventService {
 		return UserMapper.toUserDetails(judge);
 	}
 
-	public List<UserBrief> getJudgeList(Long eventId) {
+	public List<UserBrief> getJudgeList(UUID eventId) {
 		return retriveEventById(eventId).getJudgeList()
 				.stream().map(UserMapper::toUserBrief).collect(Collectors.toList());
 	}
 
-	public List<UserBrief> getPlayersForEvent(Long eventId) {
+	public List<UserBrief> getPlayersForEvent(UUID eventId) {
 		return retriveEventById(eventId).getPlayerList()
 				.stream().map(UserMapper::toUserBrief).collect(Collectors.toList());
 	}

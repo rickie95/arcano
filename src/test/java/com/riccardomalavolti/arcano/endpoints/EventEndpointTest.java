@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.UUID;
 
 import javax.json.Json;
 import javax.json.JsonArray;
@@ -65,12 +66,12 @@ public class EventEndpointTest extends JerseyTest {
 	@Test
 	public void testGetEventList() {
 		Event eOne = new Event();
-		eOne.setId((long)(1));
+		eOne.setId(UUID.randomUUID());
 		eOne.setJudgeList(new HashSet<User>());
 		eOne.setPlayerList(new HashSet<User>());
 		eOne.setAdminList(new HashSet<User>());
 		Event eTwo = new Event();
-		eTwo.setId((long)(2));
+		eTwo.setId(UUID.randomUUID());
 		eTwo.setJudgeList(new HashSet<User>());
 		eTwo.setPlayerList(new HashSet<User>());
 		eTwo.setAdminList(new HashSet<User>());
@@ -89,8 +90,8 @@ public class EventEndpointTest extends JerseyTest {
 			.statusCode(200)
 			.assertThat()
 				.body(
-						"[0].id", equalTo(eOne.getId().intValue()),
-						"[1].id", equalTo(eTwo.getId().intValue())
+						"[0].id", equalTo(eOne.getId().toString()),
+						"[1].id", equalTo(eTwo.getId().toString())
 					);
 				
 	}
@@ -98,7 +99,7 @@ public class EventEndpointTest extends JerseyTest {
 	@Test
 	public void testGetEventById() {
 		// Should also return a list of URL of the associated matches.
-		Long id = (long) 1;
+		UUID id = UUID.randomUUID();
 		Event eOne = new Event();
 		eOne.setId(id);
 		eOne.setJudgeList(new HashSet<User>());
@@ -115,13 +116,13 @@ public class EventEndpointTest extends JerseyTest {
 			.statusCode(200)
 			.assertThat()
 				.body(
-						"id", equalTo(id.intValue())
+						"id", equalTo(id.toString())
 						);
 	}
 
 	@Test
 	public void testGetEventByIdShouldReturn404IfEventCantBeFound() {
-		Long id = (long) 1;
+		UUID id = UUID.randomUUID();
 		when(eventService.getEventById(id)).thenAnswer(invocation -> {throw new NotFoundException("");});
 		
 		given()
@@ -133,11 +134,12 @@ public class EventEndpointTest extends JerseyTest {
 	}
 	
 	@Test
-	public void testCreateNewEvent() {		
+	public void testCreateNewEvent() {
+		UUID eventId = UUID.randomUUID();
 		Event event = new Event();
 		event.setName("Foo");
 		
-		Event createdEvent = new Event((long)(1));
+		Event createdEvent = new Event(eventId);
 		createdEvent.setName("Foo");
 		createdEvent.setJudgeList(new HashSet<User>());
 		createdEvent.setPlayerList(new HashSet<User>());
@@ -163,7 +165,7 @@ public class EventEndpointTest extends JerseyTest {
 			.statusCode(201)
 			.assertThat()
 				.body(
-						"id", equalTo(1),
+						"id", equalTo(eventId.toString()),
 						"name", equalTo("Foo")
 					 )
 				.header("Location", 
@@ -173,11 +175,11 @@ public class EventEndpointTest extends JerseyTest {
 	
 	@Test
 	public void testEnrollAPlayerInAEvent() {
-		Long eventId = (long) 1;
+		UUID eventId = UUID.randomUUID();
 		Event event = new Event();
 		event.setId(eventId);
 		
-		Long playerId = (long) 2;
+		UUID playerId = UUID.randomUUID();
 		String playerUsername = "Mike";
 		
 		User player = new User();
@@ -195,14 +197,14 @@ public class EventEndpointTest extends JerseyTest {
 			.statusCode(202)
 			.assertThat()
 				.body(
-						"id", equalTo(eventId.intValue())
+						"id", equalTo(eventId.toString())
 					 );
 	}
 	
 	@Test
 	public void testEnrollInNonExistentEventShouldReturn404() {
-		Long eventId = (long) 1;
-		Long playerId = (long) 2;
+		UUID eventId = UUID.randomUUID();
+		UUID playerId = UUID.randomUUID();
 		String playerUsername = "Mike";
 		
 		User player = new User();
@@ -213,7 +215,7 @@ public class EventEndpointTest extends JerseyTest {
 			.thenAnswer(invocation -> {throw new NotFoundException("");});
 		
 		JsonObject playerJson = Json.createObjectBuilder()
-					 .add("id", player.getId())
+					 .add("id", player.getId().toString())
 					 .add("username", player.getUsername())
 				 .build();
 		
@@ -229,11 +231,11 @@ public class EventEndpointTest extends JerseyTest {
 	
 	@Test
 	public void testGetPlayerListByEventId() {
-		Long eventId = (long) 1;
+		UUID eventId = UUID.randomUUID();
 		Event event = new Event(eventId);
 		
-		User playerOne = new User((long) 2);
-		User playerTwo = new User((long) 3);
+		User playerOne = new User(UUID.randomUUID());
+		User playerTwo = new User(UUID.randomUUID());
 		
 		event.enrollPlayer(playerOne);
 		event.enrollPlayer(playerTwo);
@@ -253,19 +255,19 @@ public class EventEndpointTest extends JerseyTest {
 			.statusCode(200)
 			.assertThat()
 				.body(
-						"[0].id", equalTo(playerOne.getId().intValue()),
-						"[1].id", equalTo(playerTwo.getId().intValue())
+						"[0].id", equalTo(playerOne.getId().toString()),
+						"[1].id", equalTo(playerTwo.getId().toString())
 					);
 		
 	}
 	
 	@Test
 	public void testGetJudgeListByEventId() {
-		Long eventId = (long) 1;
+		UUID eventId = UUID.randomUUID();
 		Event event = new Event(eventId);
 		
-		User judgeOne = new User((long) 2);
-		User judgeTwo = new User((long) 3);
+		User judgeOne = new User(UUID.randomUUID());
+		User judgeTwo = new User(UUID.randomUUID());
 
 		
 		event.addJudge(judgeOne);
@@ -286,8 +288,8 @@ public class EventEndpointTest extends JerseyTest {
 			.statusCode(200)
 			.assertThat()
 				.body(
-						"[0].id", equalTo(judgeOne.getId().intValue()),
-						"[1].id", equalTo(judgeTwo.getId().intValue())
+						"[0].id", equalTo(judgeOne.getId().toString()),
+						"[1].id", equalTo(judgeTwo.getId().toString())
 					);
 	}
 	

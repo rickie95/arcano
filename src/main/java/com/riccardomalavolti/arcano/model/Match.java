@@ -2,9 +2,11 @@ package com.riccardomalavolti.arcano.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -16,8 +18,8 @@ public class Match implements Ownable {
 	public static final String ENTITY_NAME = "Incontro";
 
 	@Id
-	@GeneratedValue
-	Long id;
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	UUID id;
 	
 	@ManyToOne
 	@JoinColumn(name = "event_id", referencedColumnName = "id")
@@ -42,7 +44,7 @@ public class Match implements Ownable {
 		
 	}
 
-	public Match(Long matchId) {
+	public Match(UUID matchId) {
 		this();
 		this.id = matchId;
 	}
@@ -85,11 +87,11 @@ public class Match implements Ownable {
 			}
 	}
 	
-	public Long getId() {
+	public UUID getId() {
 		return id;
 	}
 	
-	public void setId(Long matchid) {
+	public void setId(UUID matchid) {
 		this.id = matchid;
 	}
 	

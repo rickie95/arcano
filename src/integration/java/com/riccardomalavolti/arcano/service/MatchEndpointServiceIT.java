@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import javax.json.Json;
 import javax.json.JsonObject;
@@ -65,10 +66,10 @@ public class MatchEndpointServiceIT extends JerseyTest {
 	@Test
     public void getMatchList() {
         Match match1 = new Match();
-        match1.setId((long)(1));
+        match1.setId(UUID.randomUUID());
 
         Match match2 = new Match();
-        match2.setId((long)(2));
+        match2.setId(UUID.randomUUID());
 
         List<Match> matchList = new ArrayList<>(Arrays.asList(match1, match2));
         
@@ -82,18 +83,18 @@ public class MatchEndpointServiceIT extends JerseyTest {
             .statusCode(200)
             .assertThat()
             .body(
-                "[0].id", equalTo(match1.getId().intValue()),
-                "[1].id", equalTo(match2.getId().intValue())
+                "[0].id", equalTo(match1.getId().toString()),
+                "[1].id", equalTo(match2.getId().toString())
             );
     }
 	
 	@Test
     public void testGetMatchShouldReturnTheDesiredMatch() {
-		Long matchId = (long) 1;
+		UUID matchId = UUID.randomUUID();
     	Match match1 = new Match(matchId);
-        match1.setPlayerOne(new User((long)20));
-        match1.setPlayerTwo(new User((long)21));
-        match1.setParentEvent(new Event((long)30));
+        match1.setPlayerOne(new User(UUID.randomUUID()));
+        match1.setPlayerTwo(new User(UUID.randomUUID()));
+        match1.setParentEvent(new Event(UUID.randomUUID()));
         
         match1.setGameList(new ArrayList<Game>(Arrays.asList(
         			new Game((long)40),
@@ -111,18 +112,18 @@ public class MatchEndpointServiceIT extends JerseyTest {
         	.statusCode(200)
         	.assertThat()
         	.body(
-        			"id", equalTo(matchId.intValue())
+        			"id", equalTo(matchId.toString())
         			);
     }
 	
 	@Test
     public void testAddMatchShouldReturnTheURLofTheNewMatch() {
     	User p1 = new User(); 
-    	p1.setId((long)(1));
+    	p1.setId(UUID.randomUUID());
     	User p2 = new User(); 
-    	p2.setId((long)(2));
+    	p2.setId(UUID.randomUUID());
     	
-    	Match toBeReturnedMatch = new Match((long)(3));
+    	Match toBeReturnedMatch = new Match(UUID.randomUUID());
     	toBeReturnedMatch.setPlayerOneScore(1);
     	toBeReturnedMatch.setPlayerTwoScore(2);
     	toBeReturnedMatch.setPlayerOne(p1);
@@ -133,8 +134,8 @@ public class MatchEndpointServiceIT extends JerseyTest {
     	 JsonObject newMatchJSON = Json.createObjectBuilder()
  				.add("playerOneScore", 1)
  				.add("playerTwoScore", 2)
- 				.add("playerOne", Json.createObjectBuilder().add("id", 1).build())
- 				.add("playerTwo", Json.createObjectBuilder().add("id", 2).build())
+ 				.add("playerOne", Json.createObjectBuilder().add("id", p1.getId().toString()).build())
+ 				.add("playerTwo", Json.createObjectBuilder().add("id", p2.getId().toString()).build())
  				.build();
     	
     	given()
@@ -146,11 +147,11 @@ public class MatchEndpointServiceIT extends JerseyTest {
     		.statusCode(201)
     		.assertThat()
     			.body(
-    					"id", equalTo(3),
+    					"id", equalTo(toBeReturnedMatch.getId().toString()),
     					"playerOneScore", equalTo(1),
     					"playerTwoScore", equalTo(2),
-    					"playerOne.id", equalTo(1),
-    					"playerTwo.id", equalTo(2)
+    					"playerOne.id", equalTo(p1.getId().toString()),
+    					"playerTwo.id", equalTo(p2.getId().toString())
     					)
     			.header("Location", response -> endsWith(MatchEndpoint.BASE_PATH + "/" + toBeReturnedMatch.getId().toString()));
     }

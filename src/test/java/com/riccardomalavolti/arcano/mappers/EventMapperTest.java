@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,7 +26,7 @@ class EventMapperTest {
 	EventMapper mapper;
 	
 	Event event;
-	Long eventId;
+	UUID eventId;
 	String eventName;
 	
 	User userOne;
@@ -33,12 +34,12 @@ class EventMapperTest {
 	
 	@BeforeEach
 	void createNewEvent() {
-		eventId = (long) 1;
+		eventId = UUID.randomUUID();
 		eventName = "FOO";
 		event = new Event(eventId, eventName);
 		
-		userOne = new User((long) 2);
-		userTwo = new User((long) 3);
+		userOne = new User(UUID.randomUUID());
+		userTwo = new User(UUID.randomUUID());
 		
 		List<User> playerList = new ArrayList<>(Arrays.asList(userOne, userTwo));
 		List<User> judgeList = new ArrayList<>(Arrays.asList(userOne, userTwo));

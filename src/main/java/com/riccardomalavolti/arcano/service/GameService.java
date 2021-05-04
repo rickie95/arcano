@@ -1,6 +1,7 @@
 package com.riccardomalavolti.arcano.service;
 
 import java.util.List;
+import java.util.UUID;
 
 import javax.inject.Inject;
 import javax.ws.rs.NotFoundException;
@@ -42,19 +43,19 @@ public class GameService {
 		return gameRepository.findAllGames();
 	}
 	
-	public void setPointsForPlayerInGame(Long gameId, Long playerId, Short points) {
+	public void setPointsForPlayerInGame(Long gameId, UUID playerId, Short points) {
 		findGameById(gameId).setPointsForPlayer(playerId, points);
 	}
 	
-	public Short getPointForPlayerInGame(Long playerId, Long gameId) {
+	public Short getPointForPlayerInGame(UUID playerId, Long gameId) {
 		return findGameById(gameId).getPointsForPlayer(playerId);
 	}
 
-	public Long getOpponentIdForPlayerInGame(Long playerId, Long gameId) {
+	public UUID getOpponentIdForPlayerInGame(UUID playerId, Long gameId) {
 		return findGameById(gameId).opponentOf(playerId);
 	}
 
-	public void withdrawPlayer(Long gameId, Long playerId) {
+	public void withdrawPlayer(Long gameId, UUID playerId) {
 		Game game = findGameById(gameId);
 		game.withdrawPlayer(playerId);
 		game.endGame();

@@ -1,6 +1,7 @@
 package com.riccardomalavolti.arcano.endpoints.graphql;
 
 import java.util.List;
+import java.util.UUID;
 
 import javax.inject.Inject;
 
@@ -28,7 +29,7 @@ public class MatchGraphQLProvider {
 	}
 	
 	@Query
-	public MatchDetails getMatchById(@Name("matchId") Long matchId) {
+	public MatchDetails getMatchById(@Name("matchId") UUID matchId) {
 		return matchService.getMatchDetailsById(matchId);
 	}
 	
@@ -38,12 +39,12 @@ public class MatchGraphQLProvider {
 	}
 	
 	@Mutation
-	public MatchDetails removeMatch(@Name("matchId") Long matchId, @Name("jwt") String token) {
+	public MatchDetails removeMatch(@Name("matchId") UUID matchId, @Name("jwt") String token) {
 		return matchService.deleteMatch(matchId, authService.parseToken(token));
 	}
 	
 	@Mutation
-	public MatchDetails updateMatch(@Name("matchId") Long matchId, Match updatedMatch, @Name("jwt") String token) {
+	public MatchDetails updateMatch(@Name("matchId") UUID matchId, Match updatedMatch, @Name("jwt") String token) {
 		return matchService.updateMatch(matchId, updatedMatch, authService.parseToken(token));
 	}
 

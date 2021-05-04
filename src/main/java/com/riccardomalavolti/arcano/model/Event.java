@@ -4,10 +4,12 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
@@ -19,9 +21,8 @@ import com.riccardomalavolti.arcano.exceptions.ConflictException;
 public class Event implements Ownable {
 
 	@Id
-	@GeneratedValue
-	private Long id;
-
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private UUID id;
 	private String name;
 
 	@ManyToMany(fetch = FetchType.EAGER)
@@ -45,12 +46,12 @@ public class Event implements Ownable {
 		judgeList = new HashSet<>();
 	}
 	
-	public Event(Long id) {
+	public Event(UUID id) {
 		this();
 		this.setId(id);
 	}
 	
-	public Event(Long id, String name) {
+	public Event(UUID id, String name) {
 		this(id);
 		this.setName(name);
 	}
@@ -85,15 +86,11 @@ public class Event implements Ownable {
 		return adminList.contains(user);
 	}
 
-	public void setId(long id) {
-		this.id = id;
-	}
-
-	public void setId(Long id) {
+	public void setId(UUID id) {
 		this.id = id;
 	}
 	
-	public Long getId() {
+	public UUID getId() {
 		return id;
 	}
 

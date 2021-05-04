@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import javax.ws.rs.NotFoundException;
 
@@ -31,11 +32,12 @@ import com.riccardomalavolti.arcano.repositories.GameRepository;
 @ExtendWith(MockitoExtension.class)
 @RunWith(JUnitPlatform.class)
 class GameServiceTest {
-
+		
 	private static final Long gameId = (long) 1;
-	private static final Long playerOneId = (long) 1;
-	private static final Long playerTwoId = (long) 2;
-
+	private static final UUID playerOneId = UUID.randomUUID();
+	private static final UUID playerTwoId = UUID.randomUUID();
+	private static final UUID playerId = UUID.randomUUID();
+	
 	@Mock private UserService userService;
 	@Mock private GameRepository gameRepository;
 	@Mock private Game mockedGame;
@@ -102,7 +104,7 @@ class GameServiceTest {
 	
 	@Test
 	void testSetPointsForPlayerInGame() {
-		Long playerId = (long) 2;
+		
 		Short points = (short) 3;
 		
 		Game game = mock(Game.class);
@@ -115,7 +117,6 @@ class GameServiceTest {
 	
 	@Test
 	void testGetPointForPlayerInGame() {
-		Long playerId = (long) 2;
 		Short points = (short) 3;
 		
 		Game game = mock(Game.class);
@@ -129,25 +130,22 @@ class GameServiceTest {
 	
 	@Test
 	void testGetOpponentForPlayerInGame() {
-		Long playerId = (long) 2;
-		Long opponentId = (long) 3;
-		User opponent = new User();
-		opponent.setId(opponentId);
+		UUID opponentId = UUID.randomUUID();
+		User opponent = new User(opponentId);
 		Game game = mock(Game.class);
 		
 		when(gameRepository.findGameById(gameId)).thenReturn(Optional.of(game));
 		when(game.opponentOf(playerId)).thenReturn(opponent.getId());
 		
-		Long returnedId = gameService.getOpponentIdForPlayerInGame(playerId, gameId);
+		UUID returnedId = gameService.getOpponentIdForPlayerInGame(playerId, gameId);
 		
 		assertThat(returnedId).isEqualTo(opponentId);
 	}
 
 	@Test
 	void testGetWinnerOfGame() {
-		Long winnerId = (long) 4;
-		User winner = new User();
-		winner.setId(winnerId);
+		UUID winnerId = UUID.randomUUID();
+		User winner = new User(winnerId);
 		
 		when(gameRepository.findGameById(gameId)).thenReturn(Optional.of(mockedGame));
 		when(mockedGame.getWinnerId()).thenReturn(winnerId);

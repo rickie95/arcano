@@ -3,13 +3,13 @@ package com.riccardomalavolti.arcano.service;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.equalTo;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import javax.json.Json;
 import javax.json.JsonObject;
@@ -35,7 +35,7 @@ public class UserEndpointServiceIT extends JerseyTest {
 
 private static final String USERS = UserEndpoint.ENDPOINT_PATH;
 	
-	private static final Long playerId = (long) 1;
+	private static final UUID playerId = UUID.randomUUID();
 	private static final String playerUsername = "Mike";
 	
 	UserService userService;
@@ -65,7 +65,7 @@ private static final String USERS = UserEndpoint.ENDPOINT_PATH;
 	
 	@Test
 	public void getPlayersList() {
-		Long id2 = (long) 2;
+		UUID id2 = UUID.randomUUID();
 		String name2 = "Joe";
 		User p1 = new User();
 		p1.setId(playerId);
@@ -87,38 +87,37 @@ private static final String USERS = UserEndpoint.ENDPOINT_PATH;
             statusCode(200).
             assertThat().
             body(
-                    "[0].id", equalTo(playerId.intValue()),
+                    "[0].id", equalTo(playerId.toString()),
                     "[0].username", equalTo(playerUsername),
-                    "[1].id", equalTo(id2.intValue()),
+                    "[1].id", equalTo(id2.toString()),
                     "[1].username", equalTo(name2)
             );
 	}
 	
 	@Test
 	public void getPlayerByID() {
-		User p = new User();
-		p.setId(playerId);
+		User p = new User(playerId);
 		p.setUsername(playerUsername);
 		
-		when(userRepo.getUserById(anyLong()))
+		when(userRepo.getUserById(playerId))
 			.thenReturn(Optional.of(p));
 
 		given().
 			accept(MediaType.APPLICATION_JSON).
 		when().
-			get(USERS + "/1").
+			get(USERS + "/" + p.getId().toString()).
 		then().
 			statusCode(200).
 			assertThat().
 				body(
-					"id", equalTo(playerId.intValue()), 
+					"id", equalTo(playerId.toString()), 
 					"username", equalTo(playerUsername)
 					);
 		}
 	
 	@Test
 	public void testPostNewPlayer() {
-		Long createdId = (long) 3;
+		UUID createdId = UUID.randomUUID();
 		
 		User playerSent = new User();
 		playerSent.setUsername(playerUsername);
@@ -143,7 +142,7 @@ private static final String USERS = UserEndpoint.ENDPOINT_PATH;
 			.statusCode(201)
 			.assertThat().
 				body(
-						"id", equalTo(createdId.intValue()), 
+						"id", equalTo(createdId.toString()), 
 						"username", equalTo(playerUsername)
 					)
 				.header("Location", response -> endsWith(USERS + "/" + createdId));
