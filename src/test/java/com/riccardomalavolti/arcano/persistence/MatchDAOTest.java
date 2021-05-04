@@ -10,6 +10,7 @@ import static org.mockito.Mockito.verify;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,15 +33,14 @@ class MatchDAOTest {
 	@InjectMocks
 	MatchDAO matchDAO;
 	
+	static private UUID matchOneId = UUID.randomUUID();
+	static private UUID matchTwoId = UUID.randomUUID();
+	static private UUID eventOneId = UUID.randomUUID();
+	
 	@Test
 	void testGetAllMatches() {
-		Match m1 = new Match();
-		Long matchOneId = (long) 1;
-		m1.setId(matchOneId);
-		
-		Match m2 = new Match();
-		Long matchTwoId = (long) 2;
-		m2.setId(matchTwoId);
+		Match m1 = new Match(matchOneId);
+		Match m2 = new Match(matchTwoId);
 		
 		List<Match> matchList = new ArrayList<Match>(Arrays.asList(m1, m2));
 		
@@ -55,17 +55,12 @@ class MatchDAOTest {
 	
 	@Test
 	void testFindMatchOfEvent() {
-		Event event = new Event();
-		event.setId((long)10);
+		Event event = new Event(eventOneId);
 		
-		Match m1 = new Match();
-		Long matchOneId = (long) 1;
-		m1.setId(matchOneId);
+		Match m1 = new Match(matchOneId);
 		m1.setParentEvent(event);
 		
-		Match m2 = new Match();
-		Long matchTwoId = (long) 2;
-		m2.setId(matchTwoId);
+		Match m2 = new Match(matchTwoId);
 		m1.setParentEvent(event);
 		
 		List<Match> matchList = new ArrayList<Match>(Arrays.asList(m1, m2));

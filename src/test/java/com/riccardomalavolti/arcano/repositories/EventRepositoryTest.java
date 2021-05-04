@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,11 +32,11 @@ class EventRepositoryTest {
 
 	@Test
 	void testGetAllEvents() {
-		Event eventOne = new Event();
-		eventOne.setId((long) (1));
+		UUID eventID = UUID.randomUUID();
+		Event eventOne = new Event(eventID);
 
-		Event eventTwo = new Event();
-		eventTwo.setId((long) (1));
+		UUID eventTwoId = UUID.randomUUID();
+		Event eventTwo = new Event(eventTwoId);
 
 		List<Event> eventList = new ArrayList<Event>(Arrays.asList(eventOne, eventTwo));
 		when(eventDAO.findAll()).thenReturn(eventList);
@@ -47,20 +48,18 @@ class EventRepositoryTest {
 
 	@Test
 	void testGetEventById() {
-		Event eventOne = new Event();
-		eventOne.setId((long) (1));
+		UUID eventID = UUID.randomUUID();
+		Event eventOne = new Event(eventID);
 
-		when(eventDAO.findById((long) (1))).thenReturn(eventOne);
+		when(eventDAO.findById(eventID)).thenReturn(eventOne);
 
-		Optional<Event> returnedEvent = eventRepo.getEventById((long) (1));
+		Optional<Event> returnedEvent = eventRepo.getEventById(eventID);
 		assertThat(returnedEvent).isPresent().hasValue(eventOne);
 	}
 
 	@Test
 	void testGetEventByIdShouldReturnANullableIfNotPresent() {
-		Event eventOne = new Event();
-		Long eventId = (long) (1);
-		eventOne.setId(eventId);
+		UUID eventId = UUID.randomUUID();
 
 		when(eventDAO.findById(eventId)).thenReturn(null);
 
@@ -70,9 +69,8 @@ class EventRepositoryTest {
 
 	@Test
 	void testAddEvent() {
-		Event eventOne = new Event();
-		Long eventId = (long) (1);
-		eventOne.setId(eventId);
+		UUID eventID = UUID.randomUUID();
+		Event eventOne = new Event(eventID);
 
 		when(eventDAO.persist(eventOne)).thenReturn(eventOne);
 
@@ -83,9 +81,8 @@ class EventRepositoryTest {
 
 	@Test
 	void testRemoveAnEvent() {
-		Event eventOne = new Event();
-		Long eventId = (long) (1);
-		eventOne.setId(eventId);
+		UUID eventID = UUID.randomUUID();
+		Event eventOne = new Event(eventID);
 
 		when(eventDAO.delete(eventOne)).thenReturn(eventOne);
 
@@ -96,9 +93,8 @@ class EventRepositoryTest {
 
 	@Test
 	void testRemoveANonExistentEventShouldReturnNull() {
-		Event eventOne = new Event();
-		Long eventId = (long) (1);
-		eventOne.setId(eventId);
+		UUID eventID = UUID.randomUUID();
+		Event eventOne = new Event(eventID);
 
 		when(eventDAO.delete(eventOne)).thenReturn(null);
 
@@ -109,9 +105,8 @@ class EventRepositoryTest {
 	
 	@Test
 	void testUpdateEvent() {
-		Event eventOne = new Event();
-		Long eventId = (long) (1);
-		eventOne.setId(eventId);
+		UUID eventID = UUID.randomUUID();
+		Event eventOne = new Event(eventID);
 
 		when(eventDAO.merge(eventOne)).thenReturn(eventOne);
 
@@ -122,9 +117,8 @@ class EventRepositoryTest {
 	
 	@Test
 	void testUpdateANonExistentEventShouldReturnNull() {
-		Event eventOne = new Event();
-		Long eventId = (long) (1);
-		eventOne.setId(eventId);
+		UUID eventID = UUID.randomUUID();
+		Event eventOne = new Event(eventID);
 
 		when(eventDAO.merge(eventOne)).thenReturn(null);
 

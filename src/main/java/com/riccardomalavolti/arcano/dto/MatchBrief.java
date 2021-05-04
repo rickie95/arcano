@@ -1,8 +1,10 @@
 package com.riccardomalavolti.arcano.dto;
 
+import java.util.UUID;
+
 public class MatchBrief {
 	
-	Long id;
+	UUID id;
 	UserBrief userOne;
 	UserBrief userTwo;
 	
@@ -12,10 +14,10 @@ public class MatchBrief {
 	short playerTwoScore;
 	boolean matchEnded;
 	
-	public Long getId() {
+	public UUID getId() {
 		return id;
 	}
-	public void setId(Long id) {
+	public void setId(UUID id) {
 		this.id = id;
 	}
 	public UserBrief getUserOne() {

@@ -2,6 +2,7 @@ package com.riccardomalavolti.arcano.endpoints.websocket;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.UUID;
 
 import javax.inject.Inject;
 import javax.websocket.EncodeException;
@@ -34,30 +35,29 @@ public class WebSocketEndpoint {
 	private class GameSession {
 
 		private Long gameId;
-		private Long playerId;
+		private UUID playerId;
 		private WebSocketEndpoint endpoint;
 
 		public GameSession(String gameId, String playerId, WebSocketEndpoint endpoint) {
 			this.gameId = Long.parseLong(gameId);
-			this.playerId = Long.parseLong(playerId);
+			this.playerId = UUID.fromString(playerId);
 			this.endpoint = endpoint;
 		}
 	}
 
 	@OnOpen
 	public void onOpen(Session session, @PathParam("game") String gameId, @PathParam("player") String playerId) {
-		// Player registers itself, associating his name to the opponent in the hashmap
+		// Player registers itself, associating his name to the opponent in the hash map
 		this.session = session;
 		this.gameSession = new GameSession(gameId, playerId, this);
 		sessions.put(session.getId(), this.gameSession);
-		opponents.put(playerId, gameService.getOpponentIdForPlayerInGame(gameSession.playerId, gameSession.playerId).toString());
+		opponents.put(playerId, gameService.getOpponentIdForPlayerInGame(gameSession.playerId, gameSession.gameId).toString());
 
 	}
 
 	@OnMessage
 	public void updatePoints(Session session, Short points) throws IOException, EncodeException {
 		// update game
-		//Short points = Short.parseShort(message);
 		gameService.setPointsForPlayerInGame(gameSession.gameId, gameSession.playerId, points);
 		
 		// send notification at the opponent

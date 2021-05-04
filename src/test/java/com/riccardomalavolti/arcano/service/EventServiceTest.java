@@ -2,7 +2,6 @@ package com.riccardomalavolti.arcano.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.doThrow;
@@ -11,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.NotFoundException;
@@ -50,8 +50,8 @@ class EventServiceTest {
 	
 	@BeforeEach
 	void setupResources() {
-		eventOne = new Event((long)1);
-		eventTwo = new Event((long) 2);
+		eventOne = new Event(UUID.randomUUID());
+		eventTwo = new Event(UUID.randomUUID());
 	}
 	
 	@Test
@@ -87,10 +87,12 @@ class EventServiceTest {
 	
 	@Test
 	void testGetEventByIdShouldThrowNotFoundExceptionIfEventCantBeFound() {
-		when(eventRepo.getEventById(anyLong())).thenReturn(Optional.empty());
+		UUID eventUIID = UUID.randomUUID();
+		
+		when(eventRepo.getEventById(eventUIID)).thenReturn(Optional.empty());
 		
 		assertThatThrownBy(() -> 
-				eventService.getEventById((long) 1)
+				eventService.getEventById(eventUIID)
 			).isInstanceOf(NotFoundException.class);
 	}
 	
@@ -125,7 +127,7 @@ class EventServiceTest {
 	@Test
 	void testEnrollPlayerInAEvent() {
 		User user = new User();
-		user.setId((long)1);
+		user.setId(UUID.randomUUID());
 		
 		eventOne.enrollPlayer(user);
 		
@@ -139,8 +141,8 @@ class EventServiceTest {
 	
 	@Test
 	void testEnrollPlayerInEventShouldThrowNotFoundExceptionIfUserCantBeFound() {
-		Long eventId = eventOne.getId();
-		Long userId = (long)1;
+		UUID eventId = eventOne.getId();
+		UUID userId = UUID.randomUUID();
 		User user = new User();
 		user.setId(userId);
 		
@@ -154,20 +156,22 @@ class EventServiceTest {
 	
 	@Test
 	void testEnrollPlayerInEventShouldThrowNotFoundExceptionIfEventCantBeFound() {
-		Long userId = (long)1;
+		UUID userId = UUID.randomUUID();
 		User user = new User();
 		user.setId(userId);
 		
-		when(eventRepo.getEventById((long)2)).thenThrow(NotFoundException.class);
+		UUID eventID = UUID.randomUUID();
+		
+		when(eventRepo.getEventById(eventID)).thenThrow(NotFoundException.class);
 		
 		assertThatThrownBy(
-				() -> eventService.enrollPlayerInEvent(userId, (long)2)
+				() -> eventService.enrollPlayerInEvent(userId, eventID)
 			).isInstanceOf(NotFoundException.class);
 	}
 	
 	@Test
 	void removePlayerFromEvent() {
-		Long userId = (long)1;
+		UUID userId = UUID.randomUUID();;
 		User user = new User();
 		user.setId(userId);
 		
@@ -184,8 +188,8 @@ class EventServiceTest {
 	
 	@Test
 	void removePlayerFromEventSholdThrowNotFoundExceptionIfEventCantBeFound() {
-		Long eventOneId = eventOne.getId();
-		Long userId = (long)1;
+		UUID eventOneId = eventOne.getId();
+		UUID userId = UUID.randomUUID();;
 		User user = new User();
 		user.setId(userId);
 		
@@ -200,8 +204,8 @@ class EventServiceTest {
 	
 	@Test
 	void removePlayerFromEventSholdThrowBadRequestExceptionIfPlayerCantBeFound() {
-		Long eventOneId = eventOne.getId();
-		Long userId = (long)1;
+		UUID eventOneId = eventOne.getId();
+		UUID userId = UUID.randomUUID();
 		User user = new User();
 		user.setId(userId);
 		
@@ -218,8 +222,8 @@ class EventServiceTest {
 	
 	@Test
 	void removePlayerShouldBeForbiddenIfRequesterIsNotTheAccountOwnerNorOneOfTheAdmins() {
-		Long eventOneId = eventOne.getId();
-		Long userId = (long)1;
+		UUID eventOneId = eventOne.getId();
+		UUID userId = UUID.randomUUID();
 		User user = new User();
 		user.setId(userId);
 		
@@ -238,7 +242,7 @@ class EventServiceTest {
 	
 	@Test
 	void removePlayerShouldBeAllowedIfRequesterIsNotTheAccountOwnerButIsOneOfTheAdmins() {
-		Long userId = (long)1;
+		UUID userId = UUID.randomUUID();
 		User user = new User();
 		user.setId(userId);
 		
@@ -257,8 +261,8 @@ class EventServiceTest {
 	
 	@Test
 	void testGetJudgeListShouldReturnJudgeBriefList() {
-		User judgeOne = new User((long) 2);
-		User judgeTwo = new User((long) 3);
+		User judgeOne = new User(UUID.randomUUID());
+		User judgeTwo = new User(UUID.randomUUID());
 		eventOne.addJudge(judgeOne);
 		eventOne.addJudge(judgeTwo);
 		
@@ -280,7 +284,7 @@ class EventServiceTest {
 	
 	@Test
 	void testEnrollJudgeInEventShouldReturnJudgeBrief() {
-		Long judgeId = (long) 1;
+		UUID judgeId = UUID.randomUUID();
 		User judge = new User(judgeId);
 		when(eventRepo.getEventById(eventOne.getId())).thenReturn(Optional.of(eventOne));
 		when(userService.getUserById(judgeId)).thenReturn(judge);
@@ -294,8 +298,8 @@ class EventServiceTest {
 	
 	@Test
 	void testEnrollJudgeShouldThrowAnExceptionIfUserIsNotJudge() {
-		Long judgeId = (long) 1;
-		Long eventId = eventOne.getId();
+		UUID judgeId = UUID.randomUUID();
+		UUID eventId = eventOne.getId();
 		
 		when(eventRepo.getEventById(eventOne.getId())).thenReturn(Optional.of(eventOne));
 		when(userService.getUserById(judgeId)).thenThrow(IllegalArgumentException.class);
@@ -307,8 +311,8 @@ class EventServiceTest {
 	
 	@Test
 	void testGetPlayerList() {
-		User playerOne = new User((long) 2);
-		User playerTwo = new User((long) 3);
+		User playerOne = new User(UUID.randomUUID());
+		User playerTwo = new User(UUID.randomUUID());
 		eventOne.enrollPlayer(playerOne);
 		eventOne.enrollPlayer(playerTwo);
 		

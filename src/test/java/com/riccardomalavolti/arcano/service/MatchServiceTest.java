@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import javax.ws.rs.NotFoundException;
 
@@ -33,9 +34,9 @@ import com.riccardomalavolti.arcano.repositories.MatchRepository;
 @RunWith(JUnitPlatform.class)
 class MatchServiceTest {
 
-	private static final Long matchId = (long) 1;
-	private static final Long playerOneId = (long) 1;
-	private static final Long playerTwoId = (long) 2;
+	private static final UUID matchId = UUID.randomUUID();
+	private static final UUID playerOneId = UUID.randomUUID();
+	private static final UUID playerTwoId = UUID.randomUUID();
 
 	@Mock MatchRepository matchRepo;
 	@Mock UserService userService;
@@ -83,7 +84,7 @@ class MatchServiceTest {
 	@Test
 	void testGetAllMatches() {
 		Match match2 = new Match();
-		match2.setId((long)(2));
+		match2.setId(UUID.randomUUID());
 		
 		List<Match> matchList = new ArrayList<>(Arrays.asList(match, match2));
 		
@@ -157,10 +158,10 @@ class MatchServiceTest {
 	@Test
 	void testGetMatchListForEvent() {
 		Event event = new Event();
-		event.setId((long)5);
+		event.setId(UUID.randomUUID());
 		
 		Match match2 = new Match();
-		match2.setId((long)(2));
+		match2.setId(UUID.randomUUID());
 		match2.setParentEvent(event);
 		
 		match.setParentEvent(event);

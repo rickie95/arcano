@@ -2,6 +2,7 @@ package com.riccardomalavolti.arcano.repositories;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import javax.inject.Inject;
 
@@ -17,7 +18,7 @@ public class EventRepository {
 		return eventDAO.findAll();
 	}
 
-	public Optional<Event> getEventById(Long eventId) {
+	public Optional<Event> getEventById(UUID eventId) {
 		return Optional.ofNullable(eventDAO.findById(eventId));
 	}
 

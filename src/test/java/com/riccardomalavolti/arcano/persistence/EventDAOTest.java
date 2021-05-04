@@ -7,6 +7,7 @@ import static org.assertj.core.api.Assertions.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
@@ -32,12 +33,13 @@ class EventDAOTest {
 	@InjectMocks
 	EventDAO eventDAO;
 	
+	static private UUID eventOneId = UUID.randomUUID();
+	static private UUID eventTwoId = UUID.randomUUID();
+	
 	@Test
 	void testGetEventList() {
-		Event eOne = new Event();
-		eOne.setId((long)(1));
-		Event eTwo = new Event();
-		eTwo.setId((long)(2));
+		Event eOne = new Event(eventOneId);
+		Event eTwo = new Event(eventTwoId);
 		
 		List<Event> eventList = new ArrayList<Event>(Arrays.asList(eOne, eTwo));
 		

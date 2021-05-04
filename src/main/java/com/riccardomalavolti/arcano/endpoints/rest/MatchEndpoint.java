@@ -3,6 +3,7 @@ package com.riccardomalavolti.arcano.endpoints.rest;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.UUID;
 
 import javax.annotation.security.PermitAll;
 import javax.enterprise.context.RequestScoped;
@@ -48,7 +49,7 @@ public class MatchEndpoint {
 	@Path("{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	@PermitAll
-	public Response getMatchById(@PathParam("id") Long matchId, @Context UriInfo uriInfo) {
+	public Response getMatchById(@PathParam("id") UUID matchId, @Context UriInfo uriInfo) {
 		MatchDetails match = matchService.getMatchDetailsById(matchId);
 		return Response.ok(match)
 			.links(match.getLinks(uriInfo.getBaseUri().toString()).toArray(Link[]::new))
@@ -59,7 +60,7 @@ public class MatchEndpoint {
 	@Path("ofEvent/{eventId}")
 	@Produces(MediaType.APPLICATION_JSON)
 	@PermitAll
-	public List<MatchDetails> getMatchListForEvent(@PathParam("eventId") Long eventId) {
+	public List<MatchDetails> getMatchListForEvent(@PathParam("eventId") UUID eventId) {
 		return  matchService.getMatchListForEvent(eventId);
 	}
 	
@@ -77,7 +78,7 @@ public class MatchEndpoint {
 	@Path("{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	@PermitAll
-	public Response deleteMatch(@PathParam("id") Long matchId) {
+	public Response deleteMatch(@PathParam("id") UUID matchId) {
 		return Response
 				.accepted(matchService.deleteMatch(matchId, getRequester()))
 				.build();
@@ -88,7 +89,7 @@ public class MatchEndpoint {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@PermitAll
-	public Response updateMatch(@PathParam("id") Long matchId, Match updatedMatch) {
+	public Response updateMatch(@PathParam("id") UUID matchId, Match updatedMatch) {
 		return Response
 				.ok(matchService.updateMatch(matchId, updatedMatch, getRequester()))
 				.build();

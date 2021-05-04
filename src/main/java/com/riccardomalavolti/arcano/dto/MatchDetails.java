@@ -2,6 +2,7 @@ package com.riccardomalavolti.arcano.dto;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import javax.ws.rs.core.Link;
 
@@ -9,7 +10,7 @@ import com.riccardomalavolti.arcano.model.Game;
 
 public class MatchDetails implements RESTResource {
 	
-	private Long id;
+	private UUID id;
 	private EventDetails parentEvent;
 	private UserDetails playerOne;
 	private UserDetails playerTwo;
@@ -20,10 +21,10 @@ public class MatchDetails implements RESTResource {
 	private List<Game> gameList;
 	private boolean matchEnded;
 	
-	public Long getId() {
+	public UUID getId() {
 		return id;
 	}
-	public void setId(Long id) {
+	public void setId(UUID id) {
 		this.id = id;
 	}
 	public EventDetails getParentEvent() {

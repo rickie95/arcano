@@ -3,6 +3,7 @@ package com.riccardomalavolti.arcano.endpoints.rest;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.UUID;
 
 import javax.annotation.security.PermitAll;
 import javax.inject.Inject;
@@ -56,14 +57,14 @@ public class EventEndpoint {
 	@Path("{eventId}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response removeEvent(@PathParam("eventId") Long eventId) {		
+	public Response removeEvent(@PathParam("eventId") UUID eventId) {		
 		return Response.accepted(eventService.removeEvent(eventId, context.getUserPrincipal().getName())).build();
 	}
 
 	@GET
 	@Path("{eventId}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response getEventById(@PathParam("eventId") Long eventId, @Context UriInfo uriInfo) {
+	public Response getEventById(@PathParam("eventId") UUID eventId, @Context UriInfo uriInfo) {
 		EventDetails event = eventService.getEventById(eventId);
 		return Response.ok(event)
 			.links(event.getLinks(uriInfo.getBaseUri().toString()).toArray(Link[]::new))
@@ -73,7 +74,7 @@ public class EventEndpoint {
 	@GET
 	@Path("{eventId}/players")
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<UserBrief> getPlayersForEvent(@PathParam("eventId") Long eventId) {
+	public List<UserBrief> getPlayersForEvent(@PathParam("eventId") UUID eventId) {
 		return eventService.getPlayersForEvent(eventId);
 	}
 	
@@ -82,7 +83,7 @@ public class EventEndpoint {
 	@Path("{eventId}/players/{playerId}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response enrollPlayerInEvent(@PathParam("eventId") Long eventId, @PathParam("playerId") Long playerId) {
+	public Response enrollPlayerInEvent(@PathParam("eventId") UUID eventId, @PathParam("playerId") UUID playerId) {
 		return Response
 				.accepted(eventService.enrollPlayerInEvent(playerId, eventId))
 				.build();
@@ -91,7 +92,7 @@ public class EventEndpoint {
 	@DELETE
 	@Path("{eventId}/players/{playerId}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response removePlayerInEvent(@PathParam("eventId") Long eventId, @PathParam("playerId") Long playerId) {
+	public Response removePlayerInEvent(@PathParam("eventId") UUID eventId, @PathParam("playerId") UUID playerId) {
 		return Response
 				.accepted(eventService.removePlayerFromEvent(playerId, eventId, context.getUserPrincipal().getName()))
 				.build();
@@ -100,7 +101,7 @@ public class EventEndpoint {
 	@GET
 	@Path("{eventId}/judges")
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<UserBrief> getJudgeList(@PathParam("eventId") Long eventId) {
+	public List<UserBrief> getJudgeList(@PathParam("eventId") UUID eventId) {
 		return eventService.getJudgeList(eventId);
 	}
 	
@@ -108,7 +109,7 @@ public class EventEndpoint {
 	@Path("{eventId}/judges/{judgeId}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response enrollJudgeInEvent(@PathParam("eventId") Long eventId, @PathParam("judgeId") Long judgeId,
+	public Response enrollJudgeInEvent(@PathParam("eventId") UUID eventId, @PathParam("judgeId") UUID judgeId,
 			@Context UriInfo uriInfo) {
 		UserDetails judge = eventService.enrollJudgeInEvent(judgeId, eventId, 
 		context.getUserPrincipal().getName());

@@ -2,6 +2,7 @@ package com.riccardomalavolti.arcano.repositories;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
@@ -24,7 +25,7 @@ public class UserRepository {
 		return userDAO.findAll();
 	}
 
-	public Optional<User> getUserById(Long userId) {
+	public Optional<User> getUserById(UUID userId) {
 		return Optional.ofNullable(userDAO.findById(userId));
 	}
 	

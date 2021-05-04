@@ -1,6 +1,7 @@
 package com.riccardomalavolti.arcano.service;
 
 import java.util.List;
+import java.util.UUID;
 
 import javax.enterprise.inject.Default;
 import javax.inject.Inject;
@@ -42,12 +43,12 @@ public class MatchService {
 		return MatchMapper.toMatchBrief(matchRepo.getAllMatches());
 	}
 	
-	Match getMatchById(Long matchId) {
+	Match getMatchById(UUID matchId) {
 		return matchRepo.getMatchById(matchId)
 				.orElseThrow(() -> new NotFoundException(String.format(NO_MATCH_FOUND_WITH_ID, matchId)));
 	}	
 	
-	public MatchDetails getMatchDetailsById(Long matchId) {
+	public MatchDetails getMatchDetailsById(UUID matchId) {
 		return MatchMapper.toMatchDetails(getMatchById(matchId));
 	}
 
@@ -65,14 +66,14 @@ public class MatchService {
 		return MatchMapper.toMatchDetails(matchRepo.addMatch(match));
 	}
 	
-	public MatchDetails deleteMatch(Long matchId, String requesterUsername) {
+	public MatchDetails deleteMatch(UUID matchId, String requesterUsername) {
 		Match requestedMatch = getMatchById(matchId);
 		authorization.verifyOwnershipOf(requestedMatch, requesterUsername);
 		
 		return MatchMapper.toMatchDetails(matchRepo.removeMatch(requestedMatch));
 	}
 
-	public MatchDetails updateMatch(Long matchId, Match newMatch, String requesterUsername) {
+	public MatchDetails updateMatch(UUID matchId, Match newMatch, String requesterUsername) {
 		Match requestedMatch = getMatchById(matchId);
 		authorization.verifyOwnershipOf(requestedMatch, requesterUsername);
 		
@@ -80,7 +81,7 @@ public class MatchService {
 		return MatchMapper.toMatchDetails(matchRepo.updateMatch(newMatch));
 	}
 
-	public List<MatchDetails> getMatchListForEvent(Long eventId) {
+	public List<MatchDetails> getMatchListForEvent(UUID eventId) {
 		return MatchMapper.toMatchDetails(matchRepo.getMatchForEvent(eventId));
 	}
 }

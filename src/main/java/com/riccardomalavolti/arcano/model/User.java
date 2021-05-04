@@ -1,5 +1,7 @@
 package com.riccardomalavolti.arcano.model;
 
+import java.util.UUID;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -10,7 +12,7 @@ public class User implements Ownable {
 
 	@Id
 	@GeneratedValue
-	private Long id;
+	private UUID id;
 	
 	@NotNull private String username;
 	private String password;	
@@ -19,7 +21,7 @@ public class User implements Ownable {
 	
 	public User() {};
 
-	public User(long id) {
+	public User(UUID id) {
 		this.id = id;
 	}
 	
@@ -28,7 +30,7 @@ public class User implements Ownable {
 		this.password = password;
 	}
 	
-	public User(long id, String username, String password) {
+	public User(UUID id, String username, String password) {
 		this.id = id;
 		this.username = username;
 		this.password = password;
@@ -58,11 +60,11 @@ public class User implements Ownable {
 		this.surname = surname;
 	}
 
-	public Long getId() {
+	public UUID getId() {
 		return id;
 	}
 	
-	public void setId(Long id) {
+	public void setId(UUID id) {
 		this.id = id;
 	}
 	

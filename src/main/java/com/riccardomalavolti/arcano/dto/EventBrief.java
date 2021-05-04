@@ -1,16 +1,18 @@
 package com.riccardomalavolti.arcano.dto;
 
+import java.util.UUID;
+
 public class EventBrief {
 	
-	Long id;
+	UUID id;
 	String name;
 	
 	String eventURI;
 	
-	public Long getId() {
+	public UUID getId() {
 		return id;
 	}
-	public void setId(Long id) {
+	public void setId(UUID id) {
 		this.id = id;
 	}
 	public String getName() {

@@ -6,6 +6,7 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 import static org.mockito.Mockito.verify;
 
@@ -27,7 +28,6 @@ import com.riccardomalavolti.arcano.persistence.MatchDAO;
 @RunWith(JUnitPlatform.class)
 class MatchRepositoryTest {
 	
-	private final Long matchId = (long) 1;
 
 	@Mock
 	private MatchDAO matchDAO;
@@ -52,8 +52,8 @@ class MatchRepositoryTest {
 	
 	@Test
 	void testAddMatch() {
-		Match match = new Match();
-		match.setId((long)(1));
+		UUID matchId = UUID.randomUUID(); 
+		Match match = new Match(matchId);
 		when(matchDAO.persist(match)).thenReturn(match);
 		
 		Match returnedMatch = matchRepo.addMatch(match);
@@ -63,8 +63,8 @@ class MatchRepositoryTest {
 	
 	@Test
 	void testRemoveMatchShouldReturnDeletedMatchIfFound() {
-		Match match = new Match();
-		match.setId((long)(1));
+		UUID matchId = UUID.randomUUID(); 
+		Match match = new Match(matchId);
 		when(matchDAO.delete(match)).thenReturn(match);
 		
 		Match removedMatch = matchRepo.removeMatch(match);
@@ -74,8 +74,8 @@ class MatchRepositoryTest {
 	
 	@Test
 	void testRemoveMatchShouldReturnNullIfMatchToBeDeletedIsNotFound() {
-		Match match = new Match();
-		match.setId((long)(1));
+		UUID matchId = UUID.randomUUID(); 
+		Match match = new Match(matchId);
 		when(matchDAO.delete(match)).thenReturn(null);
 		
 		assertThat(matchRepo.removeMatch(match)).isNull();
@@ -83,8 +83,8 @@ class MatchRepositoryTest {
 	
 	@Test
 	void testGetMatchByIdShouldReturnTheSearchedMatch() {
-		Match match = new Match();
-		match.setId((long)(1));
+		UUID matchId = UUID.randomUUID(); 
+		Match match = new Match(matchId);
 		
 		when(matchDAO.findById(matchId)).thenReturn(match);
 		
@@ -94,14 +94,16 @@ class MatchRepositoryTest {
 	
 	@Test
 	void testGetMatchByIdShouldReturnNullIfNotFound() {
+		UUID matchId = UUID.randomUUID();
+		
 		when(matchDAO.findById(matchId)).thenReturn(null);
 		assertThat(matchRepo.getMatchById(matchId)).isEmpty();
 	}
 	
 	@Test
 	void testUpdateMatch() {
-		Match match = new Match();
-		match.setId(matchId);
+		UUID matchId = UUID.randomUUID();
+		Match match = new Match(matchId);
 		
 		when(matchDAO.merge(match)).thenReturn(match);
 		
@@ -111,8 +113,8 @@ class MatchRepositoryTest {
 	
 	@Test
 	void testUpdateMatchIfNotAvailableShouldReturnNull() {
-		Match match = new Match();
-		match.setId(matchId);
+		UUID matchId = UUID.randomUUID();
+		Match match = new Match(matchId);
 		
 		when(matchDAO.merge(match)).thenReturn(null);
 		
@@ -121,15 +123,15 @@ class MatchRepositoryTest {
 	
 	@Test
 	void testGetListOfMatchesOfEvent() {
-		Long eventId = (long) 1;
+		UUID eventId = UUID.randomUUID();
 		Event event = new Event();
 		event.setId(eventId);
 		Match m1 = new Match();
-		m1.setId((long)(2));
+		m1.setId(UUID.randomUUID());
 		m1.setMatchEnded(true);
 		m1.setParentEvent(event);
 		Match m2 = new Match();
-		m2.setId((long)(3));
+		m2.setId(UUID.randomUUID());
 		m2.setMatchEnded(false);
 		m2.setParentEvent(event);
 		List<Match> matchList = new ArrayList<Match>(Arrays.asList(m1, m2));

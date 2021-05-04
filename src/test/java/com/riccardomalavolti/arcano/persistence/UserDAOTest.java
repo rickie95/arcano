@@ -6,6 +6,7 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -25,8 +26,8 @@ import com.riccardomalavolti.arcano.model.User;
 @RunWith(JUnitPlatform.class)
 class UserDAOTest {
 
-	private static final Long USER_ONE_ID = (long) 1;
-	private static final Long USER_TWO_ID = (long) 2;
+	private static final UUID useOneId = UUID.randomUUID();
+	private static final UUID userOneId = UUID.randomUUID();
 	private static final String USER_ONE_USERNAME = "FOO";
 	
 	private User userOne = new User();
@@ -40,8 +41,8 @@ class UserDAOTest {
 	
 	@Test
 	void testFindAllUsers() {
-		userOne.setId(USER_ONE_ID);
-		userTwo.setId(USER_TWO_ID);
+		userOne.setId(useOneId);
+		userTwo.setId(userOneId);
 		
 		List<User> list = new ArrayList<User>(Arrays.asList(userOne, userTwo));
 		
@@ -56,7 +57,7 @@ class UserDAOTest {
 	
 	@Test
 	void testFindByUsernameShouldReturnTheSearchedUser() {
-		userOne.setId(USER_ONE_ID);
+		userOne.setId(useOneId);
 		userOne.setUsername(USER_ONE_USERNAME);
 		
 		when(em.createQuery(UserDAO.USER_BY_USERNAME, User.class)).thenReturn(query);

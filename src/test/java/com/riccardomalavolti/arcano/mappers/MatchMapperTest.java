@@ -2,6 +2,8 @@ package com.riccardomalavolti.arcano.mappers;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.UUID;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.runner.JUnitPlatform;
@@ -20,23 +22,23 @@ class MatchMapperTest {
 	
 	
 	Match match;
-	Long matchId;
+	UUID matchId;
 
 	User userOne;
 	User userTwo;
 
-	Long eventId;
+	UUID eventId;
 	String eventName;
 	Event event;
 	
 	
 	@BeforeEach
 	void createNewEvent() {
-		matchId = (long) 1;
+		matchId = UUID.randomUUID();
 		match = new Match(matchId);
 		
-		userOne = new User((long) 2);
-		userTwo = new User((long) 3);
+		userOne = new User(UUID.randomUUID());
+		userTwo = new User(UUID.randomUUID());
 		
 		match.setPlayerOne(userOne);
 		match.setPlayerTwo(userTwo);
@@ -45,7 +47,7 @@ class MatchMapperTest {
 		match.setPlayerTwoScore(2);
 		match.setMatchEnded(true);
 		
-		eventId = (long) 2;
+		eventId = UUID.randomUUID();
 		eventName = "FOO";
 		event = new Event(eventId, eventName);
 		match.setParentEvent(event);

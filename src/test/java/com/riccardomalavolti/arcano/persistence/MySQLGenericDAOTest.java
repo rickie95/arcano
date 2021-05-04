@@ -8,6 +8,7 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
@@ -54,7 +55,7 @@ class MySQLGenericDAOTest {
 	
 	@Test
 	void findByIdShouldReturnTheObjectWithTheCorrectPrimaryKey() {
-		Long id = (long) 1;
+		UUID id = UUID.randomUUID();
 		String toBeReturned = "Foo";
 		when(em.find(String.class, id)).thenReturn(toBeReturned);
 		
@@ -64,7 +65,7 @@ class MySQLGenericDAOTest {
 	
 	@Test
 	void findByIdShouldThrowsAnIllegalArgumentExceptionIfANullKeyIsPassed() {
-		Long id = null;
+		UUID id = null;
 		assertThrows(IllegalArgumentException.class, () -> 
 			dao.findById(id));
 	}

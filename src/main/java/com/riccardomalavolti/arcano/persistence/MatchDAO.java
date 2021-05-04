@@ -1,6 +1,7 @@
 package com.riccardomalavolti.arcano.persistence;
 
 import java.util.List;
+import java.util.UUID;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.transaction.Transactional;
@@ -24,7 +25,7 @@ public class MatchDAO extends MySQLGenericDAO<Match> {
 	}
 
 	@Transactional 
-	public List<Match> findMatchOfEvent(Long eventId) {
+	public List<Match> findMatchOfEvent(UUID eventId) {
 		return em.createQuery(MATCHES_OF_EVENT, Match.class).setParameter("eventId", eventId).getResultList();
 	}
 }

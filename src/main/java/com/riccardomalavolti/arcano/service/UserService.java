@@ -1,6 +1,7 @@
 package com.riccardomalavolti.arcano.service;
 
 import java.util.List;
+import java.util.UUID;
 
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Default;
@@ -38,7 +39,7 @@ public class UserService {
 		return UserMapper.toUserBriefList(userRepo.getAllUsers());
 	}
 	
-	User getUserById(Long userId) {
+	User getUserById(UUID userId) {
 		return userRepo
 				.getUserById(userId)
 				.orElseThrow(() -> new NotFoundException("No player exists with id" + userId));
@@ -49,7 +50,7 @@ public class UserService {
 				.orElseThrow(() -> new NotFoundException("No player exists with username " + username));
 	}
 
-	public UserDetails getUserDetailsById(Long userId) {
+	public UserDetails getUserDetailsById(UUID userId) {
 		return UserMapper.toUserDetails(getUserById(userId));
 	}
 	
@@ -77,7 +78,7 @@ public class UserService {
 		throw new ConflictException("An user with this username already exists.");
 	}
 
-	public UserDetails updateUser(Long userId, User user, final String requesterUsername) {
+	public UserDetails updateUser(UUID userId, User user, final String requesterUsername) {
 		User requestedUser = getUserById(userId);		
 		authorization.verifyOwnershipOf(requestedUser, requesterUsername);
 		user.setId(requestedUser.getId());
@@ -86,7 +87,7 @@ public class UserService {
 		return UserMapper.toUserDetails(userRepo.mergeUser(user));
 	}
 
-	public UserDetails deleteUser(Long userId, final String requesterUsername) {
+	public UserDetails deleteUser(UUID userId, final String requesterUsername) {
 		User requestedUser = getUserById(userId);
 		authorization.verifyOwnershipOf(requestedUser, requesterUsername);
 		return UserMapper.toUserDetails(userRepo.removeUser(requestedUser));

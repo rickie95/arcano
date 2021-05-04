@@ -1,6 +1,7 @@
 package com.riccardomalavolti.arcano.endpoints.graphql;
 
 import java.util.List;
+import java.util.UUID;
 
 import javax.inject.Inject;
 
@@ -30,7 +31,7 @@ public class EventGraphQLProvider {
 	}
 	
 	@Query("eventById")
-	public EventDetails getEventById(@Name("id") Long eventId) {
+	public EventDetails getEventById(@Name("id") UUID eventId) {
 		return eventService.getEventById(eventId);
 	}
 	

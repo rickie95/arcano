@@ -1,6 +1,7 @@
 package com.riccardomalavolti.arcano.persistence;
 
 import java.util.List;
+import java.util.UUID;
 
 import javax.enterprise.inject.Default;
 import javax.persistence.EntityManager;
@@ -28,7 +29,7 @@ public class MySQLGenericDAO<T> implements GenericDAO<T> {
 	
 	@Override
 	@Transactional
-	public T findById(Long id) {
+	public T findById(UUID id) {
 		checkIfInitialized();
 		
 		if (id == null)
