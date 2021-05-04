@@ -1,6 +1,8 @@
 # Arcano
 A simple backend for Congrega App.
 
+[![Java CI with Maven](https://github.com/rickie95/arcano/actions/workflows/maven.yml/badge.svg?branch=master)](https://github.com/rickie95/arcano/actions/workflows/maven.yml)
+
 ## Composition
 - Standard JEE technologies: JAX-RS for REST APIs, CDI and JPA. Compatible with every JEE complaiant application server and ORM+Database.
 - GraphQL live and working endpoint, realized with [Smallrye's GraphQL implementation](https://github.com/smallrye/smallrye-graphql).
