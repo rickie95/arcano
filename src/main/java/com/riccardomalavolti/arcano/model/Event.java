@@ -46,6 +46,8 @@ public class Event implements Ownable {
 
 	private LocalDateTime startingTime;
 	private EventStatus status;
+	private int round;
+	private String type;
 
 
 	public Event() {
@@ -148,6 +150,22 @@ public class Event implements Ownable {
 
 	public void setStatus(EventStatus status) {
 		this.status = status;
+	}
+
+	public int getRound() {
+		return round;
+	}
+
+	public void setRound(int round) {
+		this.round = round;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
 	}
 
 	@Override

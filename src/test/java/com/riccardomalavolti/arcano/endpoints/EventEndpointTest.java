@@ -120,7 +120,6 @@ public class EventEndpointTest extends JerseyTest {
 			.get(EventEndpoint.BASE_PATH + "/" + id.toString()).
 		then()
 			.statusCode(200)
-			.log().all()
 			.assertThat()
 				.body(
 						"id", equalTo(id.toString()),
@@ -155,6 +154,8 @@ public class EventEndpointTest extends JerseyTest {
 		event.setName("Foo");
 		event.setStartingTime(startingTime);
 		event.setStatus(EventStatus.IN_PROGRESS);
+		event.setRound(0);
+		event.setType("Limited");
 		
 		Event createdEvent = new Event(eventId);
 		createdEvent.setName("Foo");
@@ -163,6 +164,8 @@ public class EventEndpointTest extends JerseyTest {
 		createdEvent.setAdminList( Set.of(admin));
 		createdEvent.setStartingTime(startingTime);
 		createdEvent.setStatus(EventStatus.IN_PROGRESS);
+		createdEvent.setRound(event.getRound());
+		createdEvent.setType(event.getType());
 		
 		when(eventService.createEvent(any(Event.class))).thenReturn(EventMapper.toEventDetails(createdEvent));
 		
@@ -180,6 +183,8 @@ public class EventEndpointTest extends JerseyTest {
 					 .add("judgeList", emptyArray)
 					 .add("startingTime", event.getStartingTime().format(EventDetails.DATE_TIME_FORMATTER))
 					 .add("eventStatus", EventStatus.IN_PROGRESS.toString())
+					 .add("type", event.getType())
+					 .add("round", event.getRound())
 				 .build();
 		
 		
@@ -190,7 +195,6 @@ public class EventEndpointTest extends JerseyTest {
 			.post(EventEndpoint.BASE_PATH).
 		then()
 			.statusCode(201)
-			.log().all()
 			.assertThat()
 				.body(
 						"id", equalTo(eventId.toString()),

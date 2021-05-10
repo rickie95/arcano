@@ -28,34 +28,45 @@ public class EventDetails implements RESTResource {
 	LocalDateTime startingTime;
 	
 	EventStatus eventStatus;
+	String type;
+	int round;
 	
 	public UUID getId() {
 		return id;
 	}
+	
 	public void setId(UUID id) {
 		this.id = id;
 	}
+	
 	public String getName() {
 		return name;
 	}
+	
 	public void setName(String name) {
 		this.name = name;
 	}
+	
 	public Set<UserBrief> getPlayerList() {
 		return playerList;
 	}
+	
 	public void setPlayerList(Set<UserBrief> playerList) {
 		this.playerList = playerList;
 	}
+	
 	public Set<UserBrief> getJudgeList() {
 		return judgeList;
 	}
+	
 	public void setJudgeList(Set<UserBrief> judgeList) {
 		this.judgeList = judgeList;
 	}
+	
 	public Set<UserBrief> getAdminList() {
 		return adminList;
 	}
+	
 	public void setAdminList(Set<UserBrief> adminList) {
 		this.adminList = adminList;
 	}
@@ -71,9 +82,27 @@ public class EventDetails implements RESTResource {
 	public EventStatus getEventStatus() {
 		return eventStatus;
 	}
+	
 	public void setEventStatus(EventStatus eventStatus) {
 		this.eventStatus = eventStatus;
 	}
+	
+	public String getType() {
+		return type;
+	}
+	
+	public void setType(String type) {
+		this.type = type;
+	}
+	
+	public int getRound() {
+		return round;
+	}
+	
+	public void setRound(int round) {
+		this.round = round;
+	}
+	
 	@Override
 	public List<Link> getLinks(String absoluteBasePath) {
 		List<Link> links = new ArrayList<Link>();

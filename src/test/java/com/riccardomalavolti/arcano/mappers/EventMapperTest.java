@@ -54,6 +54,8 @@ class EventMapperTest {
 		event.setJudgeList(new HashSet<User>(adminList));
 		
 		event.setStatus(EventStatus.IN_PROGRESS);
+		event.setType("Limited");
+		event.setRound(0);
 		event.setStartingTime(LocalDateTime.of(2021, 2, 5, 12, 45));
 	}
 	
@@ -67,9 +69,11 @@ class EventMapperTest {
 	@Test
 	void testToEventBrief() {
 		EventBrief eventBrief = EventMapper.toEventBrief(event);
+		eventBrief.addUri("localhost/something");
 		
 		assertThat(eventBrief.getId()).isEqualTo(eventId);
 		assertThat(eventBrief.getName()).isEqualTo(eventName);
+		assertThat(eventBrief.getEvenURI()).isEqualTo(eventBrief.getEvenURI());
 	}
 	
 	@Test
@@ -79,6 +83,9 @@ class EventMapperTest {
 		assertThat(eventDetails.getId()).isEqualTo(eventId);
 		assertThat(eventDetails.getName()).isEqualTo(eventName);
 		assertThat(eventDetails.getEventStatus()).isEqualTo(EventStatus.IN_PROGRESS);
+		assertThat(eventDetails.getRound()).isEqualTo(event.getRound());
+		assertThat(eventDetails.getType()).isEqualTo(event.getType());
+		
 		assertThat(eventDetails.getPlayerList()).contains(
 				UserMapper.toUserBrief(userOne),
 				UserMapper.toUserBrief(userTwo));
