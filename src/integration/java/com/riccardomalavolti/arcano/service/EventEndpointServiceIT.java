@@ -3,6 +3,7 @@ package com.riccardomalavolti.arcano.service;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.oneOf;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -11,6 +12,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import javax.json.Json;
@@ -122,6 +124,11 @@ public class EventEndpointServiceIT extends JerseyTest {
 	
 	@Test
 	public void testCreateNewEvent() {
+		User admin = new User(UUID.randomUUID());
+		admin.setName("Admin");
+		admin.setPassword("secret");
+		admin.setUsername("admin420");
+		
 		UUID eventId = UUID.randomUUID();
 		Event event = new Event();
 		event.setName("Foo");
@@ -130,16 +137,21 @@ public class EventEndpointServiceIT extends JerseyTest {
 		createdEvent.setName("Foo");
 		createdEvent.setJudgeList(new HashSet<User>());
 		createdEvent.setPlayerList(new HashSet<User>());
-		createdEvent.setAdminList(new HashSet<User>());
+		createdEvent.setAdminList(Set.of(admin));
 		
 		when(eventRepo.addEvent(any(Event.class))).thenReturn(createdEvent);
 		
 		JsonArray emptyArray = Json.createArrayBuilder().build();
 		
+		JsonObject userJson = Json.createObjectBuilder()
+				.add("id", admin.getId().toString())
+				.add("username", admin.getUsername())
+				.build();
+		
 		JsonObject eventJson = Json.createObjectBuilder()
 					 .add("name", event.getName())
 					 .add("playerList", emptyArray)
-					 .add("adminList", emptyArray)
+					 .add("adminList", Json.createArrayBuilder().add(userJson).build())
 					 .add("judgeList", emptyArray)
 				 .build();
 		
@@ -200,6 +212,8 @@ public class EventEndpointServiceIT extends JerseyTest {
 		event.enrollPlayer(playerOne);
 		event.enrollPlayer(playerTwo);
 		
+		String[] playerIds = { playerOne.getId().toString(), playerTwo.getId().toString()};
+		
 		when(eventRepo.getEventById(eventId)).thenReturn(Optional.of(event));
 		
 		given()
@@ -210,8 +224,8 @@ public class EventEndpointServiceIT extends JerseyTest {
 			.statusCode(200)
 			.assertThat()
 				.body(
-						"[0].id", equalTo(playerOne.getId().toString()),
-						"[1].id", equalTo(playerTwo.getId().toString())
+						"[0].id", oneOf(playerIds),
+						"[1].id", oneOf(playerIds)
 					);
 	}
 

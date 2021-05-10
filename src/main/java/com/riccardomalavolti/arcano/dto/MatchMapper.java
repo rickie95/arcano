@@ -11,9 +11,7 @@ public class MatchMapper {
 	
 	private static ModelMapper mapper = new ModelMapper();
 	
-	private MatchMapper() {
-		throw new IllegalStateException("Utility class");
-	}
+	private MatchMapper() {}
 	
 	public static MatchBrief toMatchBrief(Match match) {
 		return mapper.map(match, MatchBrief.class);

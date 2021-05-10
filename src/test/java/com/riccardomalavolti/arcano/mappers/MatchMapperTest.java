@@ -1,7 +1,9 @@
 package com.riccardomalavolti.arcano.mappers;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.lang.reflect.Constructor;
 import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -51,6 +53,13 @@ class MatchMapperTest {
 		eventName = "FOO";
 		event = new Event(eventId, eventName);
 		match.setParentEvent(event);
+	}
+	
+	@Test
+	void callingPrivateConstructorThrowsUnsuppordedException() {
+		final Constructor<?>[] constructors = MatchMapper.class.getDeclaredConstructors();
+		assertThat(constructors).hasSize(1);
+		assertThrows(IllegalAccessException.class, () -> constructors[0].newInstance());
 	}
 	
 	@Test

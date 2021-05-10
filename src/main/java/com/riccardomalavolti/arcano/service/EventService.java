@@ -54,6 +54,9 @@ public class EventService {
 	}
 
 	public EventDetails createEvent(Event event) {
+		if(event.getAdminList().isEmpty())
+			throw new BadRequestException();
+		
 		return EventMapper.toEventDetails(eventRepo.addEvent(event));
 	}
 

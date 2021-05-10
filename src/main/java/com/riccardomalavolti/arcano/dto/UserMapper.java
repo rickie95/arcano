@@ -11,9 +11,7 @@ public class UserMapper {
 	
 private static ModelMapper mapper = new ModelMapper();
 	
-	private UserMapper() {
-		throw new IllegalStateException("Utility class");
-	}
+	private UserMapper() {}
 	
 	public static UserBrief toUserBrief(User user) {
 		return mapper.map(user, UserBrief.class);

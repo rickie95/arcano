@@ -4,22 +4,20 @@ import org.modelmapper.ModelMapper;
 
 import com.riccardomalavolti.arcano.model.Event;
 
-public class EventMapper {
+public final class EventMapper {
 	
-	private static ModelMapper mapper;
+	private EventMapper() {}
 	
-	private EventMapper() {
-		throw new IllegalStateException("Utility class");
+	private static ModelMapper mapperInstance() {
+		return new ModelMapper();
 	}
 	
 	public static EventBrief toEventBrief(Event event) {
-		mapper = new ModelMapper();
-		return mapper.map(event, EventBrief.class);
+		return mapperInstance().map(event, EventBrief.class);
 	}
 	
 	public static EventDetails toEventDetails(Event event) {
-		mapper = new ModelMapper();
-		return mapper.map(event, EventDetails.class);
+		return mapperInstance().map(event, EventDetails.class);
 	}
 	
 

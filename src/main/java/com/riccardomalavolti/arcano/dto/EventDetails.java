@@ -1,5 +1,7 @@
 package com.riccardomalavolti.arcano.dto;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -7,7 +9,13 @@ import java.util.UUID;
 
 import javax.ws.rs.core.Link;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.riccardomalavolti.arcano.model.EventStatus;
+
 public class EventDetails implements RESTResource {
+	
+	public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ISO_DATE_TIME;
 	
 	UUID id;
 	String name;
@@ -15,6 +23,11 @@ public class EventDetails implements RESTResource {
 	Set<UserBrief> playerList;
 	Set<UserBrief> judgeList;
 	Set<UserBrief> adminList;
+	
+	@JsonDeserialize(using=LocalDateTimeDeserializer.class)
+	LocalDateTime startingTime;
+	
+	EventStatus eventStatus;
 	
 	public UUID getId() {
 		return id;
@@ -46,7 +59,21 @@ public class EventDetails implements RESTResource {
 	public void setAdminList(Set<UserBrief> adminList) {
 		this.adminList = adminList;
 	}
+	
+	public LocalDateTime getStartingTime() {
+		return startingTime;
+	}
+	
+	public void setStartingTime(LocalDateTime startingTime) {
+		this.startingTime = startingTime;
+	}
 
+	public EventStatus getEventStatus() {
+		return eventStatus;
+	}
+	public void setEventStatus(EventStatus eventStatus) {
+		this.eventStatus = eventStatus;
+	}
 	@Override
 	public List<Link> getLinks(String absoluteBasePath) {
 		List<Link> links = new ArrayList<Link>();

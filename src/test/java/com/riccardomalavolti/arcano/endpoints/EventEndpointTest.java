@@ -6,10 +6,12 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import javax.json.Json;
@@ -29,11 +31,13 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import com.riccardomalavolti.arcano.dto.EventBrief;
+import com.riccardomalavolti.arcano.dto.EventDetails;
 import com.riccardomalavolti.arcano.dto.EventMapper;
 import com.riccardomalavolti.arcano.dto.UserBrief;
 import com.riccardomalavolti.arcano.dto.UserMapper;
 import com.riccardomalavolti.arcano.endpoints.rest.EventEndpoint;
 import com.riccardomalavolti.arcano.model.Event;
+import com.riccardomalavolti.arcano.model.EventStatus;
 import com.riccardomalavolti.arcano.model.User;
 import com.riccardomalavolti.arcano.service.EventService;
 
@@ -100,13 +104,15 @@ public class EventEndpointTest extends JerseyTest {
 	public void testGetEventById() {
 		// Should also return a list of URL of the associated matches.
 		UUID id = UUID.randomUUID();
-		Event eOne = new Event();
+		EventDetails eOne = new EventDetails();
 		eOne.setId(id);
-		eOne.setJudgeList(new HashSet<User>());
-		eOne.setPlayerList(new HashSet<User>());
-		eOne.setAdminList(new HashSet<User>());
+		eOne.setJudgeList(new HashSet<UserBrief>());
+		eOne.setPlayerList(new HashSet<UserBrief>());
+		eOne.setAdminList(new HashSet<UserBrief>());
+		eOne.setStartingTime(LocalDateTime.of(2021, 5, 7, 12, 45));
+		eOne.setEventStatus(EventStatus.IN_PROGRESS);
 		
-		when(eventService.getEventById(id)).thenReturn(EventMapper.toEventDetails(eOne));
+		when(eventService.getEventById(id)).thenReturn(eOne);
 		
 		given()
 			.accept(MediaType.APPLICATION_JSON).
@@ -114,9 +120,12 @@ public class EventEndpointTest extends JerseyTest {
 			.get(EventEndpoint.BASE_PATH + "/" + id.toString()).
 		then()
 			.statusCode(200)
+			.log().all()
 			.assertThat()
 				.body(
-						"id", equalTo(id.toString())
+						"id", equalTo(id.toString()),
+						"startingTime", equalTo(eOne.getStartingTime().format(EventDetails.DATE_TIME_FORMATTER)),
+						"eventStatus", equalTo(eOne.getEventStatus().toString())
 						);
 	}
 
@@ -135,26 +144,44 @@ public class EventEndpointTest extends JerseyTest {
 	
 	@Test
 	public void testCreateNewEvent() {
+		User admin = new User(UUID.randomUUID());
+		admin.setName("Admin");
+		admin.setPassword("secret");
+		admin.setUsername("admin420");
+		
+		LocalDateTime startingTime = LocalDateTime.of(2021, 5, 7, 12, 45);
 		UUID eventId = UUID.randomUUID();
 		Event event = new Event();
 		event.setName("Foo");
+		event.setStartingTime(startingTime);
+		event.setStatus(EventStatus.IN_PROGRESS);
 		
 		Event createdEvent = new Event(eventId);
 		createdEvent.setName("Foo");
 		createdEvent.setJudgeList(new HashSet<User>());
 		createdEvent.setPlayerList(new HashSet<User>());
-		createdEvent.setAdminList(new HashSet<User>());
+		createdEvent.setAdminList( Set.of(admin));
+		createdEvent.setStartingTime(startingTime);
+		createdEvent.setStatus(EventStatus.IN_PROGRESS);
 		
 		when(eventService.createEvent(any(Event.class))).thenReturn(EventMapper.toEventDetails(createdEvent));
 		
 		JsonArray emptyArray = Json.createArrayBuilder().build();
 		
+		JsonObject userJson = Json.createObjectBuilder()
+				.add("id", admin.getId().toString())
+				.add("username", admin.getUsername())
+				.build();
+		
 		JsonObject eventJson = Json.createObjectBuilder()
 					 .add("name", event.getName())
 					 .add("playerList", emptyArray)
-					 .add("adminList", emptyArray)
+					 .add("adminList", Json.createArrayBuilder().add(userJson).build())
 					 .add("judgeList", emptyArray)
+					 .add("startingTime", event.getStartingTime().format(EventDetails.DATE_TIME_FORMATTER))
+					 .add("eventStatus", EventStatus.IN_PROGRESS.toString())
 				 .build();
+		
 		
 		given()
 			.contentType(MediaType.APPLICATION_JSON)
@@ -163,10 +190,16 @@ public class EventEndpointTest extends JerseyTest {
 			.post(EventEndpoint.BASE_PATH).
 		then()
 			.statusCode(201)
+			.log().all()
 			.assertThat()
 				.body(
 						"id", equalTo(eventId.toString()),
-						"name", equalTo("Foo")
+						"name", equalTo("Foo"),
+						"playerList.size()", equalTo(0),
+						"adminList.size()", equalTo(1),
+						"judgeList.size()", equalTo(0),
+						"startingTime", equalTo(event.getStartingTime().format(EventDetails.DATE_TIME_FORMATTER)),
+						"eventStatus", equalTo(event.getStatus().toString())
 					 )
 				.header("Location", 
 						response -> endsWith(EventEndpoint.BASE_PATH + "/"+ createdEvent.getId()));

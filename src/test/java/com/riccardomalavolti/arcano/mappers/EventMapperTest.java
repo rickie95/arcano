@@ -1,7 +1,10 @@
 package com.riccardomalavolti.arcano.mappers;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.lang.reflect.Constructor;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -18,6 +21,7 @@ import com.riccardomalavolti.arcano.dto.EventDetails;
 import com.riccardomalavolti.arcano.dto.EventMapper;
 import com.riccardomalavolti.arcano.dto.UserMapper;
 import com.riccardomalavolti.arcano.model.Event;
+import com.riccardomalavolti.arcano.model.EventStatus;
 import com.riccardomalavolti.arcano.model.User;
 
 @RunWith(JUnitPlatform.class)
@@ -48,14 +52,24 @@ class EventMapperTest {
 		event.setPlayerList(new HashSet<User>(playerList));
 		event.setAdminList(new HashSet<User>(judgeList));
 		event.setJudgeList(new HashSet<User>(adminList));
+		
+		event.setStatus(EventStatus.IN_PROGRESS);
+		event.setStartingTime(LocalDateTime.of(2021, 2, 5, 12, 45));
 	}
 	
 	@Test
-	void testToEventDTO() {
-		EventBrief eventDto = EventMapper.toEventBrief(event);
+	void callingPrivateConstructorThrowsUnsuppordedException() {
+		final Constructor<?>[] constructors = EventMapper.class.getDeclaredConstructors();
+		assertThat(constructors).hasSize(1);
+		assertThrows(IllegalAccessException.class, () -> constructors[0].newInstance());
+	}
+	
+	@Test
+	void testToEventBrief() {
+		EventBrief eventBrief = EventMapper.toEventBrief(event);
 		
-		assertThat(eventDto.getId()).isEqualTo(eventId);
-		assertThat(eventDto.getName()).isEqualTo(eventName);
+		assertThat(eventBrief.getId()).isEqualTo(eventId);
+		assertThat(eventBrief.getName()).isEqualTo(eventName);
 	}
 	
 	@Test
@@ -64,6 +78,7 @@ class EventMapperTest {
 		
 		assertThat(eventDetails.getId()).isEqualTo(eventId);
 		assertThat(eventDetails.getName()).isEqualTo(eventName);
+		assertThat(eventDetails.getEventStatus()).isEqualTo(EventStatus.IN_PROGRESS);
 		assertThat(eventDetails.getPlayerList()).contains(
 				UserMapper.toUserBrief(userOne),
 				UserMapper.toUserBrief(userTwo));
@@ -79,6 +94,9 @@ class EventMapperTest {
 		assertThat(eventDetails.getJudgeList()).contains(
 				UserMapper.toUserBrief(userOne),
 				UserMapper.toUserBrief(userTwo));
+		
+		assertThat(eventDetails.getStartingTime())
+			.isEqualTo(event.getStartingTime());
 		
 	}	
 

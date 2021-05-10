@@ -1,5 +1,6 @@
 package com.riccardomalavolti.arcano.model;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -15,12 +16,15 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 
+import org.hibernate.annotations.Type;
+
 import com.riccardomalavolti.arcano.exceptions.ConflictException;
 
 @Entity
 public class Event implements Ownable {
 
 	@Id
+	@Type(type="uuid-char")
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private UUID id;
 	private String name;
@@ -39,6 +43,10 @@ public class Event implements Ownable {
 	@JoinTable(name = "EVENT_ADMINS", joinColumns = { @JoinColumn(name = "Event_id") }, inverseJoinColumns = {
 			@JoinColumn(name = "Admin_id") })
 	private Set<User> adminList;
+
+	private LocalDateTime startingTime;
+	private EventStatus status;
+
 
 	public Event() {
 		playerList = new HashSet<>();
@@ -124,6 +132,22 @@ public class Event implements Ownable {
 
 	public List<User> getAdminList() {
 		return new ArrayList<>(adminList);
+	}
+	
+	public LocalDateTime getStartingTime() {
+		return startingTime;
+	}
+
+	public void setStartingTime(LocalDateTime startingTime) {
+		this.startingTime = startingTime;
+	}
+
+	public EventStatus getStatus() {
+		return status;
+	}
+
+	public void setStatus(EventStatus status) {
+		this.status = status;
 	}
 
 	@Override

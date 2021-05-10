@@ -2,6 +2,7 @@ package com.riccardomalavolti.arcano.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.doThrow;
@@ -10,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import javax.ws.rs.BadRequestException;
@@ -98,10 +100,18 @@ class EventServiceTest {
 	
 	@Test
 	void testCreateEvent() {
+		eventOne.setAdminList(Set.of(new User(UUID.randomUUID())));
 		when(eventRepo.addEvent(eventOne)).thenReturn(eventOne);
 		EventDetails eventCreated = eventService.createEvent(eventOne);
 		assertThat(eventCreated.getId()).isEqualTo(eventOne.getId());
 		}
+	
+	@Test
+	void testCreateEventWithoutSettingAtLeastAnAdminShouldThrowBadRequestException() {
+		Event eventWithoutAdmins = new Event();
+		assertThrows(BadRequestException.class, 
+				() -> eventService.createEvent(eventWithoutAdmins));
+	}
 	
 	@Test
 	void testRemoveAnEvent() {
