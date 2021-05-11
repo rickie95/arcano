@@ -110,7 +110,7 @@ public class EventEndpointTest extends JerseyTest {
 		eOne.setPlayerList(new HashSet<UserBrief>());
 		eOne.setAdminList(new HashSet<UserBrief>());
 		eOne.setStartingTime(LocalDateTime.of(2021, 5, 7, 12, 45));
-		eOne.setEventStatus(EventStatus.IN_PROGRESS);
+		eOne.setStatus(EventStatus.IN_PROGRESS);
 		
 		when(eventService.getEventById(id)).thenReturn(eOne);
 		
@@ -124,7 +124,7 @@ public class EventEndpointTest extends JerseyTest {
 				.body(
 						"id", equalTo(id.toString()),
 						"startingTime", equalTo(eOne.getStartingTime().format(EventDetails.DATE_TIME_FORMATTER)),
-						"eventStatus", equalTo(eOne.getEventStatus().toString())
+						"status", equalTo(eOne.getStatus().toString())
 						);
 	}
 
@@ -203,7 +203,69 @@ public class EventEndpointTest extends JerseyTest {
 						"adminList.size()", equalTo(1),
 						"judgeList.size()", equalTo(0),
 						"startingTime", equalTo(event.getStartingTime().format(EventDetails.DATE_TIME_FORMATTER)),
-						"eventStatus", equalTo(event.getStatus().toString())
+						"status", equalTo(event.getStatus().toString())
+					 )
+				.header("Location", 
+						response -> endsWith(EventEndpoint.BASE_PATH + "/"+ createdEvent.getId()));
+	}
+	
+	@Test
+	public void testCreateNewEventWithStatus() {
+		User admin = new User(UUID.randomUUID());
+		admin.setName("Admin");
+		admin.setPassword("secret");
+		admin.setUsername("admin420");
+		
+		LocalDateTime startingTime = LocalDateTime.of(2021, 5, 7, 12, 45);
+		UUID eventId = UUID.randomUUID();
+		Event event = new Event();
+		event.setName("Foo");
+		event.setStartingTime(startingTime);
+		event.setStatus(EventStatus.SCHEDULED);
+		
+		Event createdEvent = new Event(eventId);
+		createdEvent.setName("Foo");
+		createdEvent.setJudgeList(new HashSet<User>());
+		createdEvent.setPlayerList(new HashSet<User>());
+		createdEvent.setAdminList( Set.of(admin));
+		createdEvent.setStartingTime(startingTime);
+		createdEvent.setStatus(EventStatus.SCHEDULED);
+		
+		when(eventService.createEvent(any(Event.class))).thenReturn(EventMapper.toEventDetails(createdEvent));
+		
+		JsonArray emptyArray = Json.createArrayBuilder().build();
+		
+		JsonObject userJson = Json.createObjectBuilder()
+				.add("id", admin.getId().toString())
+				.add("username", admin.getUsername())
+				.build();
+		
+		JsonObject eventJson = Json.createObjectBuilder()
+					 .add("name", event.getName())
+					 .add("playerList", emptyArray)
+					 .add("adminList", Json.createArrayBuilder().add(userJson).build())
+					 .add("judgeList", emptyArray)
+					 .add("startingTime", event.getStartingTime().format(EventDetails.DATE_TIME_FORMATTER))
+					 .add("status", EventStatus.SCHEDULED.toString())
+				 .build();
+		
+		
+		given()
+			.contentType(MediaType.APPLICATION_JSON)
+			.body(eventJson.toString()).
+		when()
+			.post(EventEndpoint.BASE_PATH).
+		then()
+			.statusCode(201)
+			.assertThat()
+				.body(
+						"id", equalTo(eventId.toString()),
+						"name", equalTo("Foo"),
+						"playerList.size()", equalTo(0),
+						"adminList.size()", equalTo(1),
+						"judgeList.size()", equalTo(0),
+						"startingTime", equalTo(event.getStartingTime().format(EventDetails.DATE_TIME_FORMATTER)),
+						"status", equalTo(event.getStatus().toString())
 					 )
 				.header("Location", 
 						response -> endsWith(EventEndpoint.BASE_PATH + "/"+ createdEvent.getId()));

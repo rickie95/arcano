@@ -27,7 +27,7 @@ public class EventDetails implements RESTResource {
 	@JsonDeserialize(using=LocalDateTimeDeserializer.class)
 	LocalDateTime startingTime;
 	
-	EventStatus eventStatus;
+	EventStatus status;
 	String type;
 	int round;
 	
@@ -79,12 +79,12 @@ public class EventDetails implements RESTResource {
 		this.startingTime = startingTime;
 	}
 
-	public EventStatus getEventStatus() {
-		return eventStatus;
+	public EventStatus getStatus() {
+		return status;
 	}
 	
-	public void setEventStatus(EventStatus eventStatus) {
-		this.eventStatus = eventStatus;
+	public void setStatus(EventStatus status) {
+		this.status = status;
 	}
 	
 	public String getType() {

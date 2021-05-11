@@ -82,7 +82,7 @@ class EventMapperTest {
 		
 		assertThat(eventDetails.getId()).isEqualTo(eventId);
 		assertThat(eventDetails.getName()).isEqualTo(eventName);
-		assertThat(eventDetails.getEventStatus()).isEqualTo(EventStatus.IN_PROGRESS);
+		assertThat(eventDetails.getStatus()).isEqualTo(EventStatus.IN_PROGRESS);
 		assertThat(eventDetails.getRound()).isEqualTo(event.getRound());
 		assertThat(eventDetails.getType()).isEqualTo(event.getType());
 		
