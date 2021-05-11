@@ -4,6 +4,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import javax.annotation.security.PermitAll;
 import javax.enterprise.context.RequestScoped;
@@ -30,7 +31,7 @@ import com.riccardomalavolti.arcano.service.UserService;
 
 @RequestScoped
 @Path(UserEndpoint.ENDPOINT_PATH)
-public class UserEndpoint {
+public class UserEndpoint implements ResourceEndpoint {
 	
 	public static final String ENDPOINT_PATH = "users";
 	
@@ -43,8 +44,10 @@ public class UserEndpoint {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@PermitAll
-	public List<UserBrief> getUserList() {
-		return userService.getAllUsers();
+	public List<UserBrief> getUserList(@Context UriInfo uriInfo) {
+		return userService.getAllUsers().stream()
+				.map(user -> user.addUri(getResourceUri(uriInfo.getBaseUri(), user.getId())))
+				.collect(Collectors.toList());
 	}
 	
 	@GET
@@ -101,5 +104,8 @@ public class UserEndpoint {
 	private String getRequester() {
 		return context.getUserPrincipal().getName();
 	}
-
+	
+	public String getResourceUri(URI baseUri, UUID resourceId) {
+		return baseUri.toString() + ENDPOINT_PATH + "/" +resourceId.toString();
+	}
 }

@@ -102,8 +102,10 @@ public class UserEndpointTest extends JerseyTest {
             body(
                     "[0].id", equalTo(playerId.toString()),
                     "[0].username", equalTo(playerUsername),
+                    "[0].uri", equalTo(getBaseUri().toString() + UserEndpoint.ENDPOINT_PATH + "/" + playerId.toString()),
                     "[1].id", equalTo(id2.toString()),
-                    "[1].username", equalTo(name2)
+                    "[1].username", equalTo(name2),
+                    "[1].uri", equalTo(getBaseUri().toString() + UserEndpoint.ENDPOINT_PATH + "/" + id2.toString())
             );
 	}
 
