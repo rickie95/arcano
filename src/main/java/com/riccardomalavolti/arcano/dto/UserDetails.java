@@ -12,7 +12,6 @@ public class UserDetails implements RESTResource {
 	String username;
 	
 	String name;
-	String surname;
 	
 	public UUID getId() {
 		return id;
@@ -31,12 +30,6 @@ public class UserDetails implements RESTResource {
 	}
 	public void setName(String name) {
 		this.name = name;
-	}
-	public String getSurname() {
-		return surname;
-	}
-	public void setSurname(String surname) {
-		this.surname = surname;
 	}
 
 	@Override
