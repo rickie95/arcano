@@ -73,7 +73,7 @@ class EventMapperTest {
 		
 		assertThat(eventBrief.getId()).isEqualTo(eventId);
 		assertThat(eventBrief.getName()).isEqualTo(eventName);
-		assertThat(eventBrief.getEvenURI()).isEqualTo(eventBrief.getEvenURI());
+		assertThat(eventBrief.getUri()).isEqualTo(eventBrief.getUri());
 	}
 	
 	@Test

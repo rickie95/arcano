@@ -4,6 +4,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import javax.annotation.security.PermitAll;
 import javax.inject.Inject;
@@ -31,7 +32,7 @@ import com.riccardomalavolti.arcano.service.EventService;
 
 @PermitAll
 @Path(EventEndpoint.BASE_PATH)
-public class EventEndpoint {
+public class EventEndpoint implements ResourceEndpoint {
 
 	public static final String BASE_PATH = "events";
 	
@@ -40,8 +41,10 @@ public class EventEndpoint {
 	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<EventBrief> getAllEvents(){
-		return eventService.getAllEvents();
+	public List<EventBrief> getAllEvents(@Context UriInfo uriInfo){
+		return eventService.getAllEvents().stream()
+				.map(event -> event.addUri(getResourceUri(uriInfo.getBaseUri(), event.getId())))
+				.collect(Collectors.toList());
 	}
 	
 	@POST
@@ -116,6 +119,11 @@ public class EventEndpoint {
 		return Response.accepted(judge)
 			.link("event", uriInfo.getBaseUri() + String.format("/events/{}", eventId))
 			.build();
+	}
+
+	@Override
+	public String getResourceUri(URI baseUri, UUID resourceId) {
+		return baseUri.toString() + BASE_PATH + "/" +resourceId.toString();
 	}
 
 }

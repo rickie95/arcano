@@ -69,20 +69,18 @@ public class EventEndpointTest extends JerseyTest {
 	
 	@Test
 	public void testGetEventList() {
-		Event eOne = new Event();
+		EventBrief eOne = new EventBrief();
 		eOne.setId(UUID.randomUUID());
-		eOne.setJudgeList(new HashSet<User>());
-		eOne.setPlayerList(new HashSet<User>());
-		eOne.setAdminList(new HashSet<User>());
-		Event eTwo = new Event();
+		eOne.setName("FOO");
+		eOne.setUri(getBaseUri().toString() + EventEndpoint.BASE_PATH + "/" + eOne.getId().toString());
+		
+		EventBrief eTwo = new EventBrief();
 		eTwo.setId(UUID.randomUUID());
-		eTwo.setJudgeList(new HashSet<User>());
-		eTwo.setPlayerList(new HashSet<User>());
-		eTwo.setAdminList(new HashSet<User>());
+		eTwo.setName("BAR");
+		eTwo.setUri(getBaseUri().toString() + EventEndpoint.BASE_PATH + "/" + eTwo.getId().toString());
 		
 		List<EventBrief> eventList = new ArrayList<>(Arrays.asList(
-				EventMapper.toEventBrief(eOne), 
-				EventMapper.toEventBrief(eTwo)));
+				eOne, eTwo));
 		
 		when(eventService.getAllEvents()).thenReturn(eventList);
 		
@@ -92,10 +90,15 @@ public class EventEndpointTest extends JerseyTest {
 			.get(EventEndpoint.BASE_PATH).
 		then()
 			.statusCode(200)
+			.log().body()
 			.assertThat()
 				.body(
 						"[0].id", equalTo(eOne.getId().toString()),
-						"[1].id", equalTo(eTwo.getId().toString())
+						"[0].name", equalTo(eOne.getName()),
+						"[0].uri", equalTo(eOne.getUri().toString()),
+						"[1].id", equalTo(eTwo.getId().toString()),
+						"[1].name", equalTo(eTwo.getName()),
+						"[1].uri", equalTo(eTwo.getUri().toString())
 					);
 				
 	}
