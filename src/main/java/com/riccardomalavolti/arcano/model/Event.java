@@ -48,6 +48,21 @@ public class Event implements Ownable {
 	private EventStatus status;
 	private int round;
 	private String type;
+	
+
+	private Event(UUID id, String name, Set<User> playerList, 
+			Set<User> adminList, Set<User> judgeList, LocalDateTime startingTime, 
+			EventStatus status, int round, String type) {
+		this.id = id;
+		this.name = name;
+		this.playerList = new HashSet<User>(playerList);
+		this.adminList = new HashSet<User>(adminList);
+		this.judgeList = new HashSet<User>(judgeList);
+		this.startingTime = startingTime;
+		this.status = status;
+		this.round = round;
+		this.type = type;
+	}
 
 
 	public Event() {
@@ -197,6 +212,20 @@ public class Event implements Ownable {
 	public String toString() {
 		return "Event [id=" + id + ", name=" + name + ", playerList=" + playerList + ", judgeList=" + judgeList
 				+ ", adminList=" + adminList + "]";
+	}
+
+	public Event copy() {
+		return new Event(
+				this.id,
+				this.name,
+				this.playerList,
+				this.adminList,
+				this.judgeList,
+				this.startingTime,
+				this.status,
+				this.round,
+				this.type
+				);
 	}
 
 }

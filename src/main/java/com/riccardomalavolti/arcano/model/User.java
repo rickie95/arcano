@@ -4,14 +4,18 @@ import java.util.UUID;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.validation.constraints.NotNull;
+
+import org.hibernate.annotations.Type;
 
 @Entity
 public class User implements Ownable {
 
 	@Id
-	@GeneratedValue
+	@Type(type="uuid-char")
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private UUID id;
 	
 	@NotNull private String username;

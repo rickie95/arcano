@@ -13,7 +13,6 @@ import org.eclipse.microprofile.graphql.Name;
 import org.eclipse.microprofile.graphql.Query;
 import org.eclipse.microprofile.graphql.Source;
 
-import com.riccardomalavolti.arcano.dto.UserBrief;
 import com.riccardomalavolti.arcano.dto.UserDetails;
 import com.riccardomalavolti.arcano.model.User;
 import com.riccardomalavolti.arcano.service.AuthenticationService;
@@ -29,8 +28,8 @@ public class UserGraphQLProvider {
 
 	@Query("userList")
 	@Description("Returns a list of all available users.")
-	public List<UserBrief> getUsers(){
-		return userService.getAllUsers();
+	public List<UserDetails> getUsers(){
+		return userService.getAllUsersDetailed();
 	}
 	
 	@Query("userById")

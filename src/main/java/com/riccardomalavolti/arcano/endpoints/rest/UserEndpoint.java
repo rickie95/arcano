@@ -54,8 +54,9 @@ public class UserEndpoint implements ResourceEndpoint {
 	@Path("{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	@PermitAll
-	public Response getUserById(@PathParam("id") UUID id, @Context UriInfo uriInfo) {
-		UserDetails user = userService.getUserDetailsById(id);
+	public Response getUserById(@PathParam("id") String id, @Context UriInfo uriInfo) {
+		System.out.println(id);
+		UserDetails user = userService.getUserDetailsById(UUID.fromString(id));
 		return Response.ok(user)
 			.links(user.getLinks(uriInfo.getBaseUri().toString()).toArray(Link[]::new))
 			.build();
@@ -88,8 +89,8 @@ public class UserEndpoint implements ResourceEndpoint {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@PermitAll
-	public Response updateUser(@PathParam("id") UUID userId, User updatedPlayer) {
-		return Response.ok(userService.updateUser(userId, updatedPlayer, getRequester()))
+	public Response updateUser(@PathParam("id") String userId, User updatedPlayer) {
+		return Response.ok(userService.updateUser(UUID.fromString(userId), updatedPlayer, getRequester()))
 				.build();
 	}
 	
@@ -97,8 +98,8 @@ public class UserEndpoint implements ResourceEndpoint {
 	@Path("{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	@PermitAll
-	public Response deleteUser(@PathParam("id") UUID userId) {		
-		return Response.accepted(userService.deleteUser(userId, getRequester())).build();
+	public Response deleteUser(@PathParam("id") String userId) {		
+		return Response.accepted(userService.deleteUser(UUID.fromString(userId), getRequester())).build();
 	}
 	
 	private String getRequester() {
@@ -106,6 +107,6 @@ public class UserEndpoint implements ResourceEndpoint {
 	}
 	
 	public String getResourceUri(URI baseUri, UUID resourceId) {
-		return baseUri.toString() + ENDPOINT_PATH + "/" +resourceId.toString();
+		return baseUri.toString() + ENDPOINT_PATH + "/" + resourceId.toString();
 	}
 }

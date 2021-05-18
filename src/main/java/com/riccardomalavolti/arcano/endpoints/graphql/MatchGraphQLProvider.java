@@ -10,7 +10,6 @@ import org.eclipse.microprofile.graphql.Mutation;
 import org.eclipse.microprofile.graphql.Name;
 import org.eclipse.microprofile.graphql.Query;
 
-import com.riccardomalavolti.arcano.dto.MatchBrief;
 import com.riccardomalavolti.arcano.dto.MatchDetails;
 import com.riccardomalavolti.arcano.model.Match;
 import com.riccardomalavolti.arcano.service.AuthenticationService;
@@ -24,8 +23,8 @@ public class MatchGraphQLProvider {
 	@Inject AuthenticationService authService;
 	
 	@Query
-	public List<MatchBrief> getMatches(){
-		return matchService.getAllMatches();
+	public List<MatchDetails> getMatches(){
+		return matchService.getAllMatchesDetailed();
 	}
 	
 	@Query

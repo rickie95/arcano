@@ -1,5 +1,6 @@
 package com.riccardomalavolti.arcano.dto;
 
+import java.net.URI;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -102,7 +103,7 @@ public class EventDetails implements RESTResource {
 	public void setRound(int round) {
 		this.round = round;
 	}
-	
+
 	@Override
 	public List<Link> getLinks(String absoluteBasePath) {
 		List<Link> links = new ArrayList<Link>();

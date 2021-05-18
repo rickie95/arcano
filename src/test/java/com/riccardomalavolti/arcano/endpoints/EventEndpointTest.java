@@ -6,6 +6,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,8 +19,11 @@ import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.ws.rs.NotFoundException;
+import javax.ws.rs.container.ContainerRequestContext;
+import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.SecurityContext;
 
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -40,13 +44,19 @@ import com.riccardomalavolti.arcano.model.Event;
 import com.riccardomalavolti.arcano.model.EventStatus;
 import com.riccardomalavolti.arcano.model.User;
 import com.riccardomalavolti.arcano.service.EventService;
+import com.sun.security.auth.UserPrincipal;
 
 import io.restassured.RestAssured;
 
 
 public class EventEndpointTest extends JerseyTest {
 	
+	private Event event;
+	private User admin;
+	private LocalDateTime startingTime;
+	
 	@Mock private EventService eventService;
+	@Mock private SecurityContext securityContextMock;
 	
 	@SuppressWarnings("deprecation")
 	@Override
@@ -59,12 +69,35 @@ public class EventEndpointTest extends JerseyTest {
                 protected void configure() {
                     bind(eventService).to(EventService.class);
                 }
-            });
+            }).register(new ContainerRequestFilter() {
+				@Override
+				public void filter(final ContainerRequestContext containerRequestContext) throws IOException {
+					containerRequestContext.setSecurityContext(securityContextMock);
+				}
+			});
     }
 	
 	@Before
 	public void configureRestAssured() {
 		RestAssured.baseURI = getBaseUri().toString();
+	}
+	
+	@Before
+	public void initFields() {
+		admin = new User(UUID.randomUUID());
+		admin.setName("Admin");
+		admin.setPassword("secret");
+		admin.setUsername("admin420");
+		
+		startingTime = LocalDateTime.of(2021, 5, 7, 12, 45);
+		
+		event = new Event(UUID.randomUUID());
+		event.setName("Foo");
+		event.setJudgeList(new HashSet<User>());
+		event.setPlayerList(new HashSet<User>());
+		event.setAdminList( Set.of(admin));
+		event.setStartingTime(startingTime);
+		event.setStatus(EventStatus.SCHEDULED);
 	}
 	
 	@Test
@@ -107,15 +140,15 @@ public class EventEndpointTest extends JerseyTest {
 	public void testGetEventById() {
 		// Should also return a list of URL of the associated matches.
 		UUID id = UUID.randomUUID();
-		EventDetails eOne = new EventDetails();
-		eOne.setId(id);
-		eOne.setJudgeList(new HashSet<UserBrief>());
-		eOne.setPlayerList(new HashSet<UserBrief>());
-		eOne.setAdminList(new HashSet<UserBrief>());
-		eOne.setStartingTime(LocalDateTime.of(2021, 5, 7, 12, 45));
-		eOne.setStatus(EventStatus.IN_PROGRESS);
+		EventDetails event = new EventDetails();
+		event.setId(id);
+		event.setJudgeList(new HashSet<UserBrief>());
+		event.setPlayerList(new HashSet<UserBrief>());
+		event.setAdminList(new HashSet<UserBrief>());
+		event.setStartingTime(LocalDateTime.of(2021, 5, 7, 12, 45));
+		event.setStatus(EventStatus.IN_PROGRESS);
 		
-		when(eventService.getEventById(id)).thenReturn(eOne);
+		when(eventService.getEventById(id)).thenReturn(event);
 		
 		given()
 			.accept(MediaType.APPLICATION_JSON).
@@ -126,8 +159,8 @@ public class EventEndpointTest extends JerseyTest {
 			.assertThat()
 				.body(
 						"id", equalTo(id.toString()),
-						"startingTime", equalTo(eOne.getStartingTime().format(EventDetails.DATE_TIME_FORMATTER)),
-						"status", equalTo(eOne.getStatus().toString())
+						"startingTime", equalTo(event.getStartingTime().format(EventDetails.DATE_TIME_FORMATTER)),
+						"status", equalTo(event.getStatus().toString())
 						);
 	}
 
@@ -146,12 +179,8 @@ public class EventEndpointTest extends JerseyTest {
 	
 	@Test
 	public void testCreateNewEvent() {
-		User admin = new User(UUID.randomUUID());
-		admin.setName("Admin");
-		admin.setPassword("secret");
-		admin.setUsername("admin420");
 		
-		LocalDateTime startingTime = LocalDateTime.of(2021, 5, 7, 12, 45);
+		
 		UUID eventId = UUID.randomUUID();
 		Event event = new Event();
 		event.setName("Foo");
@@ -220,13 +249,12 @@ public class EventEndpointTest extends JerseyTest {
 		admin.setUsername("admin420");
 		
 		LocalDateTime startingTime = LocalDateTime.of(2021, 5, 7, 12, 45);
-		UUID eventId = UUID.randomUUID();
-		Event event = new Event();
+		Event event = new Event(UUID.randomUUID());
 		event.setName("Foo");
 		event.setStartingTime(startingTime);
 		event.setStatus(EventStatus.SCHEDULED);
 		
-		Event createdEvent = new Event(eventId);
+		Event createdEvent = new Event(event.getId());
 		createdEvent.setName("Foo");
 		createdEvent.setJudgeList(new HashSet<User>());
 		createdEvent.setPlayerList(new HashSet<User>());
@@ -262,7 +290,7 @@ public class EventEndpointTest extends JerseyTest {
 			.statusCode(201)
 			.assertThat()
 				.body(
-						"id", equalTo(eventId.toString()),
+						"id", equalTo(event.getId().toString()),
 						"name", equalTo("Foo"),
 						"playerList.size()", equalTo(0),
 						"adminList.size()", equalTo(1),
@@ -274,6 +302,55 @@ public class EventEndpointTest extends JerseyTest {
 						response -> endsWith(EventEndpoint.BASE_PATH + "/"+ createdEvent.getId()));
 	}
 	
+	@Test
+	public void updateEventShoudlReturn202() {		
+		
+		Event eventToBeUpdated = event;
+		
+		Event updatedEvent = new Event(event.getId());
+		updatedEvent.setName("Foo");
+		updatedEvent.setJudgeList(new HashSet<User>());
+		updatedEvent.setPlayerList(new HashSet<User>());
+		updatedEvent.setAdminList( Set.of(admin));
+		updatedEvent.setStartingTime(startingTime);
+		updatedEvent.setStatus(EventStatus.SCHEDULED);
+		
+		JsonArray emptyArray = Json.createArrayBuilder().build();
+		
+		JsonObject userJson = Json.createObjectBuilder()
+				.add("id", admin.getId().toString())
+				.add("username", admin.getUsername())
+				.build();
+		
+		JsonObject updatedEventJsonBody = Json.createObjectBuilder()
+				.add("id", updatedEvent.getId().toString())
+				 .add("adminList", Json.createArrayBuilder().add(userJson).build())
+				 .add("startingTime", updatedEvent.getStartingTime().format(EventDetails.DATE_TIME_FORMATTER))
+				 .build();
+		
+		UserPrincipal userPrincipal = new UserPrincipal(admin.getUsername());
+		when(securityContextMock.getUserPrincipal()).thenReturn(userPrincipal);
+		
+		when(eventService.updateEvent(eventToBeUpdated.getId(), eventToBeUpdated, admin.getUsername()))
+			.thenReturn(EventMapper.toEventDetails(updatedEvent));
+		
+		
+		given()
+			.contentType(MediaType.APPLICATION_JSON)
+			.body(updatedEventJsonBody.toString())
+			.log().all()
+		.when()
+			.put(EventEndpoint.BASE_PATH +"/" + eventToBeUpdated.getId().toString())
+		.then()
+		.log().all()
+			.statusCode(200)
+			.assertThat()
+			.body(
+					"id", equalTo(event.getId().toString()),
+					"startingTime", equalTo(eventToBeUpdated.getStartingTime().format(EventDetails.DATE_TIME_FORMATTER).toString())
+					);
+		
+	}
 	
 	@Test
 	public void testEnrollAPlayerInAEvent() {

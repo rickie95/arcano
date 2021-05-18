@@ -39,6 +39,10 @@ public class UserService {
 		return UserMapper.toUserBriefList(userRepo.getAllUsers());
 	}
 	
+	public List<UserDetails> getAllUsersDetailed() {
+		return UserMapper.toUserDetailsList(userRepo.getAllUsers());
+	}
+	
 	User getUserById(UUID userId) {
 		return userRepo
 				.getUserById(userId)
