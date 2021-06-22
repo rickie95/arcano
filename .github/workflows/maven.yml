@@ -32,4 +32,5 @@ jobs:
       with:
         name: Arcano latest
         body: latest version of Arcano (might be unstable)
+        if: startsWith(github.ref, 'refs/tags/')
         files: arcano-lates.war
