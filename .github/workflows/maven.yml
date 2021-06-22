@@ -24,6 +24,12 @@ jobs:
     - name: Upload build artifact
       uses: actions/upload-artifact@v2.2.4
       with:
-        name: arcano-latest
+        name: arcano-latest.war
         path: target/arcano.war
         if-no-files-found: error
+    - name: Create release
+      uses: softprops/action-gh-release@v0.1.5
+      with:
+        name: Arcano latest
+        body: latest version of Arcano (might be unstable)
+        files: arcano-lates.war
