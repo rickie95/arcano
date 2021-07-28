@@ -1,22 +1,10 @@
-FROM jboss/wildfly:20.0.1.Final
+FROM maven:3.8.1-openjdk-11-slim
 EXPOSE 8080 8443
+VOLUME $HOME/.m2:/root/.m2
 
-# Installs MySql driver
-COPY wildfly-docker/mysql-connector-java-8.0.21.jar /opt/jboss/wildfly/modules/com/mysql/main/
-COPY wildfly-docker/mysql-connector-module.xml /opt/jboss/wildfly/modules/com/mysql/main/module.xml
-COPY wildfly-docker/TestConnection.java /opt/jboss/wildfly/TestConnection.java
+RUN apt-get update && apt-get install -y git && rm -rf /var/lib/apt/lists/*
 
-# Copies the configuration file
-ADD wildfly-docker/standalone-https-support.xml /opt/jboss/wildfly/standalone/configuration/standalone-custom.xml
-ADD wildfly-docker/server.keystore /opt/jboss/wildfly/standalone/configuration/server.keystore
+# Clone repo
+RUN git clone https://www.github.com/rickie95/arcano
 
-# Adds admin account
-RUN /opt/jboss/wildfly/bin/add-user.sh admin arcano --silent
-
-# Add startup script
-COPY wildfly-docker/startup-script.sh /opt/jboss/wildfly/startup-script.sh
-
-CMD ["/opt/jboss/wildfly/startup-script.sh", "/opt/jboss/wildfly/bin/standalone.sh", "-c", "standalone-custom.xml", "-b", "0.0.0.0", "-bmanagement", "0.0.0.0"]
-
-# Deploys the artifact
-ADD target/arcano.war /opt/jboss/wildfly/standalone/deployments/
+CMD ["mvn", "-f", "arcano/pom.xml", "wildfly:run"]
