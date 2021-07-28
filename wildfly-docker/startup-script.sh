@@ -2,4 +2,4 @@
 set -e
 cd arcano
 git pull
-mvn wildfly:start deploy
+mvn wildfly:start install
