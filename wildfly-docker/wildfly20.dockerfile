@@ -7,4 +7,4 @@ RUN apt-get update && apt-get install -y git && rm -rf /var/lib/apt/lists/*
 # Clone repo
 RUN git clone https://www.github.com/rickie95/arcano
 
-CMD ["mvn", "-f", "arcano/pom.xml", "wildfly:run"]
+CMD ["arcano/wildfly-docker/startup-script.sh"]
