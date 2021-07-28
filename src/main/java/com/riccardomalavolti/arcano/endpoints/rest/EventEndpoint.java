@@ -4,8 +4,10 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import javax.annotation.security.PermitAll;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -29,9 +31,10 @@ import com.riccardomalavolti.arcano.dto.UserDetails;
 import com.riccardomalavolti.arcano.model.Event;
 import com.riccardomalavolti.arcano.service.EventService;
 
+@RequestScoped
 @PermitAll
 @Path(EventEndpoint.BASE_PATH)
-public class EventEndpoint {
+public class EventEndpoint implements ResourceEndpoint {
 
 	public static final String BASE_PATH = "events";
 	
@@ -40,8 +43,10 @@ public class EventEndpoint {
 	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<EventBrief> getAllEvents(){
-		return eventService.getAllEvents();
+	public List<EventBrief> getAllEvents(@Context UriInfo uriInfo){
+		return eventService.getAllEvents().stream()
+				.map(event -> event.addUri(getResourceUri(uriInfo.getBaseUri(), event.getId())))
+				.collect(Collectors.toList());
 	}
 	
 	@POST
@@ -69,6 +74,17 @@ public class EventEndpoint {
 		return Response.ok(event)
 			.links(event.getLinks(uriInfo.getBaseUri().toString()).toArray(Link[]::new))
 			.build();
+	}
+	
+	@PUT
+	@Path("{eventId}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response updateEventById(@PathParam("eventId") UUID eventId, Event event) {
+		assert(eventId != null);
+		assert(event != null);
+		assert(getRequester() != null);
+		return Response.ok(eventService.updateEvent(eventId, event, getRequester())).build();
 	}
 	
 	@GET
@@ -116,6 +132,15 @@ public class EventEndpoint {
 		return Response.accepted(judge)
 			.link("event", uriInfo.getBaseUri() + String.format("/events/{}", eventId))
 			.build();
+	}
+	
+	private String getRequester() {
+		return context.getUserPrincipal().getName();
+	}
+
+	@Override
+	public String getResourceUri(URI baseUri, UUID resourceId) {
+		return baseUri.toString() + BASE_PATH + "/" +resourceId.toString();
 	}
 
 }

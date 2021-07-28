@@ -6,8 +6,7 @@ public class EventBrief {
 	
 	UUID id;
 	String name;
-	
-	String eventURI;
+	String uri;
 	
 	public UUID getId() {
 		return id;
@@ -18,15 +17,15 @@ public class EventBrief {
 	public String getName() {
 		return name;
 	}
-	public void setEventURI(String uri) {
-		this.eventURI = uri;
+	public void setUri(String uri) {
+		this.uri = uri;
 	}
-	public String getEvenURI() {
-		return this.eventURI;
+	public String getUri() {
+		return this.uri;
 	}
 	
 	public EventBrief addUri(String uri) {
-		this.setEventURI(uri);
+		this.setUri(uri);
 		return this;
 	}
 	

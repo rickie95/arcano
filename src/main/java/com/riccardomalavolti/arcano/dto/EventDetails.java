@@ -1,5 +1,6 @@
 package com.riccardomalavolti.arcano.dto;
 
+import java.net.URI;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -27,35 +28,46 @@ public class EventDetails implements RESTResource {
 	@JsonDeserialize(using=LocalDateTimeDeserializer.class)
 	LocalDateTime startingTime;
 	
-	EventStatus eventStatus;
+	EventStatus status;
+	String type;
+	int round;
 	
 	public UUID getId() {
 		return id;
 	}
+	
 	public void setId(UUID id) {
 		this.id = id;
 	}
+	
 	public String getName() {
 		return name;
 	}
+	
 	public void setName(String name) {
 		this.name = name;
 	}
+	
 	public Set<UserBrief> getPlayerList() {
 		return playerList;
 	}
+	
 	public void setPlayerList(Set<UserBrief> playerList) {
 		this.playerList = playerList;
 	}
+	
 	public Set<UserBrief> getJudgeList() {
 		return judgeList;
 	}
+	
 	public void setJudgeList(Set<UserBrief> judgeList) {
 		this.judgeList = judgeList;
 	}
+	
 	public Set<UserBrief> getAdminList() {
 		return adminList;
 	}
+	
 	public void setAdminList(Set<UserBrief> adminList) {
 		this.adminList = adminList;
 	}
@@ -68,12 +80,30 @@ public class EventDetails implements RESTResource {
 		this.startingTime = startingTime;
 	}
 
-	public EventStatus getEventStatus() {
-		return eventStatus;
+	public EventStatus getStatus() {
+		return status;
 	}
-	public void setEventStatus(EventStatus eventStatus) {
-		this.eventStatus = eventStatus;
+	
+	public void setStatus(EventStatus status) {
+		this.status = status;
 	}
+	
+	public String getType() {
+		return type;
+	}
+	
+	public void setType(String type) {
+		this.type = type;
+	}
+	
+	public int getRound() {
+		return round;
+	}
+	
+	public void setRound(int round) {
+		this.round = round;
+	}
+
 	@Override
 	public List<Link> getLinks(String absoluteBasePath) {
 		List<Link> links = new ArrayList<Link>();
