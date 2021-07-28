@@ -1,5 +1,5 @@
 #! /bin/sh
 set -e
-cd ~/arcano
+cd arcano
 git pull
 mvn wildfly:start deploy
