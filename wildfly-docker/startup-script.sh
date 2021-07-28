@@ -14,5 +14,7 @@ done
 
 # Then start Wildfly
 >&2 echo "MySQL is ready to accept connections, starting Wildfly."
-exec $cmd
-
+#exec $cmd
+cd ~/arcano
+git pull
+mvn wildfly:start deploy
