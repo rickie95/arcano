@@ -21,9 +21,9 @@ services:
         depends_on:
             - "mysql"
         ports:
-            - "8080:80"
+            - "80:8080"
             - "9990:9990"
-            - "8443:443"
+            - "443:8443"
 volumes:
     arcano_db_data: {}
 
