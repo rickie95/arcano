@@ -4,6 +4,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import javax.annotation.security.PermitAll;
 import javax.enterprise.context.RequestScoped;
@@ -30,7 +31,7 @@ import com.riccardomalavolti.arcano.service.UserService;
 
 @RequestScoped
 @Path(UserEndpoint.ENDPOINT_PATH)
-public class UserEndpoint {
+public class UserEndpoint implements ResourceEndpoint {
 	
 	public static final String ENDPOINT_PATH = "users";
 	
@@ -43,16 +44,19 @@ public class UserEndpoint {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@PermitAll
-	public List<UserBrief> getUserList() {
-		return userService.getAllUsers();
+	public List<UserBrief> getUserList(@Context UriInfo uriInfo) {
+		return userService.getAllUsers().stream()
+				.map(user -> user.addUri(getResourceUri(uriInfo.getBaseUri(), user.getId())))
+				.collect(Collectors.toList());
 	}
 	
 	@GET
 	@Path("{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	@PermitAll
-	public Response getUserById(@PathParam("id") UUID id, @Context UriInfo uriInfo) {
-		UserDetails user = userService.getUserDetailsById(id);
+	public Response getUserById(@PathParam("id") String id, @Context UriInfo uriInfo) {
+		System.out.println(id);
+		UserDetails user = userService.getUserDetailsById(UUID.fromString(id));
 		return Response.ok(user)
 			.links(user.getLinks(uriInfo.getBaseUri().toString()).toArray(Link[]::new))
 			.build();
@@ -85,8 +89,8 @@ public class UserEndpoint {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@PermitAll
-	public Response updateUser(@PathParam("id") UUID userId, User updatedPlayer) {
-		return Response.ok(userService.updateUser(userId, updatedPlayer, getRequester()))
+	public Response updateUser(@PathParam("id") String userId, User updatedPlayer) {
+		return Response.ok(userService.updateUser(UUID.fromString(userId), updatedPlayer, getRequester()))
 				.build();
 	}
 	
@@ -94,12 +98,15 @@ public class UserEndpoint {
 	@Path("{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	@PermitAll
-	public Response deleteUser(@PathParam("id") UUID userId) {		
-		return Response.accepted(userService.deleteUser(userId, getRequester())).build();
+	public Response deleteUser(@PathParam("id") String userId) {		
+		return Response.accepted(userService.deleteUser(UUID.fromString(userId), getRequester())).build();
 	}
 	
 	private String getRequester() {
 		return context.getUserPrincipal().getName();
 	}
-
+	
+	public String getResourceUri(URI baseUri, UUID resourceId) {
+		return baseUri.toString() + ENDPOINT_PATH + "/" + resourceId.toString();
+	}
 }

@@ -32,6 +32,7 @@ import org.mockito.MockitoAnnotations;
 
 import com.riccardomalavolti.arcano.endpoints.rest.EventEndpoint;
 import com.riccardomalavolti.arcano.model.Event;
+import com.riccardomalavolti.arcano.model.EventStatus;
 import com.riccardomalavolti.arcano.model.User;
 import com.riccardomalavolti.arcano.repositories.EventRepository;
 
@@ -107,6 +108,7 @@ public class EventEndpointServiceIT extends JerseyTest {
 		eOne.setJudgeList(new HashSet<User>());
 		eOne.setPlayerList(new HashSet<User>());
 		eOne.setAdminList(new HashSet<User>());
+		eOne.setStatus(EventStatus.IN_PROGRESS);
 		
 		when(eventRepo.getEventById(id)).thenReturn(Optional.of(eOne));
 		
@@ -118,7 +120,8 @@ public class EventEndpointServiceIT extends JerseyTest {
 			.statusCode(200)
 			.assertThat()
 				.body(
-						"id", equalTo(id.toString())
+						"id", equalTo(id.toString()),
+						"status", equalTo(EventStatus.IN_PROGRESS.toString())
 						);
 	}
 	
@@ -132,12 +135,14 @@ public class EventEndpointServiceIT extends JerseyTest {
 		UUID eventId = UUID.randomUUID();
 		Event event = new Event();
 		event.setName("Foo");
+		event.setStatus(EventStatus.IN_PROGRESS);
 		
 		Event createdEvent = new Event(eventId);
 		createdEvent.setName("Foo");
 		createdEvent.setJudgeList(new HashSet<User>());
 		createdEvent.setPlayerList(new HashSet<User>());
 		createdEvent.setAdminList(Set.of(admin));
+		createdEvent.setStatus(EventStatus.IN_PROGRESS);
 		
 		when(eventRepo.addEvent(any(Event.class))).thenReturn(createdEvent);
 		
@@ -153,6 +158,7 @@ public class EventEndpointServiceIT extends JerseyTest {
 					 .add("playerList", emptyArray)
 					 .add("adminList", Json.createArrayBuilder().add(userJson).build())
 					 .add("judgeList", emptyArray)
+					 .add("status", EventStatus.IN_PROGRESS.toString())
 				 .build();
 		
 		given()
@@ -165,7 +171,8 @@ public class EventEndpointServiceIT extends JerseyTest {
 			.assertThat()
 				.body(
 						"id", equalTo(eventId.toString()),
-						"name", equalTo("Foo")
+						"name", equalTo("Foo"),
+						"status", equalTo("IN_PROGRESS")
 					 )
 				.header("Location", 
 						response -> endsWith(EventEndpoint.BASE_PATH + "/"+ createdEvent.getId()));

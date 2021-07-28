@@ -4,6 +4,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import javax.annotation.security.PermitAll;
 import javax.enterprise.context.RequestScoped;
@@ -30,7 +31,7 @@ import com.riccardomalavolti.arcano.service.MatchService;
 
 @RequestScoped
 @Path(MatchEndpoint.BASE_PATH)
-public class MatchEndpoint {
+public class MatchEndpoint implements ResourceEndpoint {
 	
 	public static final String BASE_PATH = "matches";
 
@@ -41,8 +42,10 @@ public class MatchEndpoint {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@PermitAll
-	public List<MatchBrief> getMatches(){
-		return matchService.getAllMatches();
+	public List<MatchBrief> getMatches(@Context UriInfo uriInfo){
+		return matchService.getAllMatches().stream()
+				.map(match -> match.addUri(getResourceUri(uriInfo.getBaseUri(), match.getId())))
+				.collect(Collectors.toList());
 	}
 	
 	@GET
@@ -97,6 +100,11 @@ public class MatchEndpoint {
 	
 	private String getRequester() {
 		return context.getUserPrincipal().getName();
+	}
+
+	@Override
+	public String getResourceUri(URI baseUri, UUID resourceId) {
+		return baseUri.toString() + BASE_PATH + "/" + resourceId.toString();
 	}
 	
 }

@@ -44,6 +44,12 @@ public class EventService {
 				.map(EventMapper::toEventBrief).collect(Collectors.toList());
 	}
 	
+	public List<EventDetails> getAllEventDetailed(){
+		return eventRepo.getAllEvents().stream()
+				.map(EventMapper::toEventDetails)
+				.collect(Collectors.toList());
+	}
+	
 	private Event retriveEventById(UUID eventId) {
 		return eventRepo.getEventById(eventId)
 		.orElseThrow(() -> new NotFoundException(String.format(NO_EVENT_FOUND_WITH_ID, eventId)));

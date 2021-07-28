@@ -12,12 +12,15 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.Type;
+
 @Entity(name=Match.ENTITY_NAME)
 public class Match implements Ownable {
 	
 	public static final String ENTITY_NAME = "Incontro";
 
 	@Id
+	@Type(type="uuid-char")
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	UUID id;
 	

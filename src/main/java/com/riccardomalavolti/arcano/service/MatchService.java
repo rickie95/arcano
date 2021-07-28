@@ -43,6 +43,10 @@ public class MatchService {
 		return MatchMapper.toMatchBrief(matchRepo.getAllMatches());
 	}
 	
+	public List<MatchDetails> getAllMatchesDetailed() {
+		return MatchMapper.toMatchDetails(matchRepo.getAllMatches());
+	}
+	
 	Match getMatchById(UUID matchId) {
 		return matchRepo.getMatchById(matchId)
 				.orElseThrow(() -> new NotFoundException(String.format(NO_MATCH_FOUND_WITH_ID, matchId)));
@@ -84,4 +88,5 @@ public class MatchService {
 	public List<MatchDetails> getMatchListForEvent(UUID eventId) {
 		return MatchMapper.toMatchDetails(matchRepo.getMatchForEvent(eventId));
 	}
+
 }

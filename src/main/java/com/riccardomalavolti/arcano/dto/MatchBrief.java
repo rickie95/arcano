@@ -14,6 +14,8 @@ public class MatchBrief {
 	short playerTwoScore;
 	boolean matchEnded;
 	
+	String uri;
+	
 	public UUID getId() {
 		return id;
 	}
@@ -56,6 +58,16 @@ public class MatchBrief {
 	public void setMatchEnded(boolean matchEnded) {
 		this.matchEnded = matchEnded;
 	}
+	
+	public void setUri(String uri) {
+		this.uri = uri;
+	}
+	
+	public MatchBrief addUri(String uri) {
+		setUri(uri);
+		return this;
+	}
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
