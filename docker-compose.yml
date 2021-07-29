@@ -17,13 +17,15 @@ services:
         build:
             context: ./
             dockerfile: wildfly-docker/wildfly20.dockerfile
+        volumes:
+            - $HOME/.m2:/root/.m2
         restart: on-failure
         depends_on:
             - "mysql"
         ports:
-            - "80:8080"
+            - "8080:8080"
             - "9990:9990"
-            - "443:8443"
+            - "8443:8443"
 volumes:
     arcano_db_data: {}
 
