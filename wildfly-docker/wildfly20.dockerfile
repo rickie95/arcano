@@ -1,10 +1,11 @@
 FROM maven:3.8.1-openjdk-11-slim
 EXPOSE 8080 8443
-VOLUME $HOME/.m2:/root/.m2
 
 RUN apt-get update && apt-get install -y git && rm -rf /var/lib/apt/lists/*
 
 # Clone repo
 RUN git clone https://www.github.com/rickie95/arcano
+WORKDIR arcano/
+RUN git fetch
 
-CMD ["arcano/wildfly-docker/startup-script.sh"]
+CMD ["mvn", "wildfly:run"]
