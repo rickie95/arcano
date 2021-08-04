@@ -36,13 +36,10 @@
 		<database-name>arcano-db</database-name>
 		<database-user>arcano</database-user>
 		<database-password>arcano</database-password>
+		<postgresql-driver.version>42.2.16.jre7</postgresql-driver.version>
 
 		<javaee.api.version>8.0.1</javaee.api.version>
 		<hibernate.version>5.4.13.Final</hibernate.version>
-
-		<mysql.groupId>mysql</mysql.groupId>
-		<mysql.artifactId>mysql-connector-java</mysql.artifactId>
-		<mysql.driver.version>8.0.26</mysql.driver.version>
 
 		<!-- Plugin versions -->
 		<maven.shade>3.2.2</maven.shade>
@@ -280,11 +277,7 @@
 			<version>${jackson.version}</version>
 		</dependency>
 
-		<dependency>
-			<groupId>${mysql.groupId}</groupId>
-			<artifactId>${mysql.artifactId}</artifactId>
-			<version>${mysql.driver.version}</version>
-		</dependency>
+
 
 	</dependencies>
 
@@ -367,57 +360,6 @@
 								<source>src/integration/java</source>
 							</sources>
 						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.wildfly.plugins</groupId>
-				<artifactId>wildfly-maven-plugin</artifactId>
-				<version>2.0.2.Final</version>
-				<executions>
-					<execution>
-						<id>deploy-driver</id>
-						<phase>install</phase>
-						<configuration>
-							<groupId>${mysql.groupId}</groupId>
-							<artifactId>${mysql.artifactId}</artifactId>
-							<name>${mysql.artifactId}-${mysql.driver.version}.jar</name>
-						</configuration>
-						<goals>
-							<goal>deploy-artifact</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>add-datasource</id>
-                        <phase>install</phase>
-                        <configuration>
-							<address>subsystem=datasources,data-source=arcano-ds</address>
-							<resources>
-                                <resource>
-									<properties>
-										<connection-url>jdbc:mysql://${env.DB_URI}:3306/arcano?serverTimezone=UTC</connection-url>
-										<jndi-name>java:/arcano-ds</jndi-name>
-										<enabled>true</enabled>
-										<enable>true</enable>
-										<user-name>root</user-name>
-										<password>arcano</password>
-										<driver-name>${mysql.artifactId}-${mysql.driver.version}.jar</driver-name>
-										<use-ccm>true</use-ccm>
-										<jta>true</jta>
-										<pool-name>arcano-ds</pool-name>
-									</properties>
-								</resource>
-							</resources>
-						</configuration>
-						<goals>
-                            <goal>add-resource</goal>
-                        </goals>
-					</execution>
-					<execution>
-						<phase>install</phase>
-						<goals>
-							<goal>deploy</goal>
-						</goals>
 					</execution>
 				</executions>
 			</plugin>
