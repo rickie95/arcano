@@ -2,7 +2,7 @@ FROM jboss/wildfly:20.0.1.Final
 EXPOSE 8080 8443
 
 # Installs MySql driver
-COPY wildfly-docker/mysql-connector-java-8.0.21.jar /opt/jboss/wildfly/modules/com/mysql/main/
+COPY wildfly-docker/mysql-connector-java-8.0.26.jar /opt/jboss/wildfly/modules/com/mysql/main/
 COPY wildfly-docker/mysql-connector-module.xml /opt/jboss/wildfly/modules/com/mysql/main/module.xml
 COPY wildfly-docker/TestConnection.java /opt/jboss/wildfly/TestConnection.java
 

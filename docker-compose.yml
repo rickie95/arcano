@@ -11,6 +11,7 @@ services:
         volumes:
             - /opt/arcano_mysql_data:/var/lib/mysql
             - ./mysql_dump.sql:/docker-entrypoint-initdb.d/dump.sql
+
     wildfly:
         env_file:
             - environment.env
@@ -19,13 +20,14 @@ services:
             dockerfile: wildfly-docker/wildfly20.dockerfile
         volumes:
             - $HOME/.m2:/root/.m2
-        restart: on-failure
+        #   restart: on-failure
         depends_on:
             - "mysql"
         ports:
             - "8080:8080"
             - "9990:9990"
             - "8443:8443"
+
 volumes:
     arcano_db_data: {}
 
