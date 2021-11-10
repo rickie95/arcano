@@ -95,15 +95,17 @@ public class MatchDetails implements RESTResource {
 			.build(absoluteBasePath, playerTwo.getId()));
 		
 		// ParentEvent
-		links.add(Link.fromUri("{base_uri}/events/{id}")
-			.rel("event").type("text/plain")
-			.build(absoluteBasePath, parentEvent.getId()));
+		if(parentEvent != null)
+			links.add(Link.fromUri("{base_uri}/events/{id}")
+				.rel("event").type("text/plain")
+				.build(absoluteBasePath, parentEvent.getId()));
 
 		// Games
-		for(Game g: gameList){
-			links.add(Link.fromUri("{base_uri}/games/{id}")
-			.rel(String.format("game_{}", g.getId())).type("text/plain")
-			.build(absoluteBasePath, g.getId()));
+		if(gameList != null && !gameList.isEmpty())
+			for(Game g: gameList){
+				links.add(Link.fromUri("{base_uri}/games/{id}")
+				.rel(String.format("game_{}", g.getId())).type("text/plain")
+				.build(absoluteBasePath, g.getId()));
 		}
 		return links;
 	}
