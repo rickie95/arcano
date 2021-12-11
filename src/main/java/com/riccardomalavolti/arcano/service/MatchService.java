@@ -2,6 +2,7 @@ package com.riccardomalavolti.arcano.service;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import javax.enterprise.inject.Default;
 import javax.inject.Inject;
@@ -19,28 +20,27 @@ public class MatchService {
 
 	public static final String NO_MATCH_FOUND_WITH_ID = "No match found with id %s";
 	
-	@Inject
-	private MatchRepository matchRepo;
+	@Inject private MatchRepository matchRepo;
 	
-	@Inject
-	private UserService userService;
+	@Inject private UserService userService;
 	
-	@Inject 
-	private AuthorizationService authorization;
+	@Inject private AuthorizationService authorization;
+
+	@Inject private GameService gameService;
 	
-	public MatchService() {
-		
-	}
+	public MatchService() {}
 	
-	public MatchService(MatchRepository matchRepository, UserService userService, AuthorizationService authService) {
+	public MatchService(MatchRepository matchRepository, UserService userService, AuthorizationService authService, GameService gameService) {
 		this();
 		this.matchRepo = matchRepository;
 		this.userService = userService;
 		this.authorization = authService;
+		this.gameService = gameService;
 	}
 	
 	public List<MatchBrief> getAllMatches() {
-		return MatchMapper.toMatchBrief(matchRepo.getAllMatches());
+		return matchRepo.getAllMatches().stream()
+			.map(MatchMapper::toMatchBrief).collect(Collectors.toList());
 	}
 	
 	public List<MatchDetails> getAllMatchesDetailed() {
@@ -53,6 +53,8 @@ public class MatchService {
 	}	
 	
 	public MatchDetails getMatchDetailsById(UUID matchId) {
+		Match m = getMatchById(matchId);
+		m.setGameList(gameService.getGameListForMatch(m));
 		return MatchMapper.toMatchDetails(getMatchById(matchId));
 	}
 

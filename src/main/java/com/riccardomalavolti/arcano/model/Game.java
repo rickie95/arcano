@@ -9,10 +9,9 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Game {
 	
 	private Long id;
-
-	private boolean isEnded;
-	
+	private Match parentMatch;
 	private Map<UUID, Short> gamePoints;
+	private boolean isEnded;
 	
 	public Game() {
 		this.isEnded = false;
@@ -22,6 +21,11 @@ public class Game {
 	public Game(Long id) {
 		this();
 		this.id = id;
+	}
+
+	public Game(Long id, Match parentMatch) {
+		this(id);
+		this.parentMatch = parentMatch;
 	}
 	
 	public void withdrawPlayer(UUID playerId) {
@@ -39,6 +43,14 @@ public class Game {
 	
 	public Map<UUID, Short> getGamePoints() {
 		return gamePoints;
+	}
+
+	public void setParentMatch(Match match){
+		this.parentMatch = match;
+	}
+
+	public Match getParentMatch() {
+		return this.parentMatch;
 	}
 
 	public void setGamePoints(Map<UUID, Short> gamePoints) {
@@ -90,7 +102,7 @@ public class Game {
 
 	@Override
 	public String toString() {
-		return "Game [id=" + id + ", isEnded=" + isEnded + "]";
+		return "Game [id=" + id + ", isEnded=" + isEnded + ", parentMatch=" + parentMatch + "]";
 	}
 
 	@Override

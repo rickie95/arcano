@@ -35,13 +35,16 @@ public class Match implements Ownable {
     @ManyToOne
     @JoinColumn(name = "playertwo_id", referencedColumnName = "id")
 	User playerTwo;
+
+	@Transient List<Game> gameList;
 	
 	short playerOneScore;
 	short playerTwoScore;
 
 	@Transient User winner;
-	@Transient List<Game> gameList;
 	@Transient boolean matchEnded;
+	
+	
 	
 	public Match() {
 		
@@ -63,7 +66,7 @@ public class Match implements Ownable {
 	public User getWinner() {
 		winner = null;
 		
-		updateMatchStatus();
+		//updateMatchStatus();
 		
 		if (playerOneScore > playerTwoScore) {
 			winner = playerOne;

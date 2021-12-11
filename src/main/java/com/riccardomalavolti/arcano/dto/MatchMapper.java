@@ -1,6 +1,7 @@
 package com.riccardomalavolti.arcano.dto;
 
 import java.util.List;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
@@ -22,7 +23,25 @@ public class MatchMapper {
 	}
 	
 	public static MatchDetails toMatchDetails(Match match) {
-		return mapper.map(match, MatchDetails.class);
+		MatchDetails mDetails = new MatchDetails();
+		mDetails.setId(match.getId());
+		mDetails.setParentEvent(
+			match.getParentEvent() != null ? 
+				EventMapper.toEventDetails(match.getParentEvent()) : 
+				null
+			);
+		mDetails.setPlayerOne(UserMapper.toUserDetails(match.getPlayerOne()));
+		mDetails.setPlayerTwo(UserMapper.toUserDetails(match.getPlayerTwo()));
+		mDetails.setWinner(UserMapper.toUserDetails(match.getWinner()));
+		mDetails.setPlayerOneScore(match.getPlayerOneScore());
+		mDetails.setPlayerTwoScore(match.getPlayerTwoScore());
+		mDetails.setGameList(
+			match.getGameList() != null ? 
+				match.getGameList().stream().map(GameMapper::toGameBrief).collect(Collectors.toList()) : 
+				null
+			);
+		mDetails.setMatchEnded(match.isMatchEnded());
+		return mDetails;
 	}
 	
 	public static List<MatchDetails> toMatchDetails(List<Match> matchList) {

@@ -42,12 +42,13 @@ public class MatchEndpointServiceIT extends JerseyTest {
 	@Mock MatchRepository matchRepo;
 	@Mock AuthorizationService authService;
 	@Mock UserService userService;
+	@Mock GameService gameService;
 
 	@SuppressWarnings("deprecation")
 	@Override
 	protected Application configure(){
         MockitoAnnotations.initMocks(this);
-        matchService = new MatchService(matchRepo, userService, authService);
+        matchService = new MatchService(matchRepo, userService, authService, gameService);
         forceSet(TestProperties.CONTAINER_PORT, "0");
         return new ResourceConfig(MatchEndpoint.class)
             .register(new AbstractBinder() {

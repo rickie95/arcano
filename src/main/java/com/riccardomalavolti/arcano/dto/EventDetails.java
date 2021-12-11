@@ -1,6 +1,5 @@
 package com.riccardomalavolti.arcano.dto;
 
-import java.net.URI;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;

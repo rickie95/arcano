@@ -5,12 +5,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.enterprise.inject.Default;
 import javax.inject.Singleton;
 
 import com.riccardomalavolti.arcano.exceptions.ConflictException;
 import com.riccardomalavolti.arcano.model.Game;
+import com.riccardomalavolti.arcano.model.Match;
 
 @Default
 @Singleton
@@ -51,6 +53,14 @@ public class GameRepositoryInMemory implements GameRepository {
 
 	public static Long getIdCounter() {
 		return GameRepositoryInMemory.gameIdCounter;
+	}
+
+	@Override
+	public List<Game> getGameListForMatch(Match m) {
+		return gameList.entrySet().stream()
+			.filter(entry -> entry.getValue().getParentMatch() == m)
+			.map(entry -> entry.getValue())
+			.collect(Collectors.toList());
 	}
 
 }

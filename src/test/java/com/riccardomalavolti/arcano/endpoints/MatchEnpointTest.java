@@ -3,16 +3,23 @@ package com.riccardomalavolti.arcano.endpoints;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyCollection;
 import static org.mockito.Mockito.when;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.json.Json;
 import javax.json.JsonObject;
+import javax.ws.rs.container.ContainerRequestContext;
+import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.SecurityContext;
@@ -21,11 +28,15 @@ import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTest;
 import org.glassfish.jersey.test.TestProperties;
+import org.hamcrest.core.AllOf;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import com.riccardomalavolti.arcano.dto.GameMapper;
+import com.riccardomalavolti.arcano.dto.MatchBrief;
+import com.riccardomalavolti.arcano.dto.MatchDetails;
 import com.riccardomalavolti.arcano.dto.MatchMapper;
 import com.riccardomalavolti.arcano.endpoints.rest.MatchEndpoint;
 import com.riccardomalavolti.arcano.model.Event;
@@ -39,10 +50,10 @@ import io.restassured.RestAssured;
 
 public class MatchEnpointTest extends JerseyTest {
 
-    private final UUID matchId = UUID.randomUUID();
+    private UUID matchId;
 
     @Mock private MatchService matchService;
-    @Mock private SecurityContext securityContext;
+    @Mock private SecurityContext securityContextMock;
 
     @SuppressWarnings("deprecation")
 	@Override
@@ -55,12 +66,23 @@ public class MatchEnpointTest extends JerseyTest {
                 protected void configure() {
                     bind(matchService).to(MatchService.class);
                 }
-            });
+            }).register(new ContainerRequestFilter() {
+				@Override
+				public void filter(final ContainerRequestContext containerRequestContext) throws IOException {
+					containerRequestContext.setSecurityContext(securityContextMock);
+				}
+			});
     }
 
     @Before
     public void configureRestAssured() {
         RestAssured.baseURI = getBaseUri().toString();
+        RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
+    }
+
+    @Before
+    public void initFields(){
+        matchId = UUID.randomUUID();
     }
 
     @Test
@@ -72,8 +94,9 @@ public class MatchEnpointTest extends JerseyTest {
         match2.setId(UUID.randomUUID());
 
         List<Match> matchList = new ArrayList<>(Arrays.asList(match1, match2));
+        List<MatchBrief> matchBriefList = MatchMapper.toMatchBrief(matchList);
         
-        when(matchService.getAllMatches()).thenReturn(MatchMapper.toMatchBrief(matchList));
+        when(matchService.getAllMatches()).thenReturn(matchBriefList);
 
         given()
             .accept(MediaType.APPLICATION_JSON).
@@ -95,14 +118,23 @@ public class MatchEnpointTest extends JerseyTest {
         match1.setPlayerOne(new User(UUID.randomUUID()));
         match1.setPlayerTwo(new User(UUID.randomUUID()));
         match1.setParentEvent(new Event(UUID.randomUUID()));
+
+        Game g = new Game((long)40, match1);
+        Map<UUID, Short> gp = new HashMap<UUID, Short>();
+        gp.put(match1.getPlayerOne().getId(), (short)20);
+        gp.put(match1.getPlayerTwo().getId(), (short)20);
+        g.setGamePoints(gp);
+
+        List<Game> gameList = new ArrayList<Game>(Arrays.asList(
+            g,
+            new Game((long)41, match1),
+            new Game((long)42, match1)
+        ));
         
-        match1.setGameList(new ArrayList<Game>(Arrays.asList(
-        			new Game((long)40),
-        			new Game((long)41),
-        			new Game((long)42)
-        		)));
+        match1.setGameList(gameList);
+        MatchDetails matchDetails = MatchMapper.toMatchDetails(match1);
         
-        when(matchService.getMatchDetailsById(matchId)).thenReturn(MatchMapper.toMatchDetails(match1));
+        when(matchService.getMatchDetailsById(matchId)).thenReturn(matchDetails);
         
         given()
         	.accept(MediaType.APPLICATION_JSON).
@@ -112,7 +144,8 @@ public class MatchEnpointTest extends JerseyTest {
         	.statusCode(200)
         	.assertThat()
         	.body(
-        			"id", equalTo(matchId.toString())
+        			"id", equalTo(matchId.toString()),
+                    "gameList.id", hasItems(40, 41, 42)
         			);
     }
     

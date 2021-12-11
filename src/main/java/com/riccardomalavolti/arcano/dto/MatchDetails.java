@@ -6,7 +6,6 @@ import java.util.UUID;
 
 import javax.ws.rs.core.Link;
 
-import com.riccardomalavolti.arcano.model.Game;
 
 public class MatchDetails implements RESTResource {
 	
@@ -18,7 +17,7 @@ public class MatchDetails implements RESTResource {
 	
 	private short playerOneScore;
 	private short playerTwoScore;
-	private List<Game> gameList;
+	private List<GameBrief> gameList;
 	private boolean matchEnded;
 	
 	public UUID getId() {
@@ -63,10 +62,10 @@ public class MatchDetails implements RESTResource {
 	public void setPlayerTwoScore(short playerTwoScore) {
 		this.playerTwoScore = playerTwoScore;
 	}
-	public List<Game> getGameList() {
+	public List<GameBrief> getGameList() {
 		return gameList;
 	}
-	public void setGameList(List<Game> gameList) {
+	public void setGameList(List<GameBrief> gameList) {
 		this.gameList = gameList;
 	}
 	public boolean isMatchEnded() {
@@ -102,9 +101,9 @@ public class MatchDetails implements RESTResource {
 
 		// Games
 		if(gameList != null && !gameList.isEmpty())
-			for(Game g: gameList){
+			for(GameBrief g: gameList){
 				links.add(Link.fromUri("{base_uri}/games/{id}")
-				.rel(String.format("game_{}", g.getId())).type("text/plain")
+				.rel("game_" + g.getId().toString()).type("text/plain")
 				.build(absoluteBasePath, g.getId()));
 		}
 		return links;

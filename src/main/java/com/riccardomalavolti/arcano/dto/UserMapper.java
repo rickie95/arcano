@@ -22,6 +22,9 @@ private static ModelMapper mapper = new ModelMapper();
 	}
 
 	public static UserDetails toUserDetails(User user) {
+		if(user == null)
+			return null;
+			
 		return mapper.map(user, UserDetails.class);
 	}
 	

@@ -8,6 +8,7 @@ import javax.ws.rs.NotFoundException;
 
 import com.riccardomalavolti.arcano.dto.UserDetails;
 import com.riccardomalavolti.arcano.model.Game;
+import com.riccardomalavolti.arcano.model.Match;
 import com.riccardomalavolti.arcano.repositories.GameRepository;
 
 public class GameService {
@@ -60,5 +61,9 @@ public class GameService {
 		game.withdrawPlayer(playerId);
 		game.endGame();
 	}
+
+    public List<Game> getGameListForMatch(Match m) {
+        return gameRepository.getGameListForMatch(m);
+    }
 
 }

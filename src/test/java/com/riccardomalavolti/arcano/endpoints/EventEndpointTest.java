@@ -79,8 +79,9 @@ public class EventEndpointTest extends JerseyTest {
 	
 	@Before
 	public void configureRestAssured() {
-		RestAssured.baseURI = getBaseUri().toString();
-	}
+		RestAssured.baseURI = getBaseUri().toString();   
+		RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
+    }
 	
 	@Before
 	public void initFields() {
@@ -123,7 +124,6 @@ public class EventEndpointTest extends JerseyTest {
 			.get(EventEndpoint.BASE_PATH).
 		then()
 			.statusCode(200)
-			.log().body()
 			.assertThat()
 				.body(
 						"[0].id", equalTo(eOne.getId().toString()),
@@ -338,11 +338,9 @@ public class EventEndpointTest extends JerseyTest {
 		given()
 			.contentType(MediaType.APPLICATION_JSON)
 			.body(updatedEventJsonBody.toString())
-			.log().all()
 		.when()
 			.put(EventEndpoint.BASE_PATH +"/" + eventToBeUpdated.getId().toString())
 		.then()
-		.log().all()
 			.statusCode(200)
 			.assertThat()
 			.body(
